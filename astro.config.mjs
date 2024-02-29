@@ -8,6 +8,23 @@ export default defineConfig({
     starlight({
       title: "Constituția României",
       favicon: 'logo.png',
+      head: [
+        {
+          tag: 'script',
+          attrs: {
+            src: 'https://www.googletagmanager.com/gtag/js?id=G-4WBYC08DN1',
+            defer: true,
+          },
+        },
+        {
+          tag: 'script',
+          content: `window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+        
+          gtag('config', 'G-4WBYC08DN1');`
+        },
+      ],
       logo: {
         src: './src/assets/logo.png',
       },
