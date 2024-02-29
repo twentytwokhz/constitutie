@@ -3,7 +3,7 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://stargazers.club',
+  site: 'https://constitutia.florin.page',
   integrations: [
     starlight({
       title: "Constituția României",
