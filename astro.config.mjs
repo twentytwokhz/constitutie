@@ -7,9 +7,9 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Constituția României",
-      favicon: './src/assets/constitutia-romaniei-stema-2003.png',
+      favicon: 'logo.png',
       logo: {
-        src: './src/assets/constitutia-romaniei-stema-2003.png',
+        src: './src/assets/logo.png',
       },
       // customCss: [
       //   // Relative path to your custom CSS file
