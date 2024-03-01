@@ -1,8 +1,6 @@
 ---
 title: Istoric
 description: Istoric
-sidebar:
-  order: 1
 ---
 
 Constituția din 1991 a fost modificată şi completată prin **Legea de revizuire a Constituţiei României nr. 429/2003**, republicată de Consiliul Legislativ, cu reactualizarea denumirilor şi dându-se textelor o nouă numerotare.
