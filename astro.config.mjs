@@ -26,7 +26,7 @@ export default defineConfig({
         },
       ],
       logo: {
-        src: './src/assets/logo.png',
+        src: './src/assets/logo2003.png',
       },
       // customCss: [
       //   // Relative path to your custom CSS file
@@ -49,6 +49,7 @@ export default defineConfig({
           label: "Constituția",
           items: [
             { label: "Istoric", link: "/constitutia/istoric" },
+            { label: "1986", link: "/constitutia/1986" },
             { label: "1991", link: "/constitutia/1991" },
             { label: "2003", link: "/constitutia/2003" },
           ],
