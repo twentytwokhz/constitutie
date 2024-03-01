@@ -40,7 +40,7 @@ export default defineConfig({
         },
       },
       social: {
-        github: "https://github.com/twentytwokhz/constitutia",
+        github: "https://github.com/twentytwokhz/constitutie",
         rss: "https://florin.page",
         linkedin: "https://linkedin.com/in/florinbobis"
       },
@@ -63,6 +63,10 @@ export default defineConfig({
           ],
         },
       ],
+      lastUpdated: true,
+      editLink: {
+        baseUrl: 'https://github.com/twentytwokhz/constitutie/edit/master/',
+      },
     }),
   ],
 });
