@@ -53,6 +53,7 @@ export default defineConfig({
             { label: "1986", link: "/constitutia/1986" },
             { label: "1991", link: "/constitutia/1991" },
             { label: "2003", link: "/constitutia/2003" },
+            { label: "Diferente", link: "/constitutia/diferente" },
           ],
         },
         {
