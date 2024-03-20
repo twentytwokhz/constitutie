@@ -8,7 +8,7 @@ export default defineConfig({
   site: 'https://constitutia.florin.page',
   integrations: [starlight({
     title: "Constituția României",
-    favicon: 'logo.webp',
+    favicon: 'logo.jpg',
     head: [{
       tag: 'script',
       attrs: {
