@@ -8,7 +8,7 @@ export default defineConfig({
   site: 'https://constitutia.florin.page',
   integrations: [starlight({
     title: "Constituția României",
-    favicon: 'logo.png',
+    favicon: 'logo.webp',
     head: [{
       tag: 'script',
       attrs: {
@@ -24,7 +24,7 @@ export default defineConfig({
           gtag('config', 'G-4WBYC08DN1');`
     }],
     logo: {
-      src: './public/images/logo2003.png'
+      src: './public/images/logo2003.webp'
     },
     // customCss: [
     //   // Relative path to your custom CSS file
