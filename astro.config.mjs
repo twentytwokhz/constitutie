@@ -24,7 +24,7 @@ export default defineConfig({
           gtag('config', 'G-4WBYC08DN1');`
     }],
     logo: {
-      src: './src/assets/logo2003.png'
+      src: './public/images/logo2003.png'
     },
     // customCss: [
     //   // Relative path to your custom CSS file
@@ -59,9 +59,6 @@ export default defineConfig({
       }, {
         label: "2003",
         link: "/constitutia/2003"
-      }, {
-        label: "Diferente",
-        link: "/constitutia/diferente"
       }]
     }, {
       label: "Referințe",
