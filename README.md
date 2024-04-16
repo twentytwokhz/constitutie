@@ -1,8 +1,8 @@
 # Constituția României
 
-[![Dezvoltată cu Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+[![Azure Static Web Apps CI/CD](https://github.com/twentytwokhz/constitutie/actions/workflows/azure-static-web-apps-polite-island-0bc4dd703.yml/badge.svg)](https://github.com/twentytwokhz/constitutie/actions/workflows/azure-static-web-apps-polite-island-0bc4dd703.yml)
 
-![Website](https://img.shields.io/website?url=https%3A%2F%2Fconstitutia.florin.page)
+[![Dezvoltată cu Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build) ![Website](https://img.shields.io/website?url=https%3A%2F%2Fconstitutia.florin.page)
 
 ```
 Constituția
