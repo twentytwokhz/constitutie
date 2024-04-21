@@ -26,10 +26,10 @@ export default defineConfig({
     logo: {
       src: './public/images/logo2003.webp'
     },
-    // customCss: [
-    //   // Relative path to your custom CSS file
-    //   './src/styles/custom.css',
-    // ],
+    customCss: [
+      // Relative path to your custom CSS file
+      './src/styles/custom.css',
+    ],
     defaultLocale: "root",
     locales: {
       root: {
@@ -51,14 +51,24 @@ export default defineConfig({
         label: "1952",
         link: "/constitutia/1952"
       }, {
+        label: "1952➡️1986",
+        link: "/1952-1986"
+      }, {
         label: "1986",
         link: "/constitutia/1986"
+      }, {
+        label: "1986➡️1991",
+        link: "/1986-1991"
       }, {
         label: "1991",
         link: "/constitutia/1991"
       }, {
+        label: "1991➡️2003",
+        link: "/1991-2003"
+      }, {
         label: "2003",
-        link: "/constitutia/2003"
+        link: "/constitutia/2003",
+        badge: { text: 'curentă', variant: 'tip' },
       }]
     }, {
       label: "Referințe",

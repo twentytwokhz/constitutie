@@ -1,0 +1,11 @@
+:root {
+  --sl-content-width: 90%;
+
+  .diff-editor {
+    /* override style */
+    :not(a, strong, em, del, span, input, code)
+      + :not(a, strong, em, del, span, input, code, :where(.not-content *)) {
+      margin-top: 0rem;
+    }
+  }
+}
