@@ -1,9 +1,10 @@
 import { DiffEditor } from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 
-export default function DiffConstitutie({original, modified}) {
+export default function DiffConstitutie({original, modified}: {original: number, modified: number}) {
 	const [originalValue, setOriginalValue] = useState("");
 	const [modifiedValue, setModifiedValue] = useState("");
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     fetch(`${original}.md`)
@@ -12,6 +13,7 @@ export default function DiffConstitutie({original, modified}) {
     fetch(`${modified}.md`)
       .then((res) => res.text())
       .then((data) => setModifiedValue(data));
+    setDark(localStorage.getItem("starlight-theme") === "dark");
   }, []);
   
 	return (
@@ -22,7 +24,7 @@ export default function DiffConstitutie({original, modified}) {
           modified={modifiedValue}
           modifiedLanguage="markdown"
           className="diff-editor"
-          theme="vs-dark"
+          theme={dark ? "vs-dark" : ""}
           options={{
             // You can optionally disable the resizing
             enableSplitViewResizing: true,
