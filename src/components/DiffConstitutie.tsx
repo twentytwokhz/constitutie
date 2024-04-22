@@ -5,6 +5,8 @@ export default function DiffConstitutie({original, modified}: {original: number,
 	const [originalValue, setOriginalValue] = useState("");
 	const [modifiedValue, setModifiedValue] = useState("");
   const [dark, setDark] = useState(false);
+  const [unified, setUnified] = useState(false);
+  const [unifiedText, setUnifiedText] = useState("Două Coloane");
 
   useEffect(() => {
     fetch(`${original}.md`)
@@ -17,6 +19,11 @@ export default function DiffConstitutie({original, modified}: {original: number,
   }, []);
   
 	return (
+    <>
+    <button className="btn btn-sm btn-primary" onClick={() => {
+      setUnified(!unified);
+      setUnifiedText(unified ? "Două Coloane" : "Unificat");
+    }}>{unifiedText}</button>
     <DiffEditor
           height="50vh"
           original={originalValue}
@@ -28,12 +35,13 @@ export default function DiffConstitutie({original, modified}: {original: number,
           options={{
             // You can optionally disable the resizing
             enableSplitViewResizing: true,
-            renderSideBySide: true,
+            renderSideBySide: unified,
             renderLineHighlight: "line",
             automaticLayout: true,
             wordWrap: "on",
             readOnly: true,
           }}
     />
+    </>
 	);
 }
