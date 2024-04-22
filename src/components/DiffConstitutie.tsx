@@ -35,6 +35,9 @@ export default function DiffConstitutie({original, modified}: {original: number,
           options={{
             // You can optionally disable the resizing
             enableSplitViewResizing: true,
+            readOnlyMessage: {
+              value: "Pentru a contribui apasă butonul 'Editează pagina' de mai jos.",
+            },
             renderSideBySide: unified,
             renderLineHighlight: "line",
             automaticLayout: true,
