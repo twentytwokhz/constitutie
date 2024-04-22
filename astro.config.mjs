@@ -39,6 +39,7 @@ export default defineConfig({
     },
     social: {
       github: "https://github.com/twentytwokhz/constitutie",
+      instagram: "https://instagram.com/constitutia.romaniei",
       rss: "https://florin.page",
       linkedin: "https://linkedin.com/in/florinbobis"
     },
