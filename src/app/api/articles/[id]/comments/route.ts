@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { articles, comments } from "@/lib/db/schema";
 import { moderateComment } from "@/lib/moderation";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -13,10 +13,11 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   }
 
   try {
+    // Only return approved comments to the public (filter out pending/rejected)
     const result = await db
       .select()
       .from(comments)
-      .where(eq(comments.articleId, articleId))
+      .where(and(eq(comments.articleId, articleId), eq(comments.status, "approved")))
       .orderBy(desc(comments.createdAt));
 
     return NextResponse.json(result);
