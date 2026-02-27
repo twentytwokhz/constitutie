@@ -1,5 +1,56 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #73, #129, #74)
+
+### Completed Features
+
+#### Feature #73: Hero section with animated headline renders ✅
+- Created AnimatedText component (src/components/landing/animated-text.tsx)
+  - Staggered word-by-word fade-up + blur reveal animation (MagicUI style)
+  - Configurable stagger delay, highlight words, and CSS classes
+  - Uses requestAnimationFrame for smooth animation trigger after hydration
+- Created GridBackground component (src/components/landing/grid-background.tsx)
+  - SVG grid pattern with radial gradient mask (fades at edges)
+  - Radial indigo glow behind hero content
+  - Adapts to dark/light mode via Tailwind CSS classes
+- Added CSS keyframes: word-reveal (opacity + blur + translateY), grid-fade
+- Respects prefers-reduced-motion (instantly shows content without animation)
+- Hero now uses full viewport height with overflow hidden
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #129: Landing page responsive on mobile (375px) ✅
+- Hero: text-4xl on mobile (progressive to 5xl/7xl on sm/md), smaller illustration (h-48 w-48)
+- Hero: uses 100dvh minus header height for proper mobile viewport
+- Hero: CTA buttons full-width on mobile (items-stretch), taller touch targets (h-12)
+- Feature cards: py-12 on mobile (vs py-20 desktop), smaller heading (text-2xl)
+- Feature cards: smaller gap (gap-6 vs gap-8), single-column below sm breakpoint
+- Stats section: compact padding (p-4 vs p-6), smaller icon (h-10 vs h-12)
+- Stats section: text-2xl numbers on mobile (vs text-3xl), smaller heading
+- All sections use progressive sizing with sm/md breakpoints
+- No horizontal scroll on 375px viewport
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #74: Hero CTA buttons navigate correctly ✅
+- "Explorează Constituția" links to /2003 (reader page) — verified 200 response
+- "Compară Versiuni" links to /compare (diff page) — verified 200 response
+- Both use Next.js <Link> for client-side navigation
+- Both buttons visible in rendered HTML with correct href attributes
+- No code changes needed — already working correctly
+
+### Components Created
+- src/components/landing/animated-text.tsx — MagicUI-style staggered text animation
+- src/components/landing/grid-background.tsx — SVG grid pattern + radial glow background
+
+### Components Modified
+- src/app/page.tsx — Hero section redesigned with animation + mobile responsive
+- src/app/globals.css — Added word-reveal, grid-fade keyframes, prefers-reduced-motion
+- src/components/landing/stats-section.tsx — Mobile responsive stat cards
+
+### Current Status
+- Features passing: 34 (was 31)
+- Total features: 140
+- Percentage: ~24.3%
+
 ## Session: 2026-02-28 (Agent handling feature #140)
 
 ### Completed Features
