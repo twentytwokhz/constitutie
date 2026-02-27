@@ -1,5 +1,45 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #25, #64, #29)
+
+### Completed Features
+
+#### Feature #25: Constitution reader page renders article content via TipTap ✅
+- Created TipTapReader client component (src/components/reader/tiptap-reader.tsx)
+- Uses @tiptap/react useEditor with editable: false for read-only rendering
+- Added CSS styles for ordered lists with (N) counter numbering for alineate
+- Styled headings distinctly: h1 (Titlu: large, primary border), h2 (Capitol: medium), h3 (Secțiune: italic muted)
+- Enhanced breadcrumb with full structural unit parent chain walk
+- Article header shows "Art. N" + title (2003) or "Articolul N" (1952)
+- Fallback to raw content split when contentTiptap is null
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #64: Comment text input and submit button on article ✅
+- Already fully implemented by previous session
+- CommentsSection component has textarea, submit button, AI moderation feedback
+- Integrated below each article in the reader page
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #29: Deep linking URL per article works ✅
+- Updated nav links to use full hierarchical paths (e.g., /2003/titlul-2/capitolul-1/articolul-15)
+- Created buildArticlePath() helper that walks structural unit parent chain
+- Fetches all structural units for version in single query (efficient)
+- Verified: all deep link URLs return 200 (tested 2003 and 1952 versions)
+- Breadcrumb correctly reflects full structural hierarchy on deep link
+- Navigation links now include Titlu/Capitol/Secțiune path segments
+- Mock data grep: zero matches for all prohibited patterns
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: ~39 (was ~36)
+- Total features: 140
+- Percentage: ~27.9%
+
+### Notes
+- TipTap renders on client side (useEditor hook) with loading skeleton during SSR
+- buildArticlePath uses preloaded unitMap for O(1) parent chain lookups
+- Multiple concurrent agents are committing, so changes sometimes land in HEAD before explicit commit
+
 ## Session: 2026-02-28 (Agent handling features #13, #26, #14)
 
 ### Completed Features
