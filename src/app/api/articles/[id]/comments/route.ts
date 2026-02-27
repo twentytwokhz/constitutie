@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { articles, comments } from "@/lib/db/schema";
+import { moderateComment } from "@/lib/moderation";
 import { desc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -52,15 +53,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // For now, skip AI moderation and set status to approved
-    // AI moderation via OpenRouter will be implemented in the feedback feature
+    // AI moderation via OpenRouter
+    const moderation = await moderateComment(content.trim());
+
+    const status = moderation.approved ? "approved" : "rejected";
+
     const [newComment] = await db
       .insert(comments)
       .values({
         articleId,
         content: content.trim(),
         selectedText: selectedText || null,
-        status: "approved",
+        status,
+        rejectionReason: moderation.reason,
         fingerprintHash,
         ipHash: request.headers.get("x-forwarded-for") || "unknown",
       })
