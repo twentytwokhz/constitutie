@@ -1,5 +1,6 @@
 "use client";
 
+import { MonacoDiffViewer } from "@/components/diff/monaco-diff-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,17 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { diffWords } from "diff";
 import {
   ArrowLeftRight,
   ChevronDown,
   ChevronUp,
+  Columns2,
   FileText,
   Loader2,
   Minus,
   Plus,
+  Rows2,
 } from "lucide-react";
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /** Constitution version metadata from the API */
 interface Version {
@@ -70,6 +72,7 @@ export default function ComparePage() {
   const [versionsLoading, setVersionsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showUnchanged, setShowUnchanged] = useState(false);
+  const [sideBySide, setSideBySide] = useState(true);
 
   // Fetch available versions on mount
   useEffect(() => {
@@ -238,24 +241,44 @@ export default function ComparePage() {
         </div>
       )}
 
-      {/* Summary Bar */}
-      {diffData && (
-        <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-6 sm:flex sm:flex-wrap sm:gap-3">
-          <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400 justify-center py-1.5 sm:justify-start sm:py-0.5">
-            <Plus className="mr-1 h-3 w-3" />
-            {diffData.summary.added} adăugate
-          </Badge>
-          <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400 justify-center py-1.5 sm:justify-start sm:py-0.5">
-            <Minus className="mr-1 h-3 w-3" />
-            {diffData.summary.removed} eliminate
-          </Badge>
-          <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400 justify-center py-1.5 sm:justify-start sm:py-0.5">
-            <FileText className="mr-1 h-3 w-3" />
-            {diffData.summary.modified} modificate
-          </Badge>
-          <Badge variant="secondary" className="justify-center py-1.5 sm:justify-start sm:py-0.5">
-            {diffData.summary.unchanged} neschimbate
-          </Badge>
+      {/* View Mode Toggle + Summary */}
+      {diffData && !loading && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400">
+              <Plus className="mr-1 h-3 w-3" />
+              {diffData.summary.added} adăugate
+            </Badge>
+            <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400">
+              <Minus className="mr-1 h-3 w-3" />
+              {diffData.summary.removed} eliminate
+            </Badge>
+            <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400">
+              <FileText className="mr-1 h-3 w-3" />
+              {diffData.summary.modified} modificate
+            </Badge>
+            <Badge variant="secondary">{diffData.summary.unchanged} neschimbate</Badge>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
+            <Button
+              variant={sideBySide ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSideBySide(true)}
+              className="h-7 gap-1.5 px-2.5 text-xs"
+            >
+              <Columns2 className="h-3.5 w-3.5" />
+              Side-by-side
+            </Button>
+            <Button
+              variant={!sideBySide ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setSideBySide(false)}
+              className="h-7 gap-1.5 px-2.5 text-xs"
+            >
+              <Rows2 className="h-3.5 w-3.5" />
+              Inline
+            </Button>
+          </div>
         </div>
       )}
 
@@ -291,6 +314,7 @@ export default function ComparePage() {
                   statusLabel={statusLabel}
                   yearA={versionA}
                   yearB={versionB}
+                  sideBySide={sideBySide}
                 />
               ))}
             </div>
@@ -348,114 +372,27 @@ export default function ComparePage() {
   );
 }
 
-/**
- * Compute inline diff between two strings and return React nodes for each side.
- * Left side highlights removed words in red; right side highlights added words in green.
- */
-function useInlineDiff(
-  textA: string | undefined,
-  textB: string | undefined,
-): { left: ReactNode; right: ReactNode } {
-  return useMemo(() => {
-    if (!textA && !textB) return { left: null, right: null };
-    if (!textA)
-      return {
-        left: null,
-        right: <span className="bg-emerald-500/20 rounded px-0.5">{textB}</span>,
-      };
-    if (!textB)
-      return {
-        left: <span className="bg-rose-500/20 rounded px-0.5">{textA}</span>,
-        right: null,
-      };
-
-    const changes = diffWords(textA, textB);
-    const leftParts: ReactNode[] = [];
-    const rightParts: ReactNode[] = [];
-
-    for (let i = 0; i < changes.length; i++) {
-      const change = changes[i];
-      const key = i;
-      if (change.added) {
-        rightParts.push(
-          <span
-            key={key}
-            className="bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 rounded px-0.5"
-          >
-            {change.value}
-          </span>,
-        );
-      } else if (change.removed) {
-        leftParts.push(
-          <span
-            key={key}
-            className="bg-rose-500/20 text-rose-900 dark:text-rose-300 rounded px-0.5 line-through decoration-rose-400/50"
-          >
-            {change.value}
-          </span>,
-        );
-      } else {
-        leftParts.push(<span key={key}>{change.value}</span>);
-        rightParts.push(<span key={key}>{change.value}</span>);
-      }
-    }
-
-    return { left: <>{leftParts}</>, right: <>{rightParts}</> };
-  }, [textA, textB]);
-}
-
-/** Render one side of the diff (version content panel) */
-function DiffSideContent({
-  article,
-  side,
-  year,
-  diffContent,
-}: {
-  article: DiffArticle;
-  side: "a" | "b";
-  year: string;
-  diffContent: ReactNode;
-}) {
-  const content = side === "a" ? article.a : article.b;
-  const showDiff = article.status === "modified";
-
-  return (
-    <div className="p-4">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">{year}</div>
-      {content ? (
-        <div className="whitespace-pre-wrap text-sm leading-relaxed break-words">
-          {showDiff ? diffContent : content.content}
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 italic text-sm opacity-50 py-4">
-          {side === "a" ? <Plus className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
-          {side === "a" ? "Nu există în această versiune" : "Eliminat din această versiune"}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** Individual diff article card with side-by-side (desktop) and tabbed (mobile) view */
+/** Individual diff article card with Monaco DiffEditor */
 function DiffArticleCard({
   article,
   statusColor,
   statusLabel,
   yearA,
   yearB,
+  sideBySide,
 }: {
   article: DiffArticle;
   statusColor: (status: DiffArticle["status"]) => string;
   statusLabel: (status: DiffArticle["status"]) => string;
   yearA: string;
   yearB: string;
+  sideBySide: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [mobileTab, setMobileTab] = useState<"a" | "b">("a");
-  const { left: diffLeft, right: diffRight } = useInlineDiff(
-    article.a?.content,
-    article.b?.content,
-  );
+
+  const originalText = article.a?.content || "";
+  const modifiedText = article.b?.content || "";
+  const isOnlyOneSide = article.status === "added" || article.status === "removed";
 
   /** Status-specific icon */
   const statusIcon = (status: DiffArticle["status"]) => {
@@ -475,21 +412,19 @@ function DiffArticleCard({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-3 py-3 text-left hover:bg-accent/30 transition-colors sm:px-4"
+        className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-accent/30 transition-colors"
       >
-        <div className="flex items-center gap-2 min-w-0 sm:gap-3">
-          <span className="flex shrink-0 items-center gap-1.5 font-semibold text-sm sm:text-base">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5">
             {statusIcon(article.status)}
-            Art. {article.articleNumber}
+            <span className="font-semibold">Articolul {article.articleNumber}</span>
           </span>
           {(article.a?.title || article.b?.title) && (
-            <span className="truncate text-xs opacity-80 sm:text-sm">
-              {article.a?.title || article.b?.title}
-            </span>
+            <span className="text-sm opacity-80">{article.a?.title || article.b?.title}</span>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <span className="hidden text-xs font-medium uppercase tracking-wider opacity-70 sm:inline">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium uppercase tracking-wider opacity-70">
             {statusLabel(article.status)}
           </span>
           {expanded ? (
@@ -500,49 +435,38 @@ function DiffArticleCard({
         </div>
       </button>
 
-      {/* Expanded content */}
+      {/* Expanded content - Monaco DiffEditor */}
       {expanded && (
         <div className="border-t border-inherit">
-          {/* Mobile: A/B tab toggle (visible below md) */}
-          <div className="flex border-b border-inherit md:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileTab("a")}
-              className={`flex-1 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
-                mobileTab === "a"
-                  ? "bg-background text-foreground border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {yearA} (A)
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileTab("b")}
-              className={`flex-1 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
-                mobileTab === "b"
-                  ? "bg-background text-foreground border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {yearB} (B)
-            </button>
-          </div>
-
-          {/* Mobile: tabbed content (below md) */}
-          <div className="md:hidden">
-            {mobileTab === "a" ? (
-              <DiffSideContent article={article} side="a" year={yearA} diffContent={diffLeft} />
-            ) : (
-              <DiffSideContent article={article} side="b" year={yearB} diffContent={diffRight} />
-            )}
-          </div>
-
-          {/* Desktop: side-by-side (md and above) */}
-          <div className="hidden md:grid md:grid-cols-2 md:divide-x divide-inherit">
-            <DiffSideContent article={article} side="a" year={yearA} diffContent={diffLeft} />
-            <DiffSideContent article={article} side="b" year={yearB} diffContent={diffRight} />
-          </div>
+          {isOnlyOneSide ? (
+            <div className="p-4">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
+                {article.status === "added" ? `${yearB} (Adăugat)` : `${yearA} (Eliminat)`}
+              </div>
+              <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-background/50 rounded p-3 border border-inherit">
+                {article.status === "added" ? modifiedText : originalText}
+              </div>
+            </div>
+          ) : (
+            <div>
+              {sideBySide && (
+                <div className="grid grid-cols-2 border-b border-inherit text-xs font-semibold uppercase tracking-wider opacity-60">
+                  <div className="px-4 py-1.5 border-r border-inherit">{yearA}</div>
+                  <div className="px-4 py-1.5">{yearB}</div>
+                </div>
+              )}
+              {!sideBySide && (
+                <div className="border-b border-inherit text-xs font-semibold uppercase tracking-wider opacity-60 px-4 py-1.5">
+                  {yearA} → {yearB}
+                </div>
+              )}
+              <MonacoDiffViewer
+                original={originalText}
+                modified={modifiedText}
+                sideBySide={sideBySide}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

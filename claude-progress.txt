@@ -1,5 +1,43 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #11, #99, #12)
+
+### Completed Features
+
+#### Feature #11: GET /api/versions/[year]/articles returns all articles for version ✅
+- Verified endpoint returns valid JSON array with correct article counts
+- 2003: 157 articles, 1991: 152 articles — both match spec
+- Each article has: id, number, title, content, structuralUnitId, contentTiptap
+- Articles ordered by orderIndex (verified)
+- No mock data patterns in endpoint code
+- Biome lint: 0 errors
+
+#### Feature #99: All 535 articles are navigable across all versions ✅
+- Verified all 4 versions: 1952 (105), 1986 (121), 1991 (152), 2003 (157)
+- Total: 535 articles (matches spec exactly)
+- Sampled first/middle/last articles from each version — all have non-empty content
+- UI reader pages return 200 for /2003 and /1952
+- Reader page uses Server Components with real Drizzle ORM queries
+
+#### Feature #12: GET /api/versions/[year]/articles/[number] returns specific article ✅
+- Enhanced endpoint to include structural context (title/chapter/section breadcrumb)
+- Added getStructuralContext() helper that walks parentId chain
+- 2003 Art. 1: returns title "Statul român", contentTiptap JSON, structuralContext with Titlul 1
+- 1952 Art. 1: returns content, structuralContext with Capitolul 1
+- Both TipTap JSON and raw markdown content present
+- No mock data patterns
+- Biome lint: 0 errors
+
+### Current Status
+- Features passing: ~33 (was ~30)
+- Total features: 140
+- Percentage: ~23.6%
+
+### Notes
+- The article endpoint now includes structural hierarchy via structuralContext array
+- getStructuralContext() walks the self-referencing parentId FK chain in structural_units
+- This breadcrumb data supports the reader page's breadcrumb navigation component
+
 ## Session: 2026-02-28 (Agent handling features #45, #46, #128)
 
 ### Completed Features
