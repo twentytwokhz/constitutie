@@ -6,6 +6,8 @@ import {
   IllustrationGraph,
   IllustrationSearch,
 } from "@/components/illustrations";
+import { AnimatedText } from "@/components/landing/animated-text";
+import { GridBackground } from "@/components/landing/grid-background";
 import { StatsSection } from "@/components/landing/stats-section";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
 import Link from "next/link";
@@ -20,19 +22,31 @@ import { Suspense } from "react";
 export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col">
-      {/* Hero Section */}
-      <section className="flex min-h-[90vh] items-center justify-center">
-        <div className="container mx-auto px-4">
+      {/* Hero Section — full viewport, animated headline, grid background */}
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+        <GridBackground />
+        <div className="container relative z-10 mx-auto px-4">
           <div className="flex flex-col items-center gap-12 md:flex-row md:justify-between">
             <div className="text-center md:text-left">
               <h1 className="text-5xl font-bold tracking-tight md:text-7xl">
-                Constituția <span className="text-primary">României</span>
+                <AnimatedText
+                  text="Constituția României"
+                  highlightWords={["României"]}
+                  highlightClass="text-primary"
+                  staggerMs={120}
+                />
               </h1>
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:mx-0">
+              <p
+                className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:mx-0 animate-word-reveal"
+                style={{ animationDelay: "400ms" }}
+              >
                 Explorează legea fundamentală a României prin toate versiunile sale istorice: 1952,
                 1986, 1991, 2003.
               </p>
-              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row md:justify-start">
+              <div
+                className="mt-10 flex flex-col items-center gap-4 sm:flex-row md:justify-start animate-word-reveal"
+                style={{ animationDelay: "700ms" }}
+              >
                 <Link
                   href="/2003"
                   className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90"
@@ -47,7 +61,9 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-            <IllustrationConstitution className="h-64 w-64 flex-shrink-0 md:h-80 md:w-80" />
+            <div className="flex-shrink-0 animate-word-reveal" style={{ animationDelay: "300ms" }}>
+              <IllustrationConstitution className="h-64 w-64 md:h-80 md:w-80" />
+            </div>
           </div>
         </div>
       </section>
