@@ -67,17 +67,40 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     }
   }
 
-  // Fetch all articles for this version (ordered)
+  // Fetch all articles for this version (ordered), include structuralUnitId for path building
   const allArticles = await db
     .select({
       id: articles.id,
       number: articles.number,
       title: articles.title,
       slug: articles.slug,
+      structuralUnitId: articles.structuralUnitId,
     })
     .from(articles)
     .where(eq(articles.versionId, version.id))
     .orderBy(asc(articles.orderIndex));
+
+  // Fetch all structural units for this version (single query for efficiency)
+  const allUnits = await db
+    .select()
+    .from(structuralUnits)
+    .where(eq(structuralUnits.versionId, version.id));
+
+  const unitMap = new Map(allUnits.map((u) => [u.id, u]));
+
+  /** Build full hierarchical URL path for an article: /year/titlul-X/capitolul-Y/articolul-Z */
+  function buildArticlePath(art: { slug: string; structuralUnitId: number }): string {
+    const pathParts: string[] = [];
+    let unitId: number | null = art.structuralUnitId;
+    while (unitId) {
+      const unit = unitMap.get(unitId);
+      if (!unit) break;
+      pathParts.unshift(unit.slug);
+      unitId = unit.parentId;
+    }
+    pathParts.push(art.slug);
+    return `/${year}/${pathParts.join("/")}`;
+  }
 
   // If no specific article requested, show the first article
   if (articleNumber === null && allArticles.length > 0) {
@@ -266,11 +289,11 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           />
         </div>
 
-        {/* Article Navigation (Prev/Next) */}
+        {/* Article Navigation (Prev/Next) — full deep links */}
         <nav className="mt-10 flex items-center justify-between border-t border-border pt-6">
           {prevArticle ? (
             <Link
-              href={`/${year}/${prevArticle.slug}`}
+              href={buildArticlePath(prevArticle)}
               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -284,7 +307,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           )}
           {nextArticle ? (
             <Link
-              href={`/${year}/${nextArticle.slug}`}
+              href={buildArticlePath(nextArticle)}
               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Art. {nextArticle.number}
