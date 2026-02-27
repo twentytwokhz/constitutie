@@ -1,17 +1,19 @@
+import { IllustrationNotFound } from "@/components/illustrations";
 import Link from "next/link";
 
 /**
  * Custom 404 Page
  *
- * Styled 404 page with link to return home.
+ * Styled 404 page with unDraw-style illustration and link to return home.
  */
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="text-center">
-        <h1 className="text-6xl font-bold text-primary">404</h1>
+        <IllustrationNotFound className="mx-auto h-56 w-56 md:h-72 md:w-72" />
+        <h1 className="mt-6 text-6xl font-bold text-primary">404</h1>
         <h2 className="mt-4 text-2xl font-semibold">Pagină negăsită</h2>
-        <p className="mt-2 text-muted-foreground">
+        <p className="mt-2 max-w-md text-muted-foreground">
           Pagina pe care o cauți nu există sau a fost mutată.
         </p>
         <Link

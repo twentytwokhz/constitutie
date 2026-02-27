@@ -1,5 +1,64 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #66, #67, #97)
+
+### Completed Features
+
+#### Feature #66: AI moderation via OpenRouter filters comments ✅
+- Created src/lib/moderation.ts with moderateComment() function
+- Integrated OpenRouter API into POST /api/articles/[id]/comments
+- Uses meta-llama/llama-3.1-8b-instruct model (free model was unavailable)
+- System prompt in Romanian instructs AI to approve/reject based on content quality
+- Polite constructive comments → approved (no rejection reason)
+- Offensive/vulgar comments → rejected with specific reason in Romanian
+- Short meaningless comments → rejected ("prea scurt și nu are sens")
+- Fail-open design: approves if API unavailable (availability > strictness)
+- Robust JSON parsing handles markdown code blocks from AI response
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #67: Approved comments display under article sorted by date ✅
+- Updated GET /api/articles/[id]/comments to filter only approved comments
+- Created CommentsSection client component (src/components/feedback/comments-section.tsx)
+- Displays comments with content text and Romanian-formatted timestamp
+- Sorted by date descending (newest first) via SQL ORDER BY
+- Rejected/pending comments filtered out at API level
+- Built full reader page (/[year]/[[...slug]]) with:
+  - Article content with numbered paragraphs
+  - Breadcrumb navigation (Acasă > Year > Structural Unit > Article)
+  - Prev/Next article navigation
+  - Comments section integrated below article
+- Loading skeletons, error states, empty state messages
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #97: Create test comment and verify it appears after AI approval ✅
+- Added comment submission form to CommentsSection component
+- Form includes textarea, submit button with loading spinner
+- Shows approval success, rejection reason, or error messages
+- Generates browser fingerprint for abuse prevention
+- E2E test: submitted VERIFY_COMMENT_67890 → AI approved → visible in list → persists on refresh
+- Timestamp verified as current (0 seconds old)
+- Comment persists across page refresh (Neon PostgreSQL)
+- Mock data grep: zero matches for all prohibited patterns
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Created/Modified
+- src/lib/moderation.ts - NEW: OpenRouter AI moderation module
+- src/components/feedback/comments-section.tsx - NEW: Comments display + form
+- src/app/api/articles/[id]/comments/route.ts - Updated: AI moderation + approved filter
+- src/app/[year]/[[...slug]]/page.tsx - Rebuilt: Full article reader with comments
+
+### Current Status
+- Features passing: 20 (was 17)
+- Total features: 138
+- Percentage: ~14.5%
+
+### Notes
+- OpenRouter API key is real and working (configured in .env.local)
+- Free models (:free suffix) are no longer available on OpenRouter
+- AI moderation costs minimal credits per comment (llama-3.1-8b-instruct)
+- Reader page is now functional with real DB data, article navigation, and comments
+- Pre-existing TypeScript errors in illustration modules (unrelated to this session)
+
 ## Session: 2026-02-28 (Agent handling features #9, #43, #44)
 
 ### Completed Features
