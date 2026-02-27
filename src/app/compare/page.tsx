@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { diffWords } from "diff";
 import {
   ArrowLeftRight,
   ChevronDown,
@@ -18,7 +19,7 @@ import {
   Minus,
   Plus,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
 /** Constitution version metadata from the API */
 interface Version {
@@ -345,7 +346,63 @@ export default function ComparePage() {
   );
 }
 
-/** Individual diff article card with side-by-side content */
+/**
+ * Compute inline diff between two strings and return React nodes for each side.
+ * Left side highlights removed words in red; right side highlights added words in green.
+ */
+function useInlineDiff(
+  textA: string | undefined,
+  textB: string | undefined,
+): { left: ReactNode; right: ReactNode } {
+  return useMemo(() => {
+    if (!textA && !textB) return { left: null, right: null };
+    if (!textA)
+      return {
+        left: null,
+        right: <span className="bg-emerald-500/20 rounded px-0.5">{textB}</span>,
+      };
+    if (!textB)
+      return {
+        left: <span className="bg-rose-500/20 rounded px-0.5">{textA}</span>,
+        right: null,
+      };
+
+    const changes = diffWords(textA, textB);
+    const leftParts: ReactNode[] = [];
+    const rightParts: ReactNode[] = [];
+
+    for (let i = 0; i < changes.length; i++) {
+      const change = changes[i];
+      const key = i;
+      if (change.added) {
+        rightParts.push(
+          <span
+            key={key}
+            className="bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 rounded px-0.5"
+          >
+            {change.value}
+          </span>,
+        );
+      } else if (change.removed) {
+        leftParts.push(
+          <span
+            key={key}
+            className="bg-rose-500/20 text-rose-900 dark:text-rose-300 rounded px-0.5 line-through decoration-rose-400/50"
+          >
+            {change.value}
+          </span>,
+        );
+      } else {
+        leftParts.push(<span key={key}>{change.value}</span>);
+        rightParts.push(<span key={key}>{change.value}</span>);
+      }
+    }
+
+    return { left: <>{leftParts}</>, right: <>{rightParts}</> };
+  }, [textA, textB]);
+}
+
+/** Individual diff article card with side-by-side content and inline diff */
 function DiffArticleCard({
   article,
   statusColor,
@@ -360,6 +417,22 @@ function DiffArticleCard({
   yearB: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const { left: diffLeft, right: diffRight } = useInlineDiff(
+    article.a?.content,
+    article.b?.content,
+  );
+
+  /** Status-specific icon */
+  const statusIcon = (status: DiffArticle["status"]) => {
+    switch (status) {
+      case "added":
+        return <Plus className="h-3.5 w-3.5" />;
+      case "removed":
+        return <Minus className="h-3.5 w-3.5" />;
+      default:
+        return <FileText className="h-3.5 w-3.5" />;
+    }
+  };
 
   return (
     <div className={`rounded-lg border ${statusColor(article.status)} overflow-hidden`}>
@@ -370,7 +443,10 @@ function DiffArticleCard({
         className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-accent/30 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="font-semibold">Articolul {article.articleNumber}</span>
+          <span className="flex items-center gap-1.5 font-semibold">
+            {statusIcon(article.status)}
+            Articolul {article.articleNumber}
+          </span>
           {(article.a?.title || article.b?.title) && (
             <span className="text-sm opacity-80">{article.a?.title || article.b?.title}</span>
           )}
@@ -387,35 +463,41 @@ function DiffArticleCard({
         </div>
       </button>
 
-      {/* Expanded content - side by side */}
+      {/* Expanded content - side by side with inline diff */}
       {expanded && (
         <div className="border-t border-inherit">
           <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-inherit">
-            {/* Version A content */}
+            {/* Version A content (left) */}
             <div className="p-4">
               <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
                 {yearA}
               </div>
               {article.a ? (
                 <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {article.a.content}
+                  {article.status === "modified" ? diffLeft : article.a.content}
                 </div>
               ) : (
-                <div className="italic text-sm opacity-50">Nu există în această versiune</div>
+                <div className="flex items-center gap-2 italic text-sm opacity-50 py-4">
+                  <Plus className="h-4 w-4" />
+                  Nu există în această versiune
+                </div>
               )}
             </div>
 
-            {/* Version B content */}
+            {/* Version B content (right) */}
             <div className="p-4">
               <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
                 {yearB}
               </div>
               {article.b ? (
                 <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {article.b.content}
+                  {article.status === "modified" ? diffRight : article.b.content}
                 </div>
               ) : (
-                <div className="italic text-sm opacity-50">Nu există în această versiune</div>
+                <div className="flex items-center gap-2 italic text-sm opacity-50 py-4">
+                  <Minus className="h-4 w-4" />
+                  Eliminat din această versiune
+                </div>
               )}
             </div>
           </div>

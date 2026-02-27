@@ -17,50 +17,45 @@
     "db:seed": "tsx src/lib/db/seed.ts"
   },
   "dependencies": {
-    "next": "^15.3.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-
+    "@monaco-editor/react": "^4.7.0",
     "@neondatabase/serverless": "^0.10.0",
-    "drizzle-orm": "^0.38.0",
-
-    "@tiptap/react": "^2.10.0",
-    "@tiptap/starter-kit": "^2.10.0",
-    "@tiptap/extension-placeholder": "^2.10.0",
-
-    "react-diff-viewer-continued": "^4.0.0",
-    "diff": "^7.0.0",
-    "react-force-graph-2d": "^1.25.0",
-
-    "recharts": "^2.14.0",
-    "@react-pdf/renderer": "^4.0.0",
-
-    "cmdk": "^1.0.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-dialog": "^1.1.0",
     "@radix-ui/react-dropdown-menu": "^2.1.0",
     "@radix-ui/react-select": "^2.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.0",
-    "@radix-ui/react-slot": "^1.1.0",
-
+    "@react-pdf/renderer": "^4.0.0",
+    "@tiptap/extension-placeholder": "^2.10.0",
+    "@tiptap/react": "^2.10.0",
+    "@tiptap/starter-kit": "^2.10.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "tailwind-merge": "^2.6.0",
+    "cmdk": "^1.0.0",
+    "diff": "^7.0.0",
+    "drizzle-orm": "^0.38.0",
     "lucide-react": "^0.460.0",
-
-    "next-themes": "^0.4.0"
+    "next": "^15.3.0",
+    "next-themes": "^0.4.0",
+    "react": "^19.0.0",
+    "react-diff-viewer-continued": "^4.0.0",
+    "react-dom": "^19.0.0",
+    "react-force-graph-2d": "^1.25.0",
+    "recharts": "^2.14.0",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/diff": "^7.0.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.7.0",
     "drizzle-kit": "^0.30.0",
-    "@tailwindcss/postcss": "^4.0.0",
     "tailwindcss": "^4.0.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
   },
   "engines": {
     "node": ">=22.0.0"
