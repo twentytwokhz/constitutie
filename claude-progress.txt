@@ -1,5 +1,47 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #16, #78, #86)
+
+### Completed Features
+
+#### Feature #16: GET /api/stats returns aggregated statistics from real data ✅
+- Verified existing /api/stats endpoint returns correct data
+- total_articles: 535, total_versions: 4, total_references: 55, total_comments: 8+
+- All values come from real Drizzle ORM count() queries (no mock data)
+- Zero mock data pattern matches in codebase grep checks
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #78: Statistics section on landing shows real data ✅
+- Created StatsSection async Server Component (src/components/landing/stats-section.tsx)
+- Queries DB directly using Drizzle ORM (no API round-trip for SSR)
+- 4 stat cards: articles (535), versions (4), references (55), comments
+- Uses Lucide icons, hover effects, gradient accent line on hover
+- Wrapped in Suspense with skeleton fallback for streaming SSR
+- Added to landing page between feature cards and closing
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #86: Stat cards dashboard style shows totals from database ✅
+- Completely rewrote statistics page from stub to full dashboard
+- 7 stat cards: articles, versions, references, comments, agree votes, disagree votes, total votes
+- Per-version article breakdown with visual progress bars
+- Top referenced articles section with reference counts
+- Fixed Drizzle ORM query: replaced raw SQL `ANY()` with `inArray()` for Neon compatibility
+- All data from real database queries, zero hardcoded values
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Created
+- src/components/landing/stats-section.tsx - Landing page statistics section (async Server Component)
+
+### Current Status
+- Features passing: ~22 (was ~19)
+- Total features: 139
+- Percentage: ~15.8%
+
+### Notes
+- Drizzle ORM's `inArray()` is required for Neon HTTP driver (raw SQL `ANY()` doesn't serialize arrays correctly)
+- Server Components can query DB directly without going through API routes
+- Suspense boundaries enable streaming SSR for async components
+
 ## Session: 2026-02-28 (Agent handling feature #139)
 
 ### Completed Features
