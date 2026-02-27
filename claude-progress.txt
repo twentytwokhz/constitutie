@@ -51,3 +51,19 @@
 - PDF export route still needs implementation
 - Frontend pages are mostly stubs
 - Landing page, reader, graph view, search UI, diff UI all need implementation
+
+## Session: 2026-02-27 (Agent handling feature #138)
+
+### Completed Features
+
+#### Feature #138: OpenRouter API Key ✅
+- Updated .env.local with real OpenRouter API key (was sk-or-v1-placeholder)
+- Key is used for AI comment moderation (filtering obscene language, spam, low-quality comments)
+- Verified .env.local is in .gitignore (not committed to repo)
+- Code currently skips AI moderation in comments route (line 55-56) - to be implemented in future feature
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: 6
+- Total features: 138
+- Percentage: ~4.3%
