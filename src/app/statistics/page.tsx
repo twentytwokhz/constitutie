@@ -8,6 +8,7 @@ import {
 } from "@/lib/db/schema";
 import { count, eq, inArray, sql } from "drizzle-orm";
 import {
+  ArrowRight,
   BookOpen,
   GitCompareArrows,
   Link2,
@@ -16,6 +17,7 @@ import {
   ThumbsUp,
   TrendingUp,
 } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Statistics Dashboard Page
@@ -259,12 +261,13 @@ export default async function StatisticsPage() {
             {stats.topArticles.length > 0 ? (
               <div className="space-y-3">
                 {stats.topArticles.map((article) => (
-                  <div
+                  <Link
                     key={`art-${article.year}-${article.number}`}
-                    className="flex items-center justify-between rounded-lg border border-border/50 px-4 py-3"
+                    href={`/${article.year}/articolul-${article.number}`}
+                    className="group flex items-center justify-between rounded-lg border border-border/50 px-4 py-3 transition-colors hover:border-primary/30 hover:bg-primary/5"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-medium">
+                      <p className="text-sm font-medium group-hover:text-primary">
                         Art. {article.number}
                         {article.title ? ` — ${article.title}` : ""}
                       </p>
@@ -272,13 +275,16 @@ export default async function StatisticsPage() {
                         Constituția din {article.year}
                       </p>
                     </div>
-                    <div className="ml-4 flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1">
-                      <Link2 className="h-3 w-3 text-primary" />
-                      <span className="text-xs font-semibold text-primary tabular-nums">
-                        {article.refCount}
-                      </span>
+                    <div className="ml-4 flex shrink-0 items-center gap-2">
+                      <div className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1">
+                        <Link2 className="h-3 w-3 text-primary" />
+                        <span className="text-xs font-semibold text-primary tabular-nums">
+                          {article.refCount}
+                        </span>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
