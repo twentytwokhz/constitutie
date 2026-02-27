@@ -12,13 +12,13 @@ interface StatCardProps {
 
 function StatCard({ icon, value, label, description }: StatCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:shadow-lg">
-      <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+    <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-lg sm:p-6">
+      <div className="flex items-start gap-3 sm:gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:h-12 sm:w-12">
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-3xl font-bold tracking-tight text-foreground tabular-nums">
+          <p className="text-2xl font-bold tracking-tight text-foreground tabular-nums sm:text-3xl">
             {value.toLocaleString("ro-RO")}
           </p>
           <p className="mt-1 text-sm font-semibold text-foreground">{label}</p>
@@ -51,18 +51,18 @@ export async function StatsSection() {
   const stats = await getStats();
 
   return (
-    <section className="py-20" id="statistici">
+    <section className="py-12 sm:py-20" id="statistici">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
             Constituția în <span className="text-primary">cifre</span>
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
             Date reale extrase din toate cele patru versiuni ale Constituției României.
           </p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             icon={<BookOpen className="h-6 w-6" />}
             value={stats.totalArticles}
