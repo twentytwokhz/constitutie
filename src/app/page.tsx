@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 /**
  * Landing Page - Constituția României
  *
@@ -18,18 +20,18 @@ export default function HomePage() {
             1986, 1991, 2003.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <a
+            <Link
               href="/2003"
               className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90"
             >
               Explorează Constituția
-            </a>
-            <a
+            </Link>
+            <Link
               href="/compare"
               className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               Compară Versiuni
-            </a>
+            </Link>
           </div>
         </div>
       </section>
