@@ -1,5 +1,6 @@
 import { CommentsSection } from "@/components/feedback/comments-section";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
+import { TipTapReader } from "@/components/reader/tiptap-reader";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 import { and, asc, eq } from "drizzle-orm";
@@ -117,50 +118,130 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
   const prevArticle = currentIndex > 0 ? allArticles[currentIndex - 1] : null;
   const nextArticle = currentIndex < allArticles.length - 1 ? allArticles[currentIndex + 1] : null;
 
-  // Parse content into paragraphs (alineate)
-  const paragraphs = article.content.split("\n").filter((p) => p.trim().length > 0);
+  // Build full breadcrumb from structural context
+  // Walk the parent chain for full hierarchy
+  const breadcrumbParts: Array<{ type: string; name: string; slug: string }> = [];
+  if (structUnit) {
+    // Walk parent chain
+    let currentUnit: typeof structUnit | undefined = structUnit;
+    const chain: typeof breadcrumbParts = [];
+    while (currentUnit) {
+      chain.unshift({
+        type: currentUnit.type,
+        name: currentUnit.name,
+        slug: currentUnit.slug,
+      });
+      if (currentUnit.parentId) {
+        const [parent] = await db
+          .select()
+          .from(structuralUnits)
+          .where(eq(structuralUnits.id, currentUnit.parentId))
+          .limit(1);
+        currentUnit = parent;
+      } else {
+        currentUnit = undefined;
+      }
+    }
+    breadcrumbParts.push(...chain);
+  }
+
+  // Get the structural unit heading label (Titlu/Capitol/Secțiune)
+  const getTypeLabel = (type: string): string => {
+    switch (type) {
+      case "titlu":
+        return "Titlul";
+      case "capitol":
+        return "Capitolul";
+      case "sectiune":
+        return "Secțiunea";
+      default:
+        return type;
+    }
+  };
+
+  // Use TipTap JSON if available, otherwise fall back to raw content
+  const tiptapContent = article.contentTiptap as Record<string, unknown> | null;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+      <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
         <Link href="/" className="hover:text-foreground transition-colors">
           Acasă
         </Link>
-        <span>/</span>
+        <span className="text-muted-foreground/50">/</span>
         <Link href={`/${year}`} className="hover:text-foreground transition-colors">
           {year}
         </Link>
-        {structUnit && (
-          <>
-            <span>/</span>
-            <span className="capitalize">{structUnit.name}</span>
-          </>
-        )}
-        <span>/</span>
+        {breadcrumbParts.map((part) => (
+          <span key={part.slug} className="flex items-center gap-2">
+            <span className="text-muted-foreground/50">/</span>
+            <span>
+              {getTypeLabel(part.type)} {part.name}
+            </span>
+          </span>
+        ))}
+        <span className="text-muted-foreground/50">/</span>
         <span className="text-foreground font-medium">Articolul {article.number}</span>
       </nav>
 
-      {/* Article Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Articolul {article.number}
-          {article.title && (
-            <span className="text-muted-foreground font-normal"> — {article.title}</span>
-          )}
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">Constituția din {year}</p>
-      </header>
-
-      {/* Article Content */}
-      <article className="prose prose-stone dark:prose-invert max-w-none">
-        <div className="space-y-3">
-          {paragraphs.map((paragraph) => (
-            <p key={paragraph.substring(0, 50)} className="text-base leading-relaxed">
-              {paragraph}
+      {/* Structural Unit Heading (Titlu/Capitol/Secțiune) */}
+      {breadcrumbParts.length > 0 && (
+        <div className="mb-4 space-y-1">
+          {breadcrumbParts.map((part) => (
+            <p
+              key={part.slug}
+              className={
+                part.type === "titlu"
+                  ? "text-xs font-semibold uppercase tracking-widest text-primary"
+                  : part.type === "capitol"
+                    ? "text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                    : "text-xs font-medium italic text-muted-foreground/80"
+              }
+            >
+              {getTypeLabel(part.type)} {part.name}
             </p>
           ))}
         </div>
+      )}
+
+      {/* Article Header */}
+      <header className="mb-8">
+        <div className="flex items-baseline gap-3">
+          <span className="text-lg font-bold tabular-nums text-primary">Art. {article.number}</span>
+          {article.title && (
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{article.title}</h1>
+          )}
+        </div>
+        {!article.title && (
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-1">
+            Articolul {article.number}
+          </h1>
+        )}
+        <p className="mt-2 text-sm text-muted-foreground">
+          Constituția din {year} &middot; {allArticles.length} articole
+        </p>
+      </header>
+
+      {/* Article Content via TipTap */}
+      <article className="max-w-none">
+        {tiptapContent ? (
+          <TipTapReader content={tiptapContent} />
+        ) : (
+          <div className="space-y-3">
+            {article.content
+              .split("\n")
+              .filter((p) => p.trim().length > 0)
+              .map((paragraph, idx) => (
+                <p
+                  key={`p-${idx}-${paragraph.substring(0, 20)}`}
+                  className="text-base leading-relaxed"
+                >
+                  {paragraph}
+                </p>
+              ))}
+          </div>
+        )}
       </article>
 
       {/* Vote Buttons */}

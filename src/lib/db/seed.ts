@@ -55,22 +55,6 @@ function readConstitutionFile(year: number): string {
   }
 }
 
-// ---------- Batch insert helper ----------
-
-async function insertBatch<T extends Record<string, unknown>>(
-  table: Parameters<typeof db.insert>[0],
-  rows: T[],
-  batchSize = 50,
-): Promise<Array<{ id: number }>> {
-  const results: Array<{ id: number }> = [];
-  for (let i = 0; i < rows.length; i += batchSize) {
-    const batch = rows.slice(i, i + batchSize);
-    const inserted = await (db.insert(table) as any).values(batch).returning({ id: sql`id` });
-    results.push(...inserted);
-  }
-  return results;
-}
-
 // ---------- Database operations ----------
 
 async function clearDatabase() {
@@ -136,9 +120,7 @@ async function seedVersion(parsed: ParsedVersion) {
     const parentDbId = unitIdMap.get(unit.parentIndex);
     if (dbId === undefined || parentDbId === undefined) continue;
 
-    await db.execute(
-      sql`UPDATE structural_units SET parent_id = ${parentDbId} WHERE id = ${dbId}`,
-    );
+    await db.execute(sql`UPDATE structural_units SET parent_id = ${parentDbId} WHERE id = ${dbId}`);
   }
 
   console.log(`  Inserted ${unitIdMap.size} structural units`);

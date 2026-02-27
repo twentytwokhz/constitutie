@@ -127,6 +127,83 @@
   animation: grid-fade 1.5s ease-out forwards;
 }
 
+/* TipTap Reader Styles — Constitution article content */
+.tiptap-content .tiptap {
+  outline: none;
+}
+
+.tiptap-content .tiptap p.tiptap-paragraph {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-content .tiptap ol.tiptap-ordered-list {
+  list-style-type: decimal;
+  padding-left: 0;
+  margin: 0;
+  counter-reset: list-counter;
+}
+
+.tiptap-content .tiptap ol.tiptap-ordered-list > li.tiptap-list-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  counter-increment: list-counter;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  list-style: none;
+}
+
+.tiptap-content .tiptap ol.tiptap-ordered-list > li.tiptap-list-item:last-child {
+  border-bottom: none;
+}
+
+.tiptap-content .tiptap ol.tiptap-ordered-list > li.tiptap-list-item::before {
+  content: "(" counter(list-counter) ")";
+  flex-shrink: 0;
+  min-width: 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: hsl(var(--primary));
+}
+
+.tiptap-content .tiptap ol.tiptap-ordered-list > li.tiptap-list-item p.tiptap-paragraph {
+  margin-bottom: 0;
+}
+
+/* Heading styles per hierarchy level */
+.tiptap-content .tiptap h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid hsl(var(--primary));
+  color: hsl(var(--foreground));
+}
+
+.tiptap-content .tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: hsl(var(--foreground));
+}
+
+.tiptap-content .tiptap h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-style: italic;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--muted-foreground));
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-word-reveal,
