@@ -1,7 +1,37 @@
 import { db } from "@/lib/db";
-import { articles, constitutionVersions } from "@/lib/db/schema";
+import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+
+/**
+ * Build the structural breadcrumb chain for an article.
+ * Walks up the parentId chain to collect: secțiune → capitol → titlu.
+ */
+async function getStructuralContext(structuralUnitId: number) {
+  const breadcrumb: Array<{ type: string; number: number; name: string; slug: string }> = [];
+
+  let currentId: number | null = structuralUnitId;
+  while (currentId !== null) {
+    const [unit] = await db
+      .select()
+      .from(structuralUnits)
+      .where(eq(structuralUnits.id, currentId))
+      .limit(1);
+
+    if (!unit) break;
+
+    breadcrumb.unshift({
+      type: unit.type,
+      number: unit.number,
+      name: unit.name,
+      slug: unit.slug,
+    });
+
+    currentId = unit.parentId;
+  }
+
+  return breadcrumb;
+}
 
 export async function GET(
   _request: NextRequest,
@@ -39,7 +69,13 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(article);
+    // Build structural context (title/chapter/section breadcrumb)
+    const structuralContext = await getStructuralContext(article.structuralUnitId);
+
+    return NextResponse.json({
+      ...article,
+      structuralContext,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch article";
     return NextResponse.json({ error: message }, { status: 500 });
