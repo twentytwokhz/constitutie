@@ -1,6 +1,6 @@
+import { ThemeProvider } from "@/components/layout/theme-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/layout/theme-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,8 +25,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Constituția României Project" }],
   openGraph: {
     title: "Constituția României - Explorare Interactivă",
-    description:
-      "Explorează Constituția României prin toate versiunile sale istorice.",
+    description: "Explorează Constituția României prin toate versiunile sale istorice.",
     type: "website",
     locale: "ro_RO",
   },

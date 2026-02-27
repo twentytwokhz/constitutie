@@ -22,17 +22,9 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold">
-        Constituția din {year}
-      </h1>
-      <p className="mt-4 text-muted-foreground">
-        Reader page - to be implemented
-      </p>
-      {slug && (
-        <p className="mt-2 text-sm text-muted-foreground">
-          Path: {slug.join(" / ")}
-        </p>
-      )}
+      <h1 className="text-3xl font-bold">Constituția din {year}</h1>
+      <p className="mt-4 text-muted-foreground">Reader page - to be implemented</p>
+      {slug && <p className="mt-2 text-sm text-muted-foreground">Path: {slug.join(" / ")}</p>}
     </div>
   );
 }

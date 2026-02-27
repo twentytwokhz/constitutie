@@ -14,8 +14,8 @@ export default function HomePage() {
             Constituția <span className="text-primary">României</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Explorează legea fundamentală a României prin toate versiunile sale
-            istorice: 1952, 1986, 1991, 2003.
+            Explorează legea fundamentală a României prin toate versiunile sale istorice: 1952,
+            1986, 1991, 2003.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <a

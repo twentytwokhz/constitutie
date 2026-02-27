@@ -1,11 +1,11 @@
 import {
-  pgTable,
-  serial,
   integer,
-  text,
-  timestamp,
   jsonb,
   pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
   unique,
 } from "drizzle-orm/pg-core";
 
@@ -16,11 +16,7 @@ export const structuralUnitTypeEnum = pgEnum("structural_unit_type", [
   "sectiune",
 ]);
 
-export const commentStatusEnum = pgEnum("comment_status", [
-  "pending",
-  "approved",
-  "rejected",
-]);
+export const commentStatusEnum = pgEnum("comment_status", ["pending", "approved", "rejected"]);
 
 export const voteTypeEnum = pgEnum("vote_type", ["agree", "disagree"]);
 
@@ -43,6 +39,7 @@ export const structuralUnits = pgTable("structural_units", {
   type: structuralUnitTypeEnum("type").notNull(),
   number: integer("number").notNull(),
   name: text("name").notNull(),
+  // biome-ignore lint/suspicious/noExplicitAny: Drizzle ORM requires this for self-referencing FK
   parentId: integer("parent_id").references((): any => structuralUnits.id),
   orderIndex: integer("order_index").notNull(),
   slug: text("slug").notNull(),
