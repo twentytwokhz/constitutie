@@ -67,3 +67,53 @@
 - Features passing: 6
 - Total features: 138
 - Percentage: ~4.3%
+
+## Session: 2026-02-28 (Agent handling features #3, #7, #65)
+
+### Completed Features
+
+#### Feature #3: Data persists across server restart ✅
+- Verified database schema already pushed to Neon (drizzle-kit push: "No changes detected")
+- Database fully seeded with all 4 constitution versions (535 articles)
+- Created unique test comment (RESTART_TEST_12345) via POST /api/articles/1/comments
+- Killed dev server (PID kill -9), confirmed server down
+- Restarted dev server, verified health check passes
+- Queried API: RESTART_TEST_12345 comment still present after restart
+- Confirmed: Neon PostgreSQL is persistent (not in-memory storage)
+- Ran mock data grep checks: zero matches for all prohibited patterns
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #7: All 4 constitution versions seeded in database ✅
+- Verified 4 rows in constitution_versions: 1952, 1986, 1991, 2003
+- Article counts match expectations: 105, 121, 152, 157
+- Structural units populated with hierarchy (titlu → capitol → secțiune)
+- FK relationships verified (articles → structural_units → constitution_versions)
+- Content field populated with real Romanian constitution text
+- TipTap JSON (contentTiptap) generated for all articles
+- 55 inter-article references detected and stored
+
+#### Feature #65: POST /api/articles/[id]/comments creates comment ✅
+- POST /api/articles/1/comments returns 201 with full comment object
+- Response includes status field ("approved" - AI moderation deferred)
+- Comment persisted and returned by GET endpoint
+- Validated error handling: missing content (400), missing fingerprint (400), non-existent article (404)
+- All API routes use real Drizzle ORM queries (no mock data)
+
+### Current Status
+- Features passing: 9 (was 6)
+- Total features: 138
+- Percentage: ~6.5%
+
+### Notes
+- Database is fully operational: schema pushed, seed data present
+- Dev server runs on port 3000 with turbopack
+- Sandbox restricts: python3, source, xargs, find commands - use alternatives
+- Need dangerouslyDisableSandbox=true for network-dependent commands (curl to localhost, drizzle-kit)
+- Comments route currently auto-approves (AI moderation via OpenRouter to be implemented later)
+
+### What's Left
+- PDF export route still needs implementation
+- Frontend pages are mostly stubs (landing, reader, graph, search, diff, statistics)
+- AI moderation integration for comments (OpenRouter)
+- Arcjet rate limiting integration
+- Many UI features remaining
