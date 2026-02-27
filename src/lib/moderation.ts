@@ -63,7 +63,7 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
         "X-Title": "Constitutia Romaniei - Comment Moderation",
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
+        model: "meta-llama/llama-3.1-8b-instruct",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           {
@@ -73,7 +73,6 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
         ],
         temperature: 0.1,
         max_tokens: 200,
-        response_format: { type: "json_object" },
       }),
     });
 
@@ -91,8 +90,12 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
       return { approved: true, reason: null };
     }
 
-    // Parse the JSON response from the AI
-    const result = JSON.parse(messageContent);
+    // Parse the JSON response from the AI (handle markdown code blocks)
+    const jsonStr = messageContent
+      .replace(/```json?\s*/g, "")
+      .replace(/```\s*/g, "")
+      .trim();
+    const result = JSON.parse(jsonStr);
 
     if (typeof result.approved !== "boolean") {
       console.error("[moderation] Invalid moderation response format:", result);

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Menu, Scale, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const navLinks = [
   { href: "/2003", label: "Explorare" },
@@ -28,6 +28,12 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally react to pathname changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   /** Check if a nav link should be highlighted as active */
   const isActive = (href: string) => {
@@ -98,25 +104,35 @@ export function Header() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <nav className="md:hidden border-t border-border/40 bg-background pb-4">
-          <div className="container mx-auto px-4 pt-2 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
-                  isActive(link.href)
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <>
+          {/* Backdrop overlay: click outside to close */}
+          <div
+            className="fixed inset-0 top-16 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setMobileMenuOpen(false);
+            }}
+          />
+          <nav className="relative z-50 md:hidden border-t border-border/40 bg-background pb-4 animate-slide-down">
+            <div className="container mx-auto px-4 pt-2 flex flex-col gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
+                    isActive(link.href)
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </>
       )}
     </header>
   );
