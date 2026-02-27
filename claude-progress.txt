@@ -375,3 +375,38 @@
 - AI moderation integration for comments (OpenRouter)
 - Arcjet rate limiting integration
 - Many UI features remaining
+
+## Session: 2026-02-28 (Agent handling features #63, #98, #122)
+
+### Completed Features
+
+#### Feature #63: POST /api/articles/[id]/vote creates vote in database ✅
+- Vote API route already implemented with full functionality
+- Tested: POST creates vote (201), duplicate rejected (409), count incremented
+- Verified via GET /api/versions/2003/articles/1 — agreeCount updated
+- No mock data patterns found
+- Biome lint: 0 errors
+
+#### Feature #98: Create vote and verify it persists after page refresh ✅
+- Created VoteButtons client component (src/components/feedback/vote-buttons.tsx)
+- De acord (👍) and Dezacord (👎) buttons with vote counts
+- Browser fingerprint generation for vote deduplication
+- localStorage tracks user's vote to prevent re-voting in UI
+- Integrated into reader page (/[year]/[[...slug]])
+- SSR renders initialAgreeCount/initialDisagreeCount from database
+- Verified: vote persists across page refresh (Neon PostgreSQL)
+- Biome lint: 0 errors
+
+#### Feature #122: Vote type validated server-side (agree/disagree only) ✅
+- Validation already implemented in vote route (lines 18-23)
+- Tested: invalid type → 400, missing type → 400, empty type → 400
+- Valid "agree" → 201 success
+- Error message: "voteType must be 'agree' or 'disagree'"
+
+### Components Created
+- src/components/feedback/vote-buttons.tsx - NEW: Vote buttons with counts and fingerprint dedup
+
+### Current Status
+- Features passing: ~28 (was ~25)
+- Total features: 140
+- Percentage: ~20%
