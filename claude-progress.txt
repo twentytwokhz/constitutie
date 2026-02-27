@@ -1,5 +1,44 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #9, #43, #44)
+
+### Completed Features
+
+#### Feature #9: GET /api/versions returns all 4 versions from database ✅
+- Verified endpoint returns valid JSON array with exactly 4 versions
+- All versions have required fields: id, year, name, description, totalArticles
+- Years: 1952, 1986, 1991, 2003 — all with >100 articles
+- Endpoint uses real Drizzle ORM queries (no mock data)
+
+#### Feature #43: Diff page version A selector works ✅
+- Built full Compare page at /compare with version A (left) dropdown
+- Created shadcn Select UI component (wraps @radix-ui/react-select)
+- Dropdown lists all 4 versions fetched from /api/versions
+- Selection triggers diff computation via /api/diff endpoint
+
+#### Feature #44: Diff page version B selector works ✅
+- Version B (right) dropdown works independently from version A
+- Both selectors can hold different values simultaneously
+- Changing either selector updates the diff display
+- Swap button to reverse A/B selections
+
+### Components Created
+- src/components/ui/select.tsx - shadcn Select (Radix UI based)
+- src/components/ui/badge.tsx - shadcn Badge for diff stats
+- src/app/compare/page.tsx - Full compare page with diff display
+
+### Current Status
+- Features passing: 17 (was 14)
+- Total features: 138
+- Percentage: ~12.3%
+
+### Notes
+- Compare page includes: version selectors, summary bar, article-level diff cards
+- Color-coded changes: green (added), red (removed), amber (modified)
+- Collapsible unchanged articles section
+- Side-by-side content view per article
+- Biome lint: 0 errors | TypeScript: 0 errors
+
 ## Session: 2026-02-27 (Agent handling features #4 and #5)
 
 ### Completed Features
