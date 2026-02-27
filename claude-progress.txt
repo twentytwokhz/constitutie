@@ -1,5 +1,46 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #15, #88, #10)
+
+### Completed Features
+
+#### Feature #15: Article references stored correctly in database ✅
+- Verified 55 references exist in article_references table across all 4 versions
+- Distribution: 1952 (0), 1986 (4), 1991 (18), 2003 (33)
+- All source_article_id and target_article_id have valid FK references (0 invalid)
+- All 55 references have non-empty reference_text (e.g., "Art. 45", "articolul 16")
+- Queryable by source: article_id=261 returns 2 refs (Art.35 → Art.16, Art.35 → Art.37)
+- Queryable by target: article_id=192 returns 2 refs (Art.95 → Art.87, Art.114 → Art.87)
+- No mock data patterns found
+
+#### Feature #88: Top articles by reference count chart displays ✅
+- Top referenced articles section already existed on /statistics page
+- Added clickable links: each article now links to reader view (/{year}/articolul-{number})
+- 5 top referenced articles displayed with reference counts in badges
+- Added hover effects with ArrowRight indicator for navigation affordance
+- All links verified working (HTTP 200)
+- Data comes from real article_references table via Drizzle ORM groupBy + count
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #10: GET /api/versions/[year] returns version details with structure ✅
+- Enhanced /api/versions/[year] endpoint to include structural hierarchy
+- Added buildHierarchy() function to construct parent-child tree from flat units
+- 2003: 8 Titles with nested Chapters (e.g., Titlul 2 has 4 Chapters) and Sections
+- Sections present where applicable: Parlamentul (3), Administrația publică (2), Autoritatea judecătorească (3)
+- 1952: 11 top-level Capitole (no Titluri, no Secțiuni) — different structure format verified
+- Both endpoints return 200 with correct data
+- No mock data patterns | Biome: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: ~43 (was ~40)
+- Total features: 141
+- Percentage: ~30.5%
+
+### Notes
+- article_references reference_text uses two patterns: "Art. N" (4 occurrences) and "articolul N" (51 occurrences)
+- The version detail API now serves as a single-request endpoint for version metadata + full structural tree
+- buildHierarchy() replicates the tree-building logic from the structure endpoint but without article data
+
 ## Session: 2026-02-28 (Agent handling features #25, #64, #29)
 
 ### Completed Features
