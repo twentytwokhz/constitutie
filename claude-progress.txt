@@ -1,5 +1,50 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #45, #46, #128)
+
+### Completed Features
+
+#### Feature #45: GET /api/diff returns diff between two versions ✅
+- Verified existing diff API endpoint works correctly
+- GET /api/diff?a=1991&b=2003 returns 156 items (4 added, 133 modified, 19 unchanged)
+- GET /api/diff?a=1952&b=1986 returns different results (16 added, 105 modified, 0 unchanged)
+- Added articles correctly marked (a: null, b: {content})
+- Modified articles include both sides with content for comparison
+- Unchanged articles properly identified
+- Zero mock data patterns, lint clean
+
+#### Feature #46: Side-by-side diff layout displays correctly ✅
+- Added word-level inline diff using diffWords() from the `diff` library
+- Added text highlighted green (bg-emerald-500/20) on the right side
+- Removed text highlighted red (bg-rose-500/20) with strikethrough on the left side
+- Modified articles show inline diffs with colored word-level changes
+- Unchanged sections hidden by default with toggle button to expand
+- Installed @types/diff for TypeScript support
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #128: Diff page responsive on mobile (stacked vertical) ✅
+- Added A/B tab toggle for mobile (visible below md breakpoint)
+- Desktop keeps side-by-side layout; mobile shows one version at a time with tab switching
+- Version selectors stack vertically on mobile (already responsive)
+- Summary badges use 2-column grid on mobile for compact layout
+- Added break-words and overflow-x-hidden to prevent horizontal scroll
+- Smaller text sizes on mobile (text-sm sm:text-base)
+- Article headers more compact on mobile (Art. instead of Articolul)
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Modified
+- src/app/compare/page.tsx - Enhanced with inline diff, A/B mobile tabs, responsive layout
+
+### Current Status
+- Features passing: 28 (was 25)
+- Total features: 140
+- Percentage: ~20%
+
+### Notes
+- The diff library (v7) was already installed; only @types/diff needed adding
+- The useInlineDiff custom hook memoizes diff computation for performance
+- DiffSideContent extracted as reusable component for both mobile and desktop views
+
 ## Session: 2026-02-28 (Agent handling features #16, #78, #86)
 
 ### Completed Features
