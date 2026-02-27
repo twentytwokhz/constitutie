@@ -159,3 +159,43 @@
 - Header uses sticky positioning with backdrop blur
 - Theme transitions are smooth (200ms) with no flash on page load
 - next-themes handles localStorage persistence and system preference detection
+
+## Session: 2026-02-28 (Agent handling features #17, #24, #20)
+
+### Completed Features
+
+#### Feature #17: Header displays logo and main navigation links ✅
+- Header already existed from Feature #8 session with correct structure
+- Fixed nav labels to match spec: "Comparare"→"Compară", "Graph"→"Graf"
+- Improved isActive() route detection for year-based routes (/1952, /1986, /1991, /2003)
+- Verified header in root layout.tsx (persistent across all pages)
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #24: All navigation links point to valid pages ✅
+- CRITICAL FIX: Renamed [year]/[...slug] to [year]/[[...slug]] (optional catch-all)
+  - /2003 was getting a 404 because [..slug] requires at least one segment
+  - [[...slug]] makes the slug optional, so /2003 renders correctly
+- Updated landing page CTA links from <a> to next/link for client-side navigation
+- Verified all routes: /, /2003, /compare, /graph, /statistics, /not-found
+- No footer links exist yet (footer is a future landing page feature)
+- Cleaned stale .next/types cache after route rename
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #20: Mobile hamburger menu opens and closes ✅
+- Mobile menu was functional from Feature #8, enhanced with:
+  - Backdrop overlay for click-outside-to-close behavior
+  - Slide-down animation (custom CSS keyframe in globals.css)
+  - Auto-close on route change (useEffect watching pathname)
+- Fixed pre-existing formatting issue in src/lib/moderation.ts
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: ~10+ (was ~7)
+- Total features: 138
+
+### What's Left
+- PDF export route still needs implementation
+- Frontend pages are mostly stubs (landing, reader, graph, search, diff, statistics)
+- AI moderation integration for comments (OpenRouter)
+- Arcjet rate limiting integration
+- Many UI features remaining
