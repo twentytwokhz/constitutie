@@ -1,0 +1,53 @@
+# Constituția României - Development Progress
+
+## Session: 2026-02-27 (Agent handling features #4 and #5)
+
+### Completed Features
+
+#### Feature #4: No mock data patterns in codebase ✅
+- Scanned entire codebase for prohibited patterns (globalThis, devStore, mockData, etc.)
+- Found 7 API route files with `TODO.*database` pattern (stub implementations)
+- Replaced all 7 routes with real Drizzle ORM database queries:
+  - GET /api/versions
+  - GET /api/versions/[year]
+  - GET /api/versions/[year]/articles
+  - GET /api/versions/[year]/articles/[number]
+  - GET /api/versions/[year]/structure
+  - GET /api/versions/[year]/graph
+  - GET /api/stats
+- Fixed pre-existing lint issues:
+  - Unicode regex in parser (replaced [\u0300-\u036f] with \p{M})
+  - Self-referencing FK type in schema (added biome-ignore)
+- All 7 grep pattern checks return zero matches
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #5: Backend API queries real database ✅
+- Implemented real DB queries for remaining API routes:
+  - POST /api/articles/[id]/vote - with fingerprint deduplication
+  - GET /api/articles/[id]/cross-versions - find same article across versions
+  - GET /api/articles/search - full-text search with ilike
+  - GET /api/diff - compute diff between two versions
+  - GET /api/diff/article - diff for specific article
+- 14 of 15 API routes now use real Drizzle ORM queries
+  - Only /api/diff/export-pdf remains stub (PDF rendering, not DB query)
+- Comments route was already implemented by another agent
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: 2 (was 0)
+- Total features: 138
+- Percentage: ~1.4%
+
+### Notes
+- Database schema is defined but DB might not be pushed yet (drizzle-kit push failed due to sandbox network restrictions)
+- Seed script is a placeholder - data has not been seeded yet
+- Parser has full implementation (was implemented by another agent)
+- Next.js build fails only due to Google Fonts fetch in sandbox (network restriction)
+- All code compiles successfully (tsc + biome)
+
+### What's Left
+- Database migration needs to be run when network is available
+- Seed script needs implementation to populate constitution data
+- PDF export route still needs implementation
+- Frontend pages are mostly stubs
+- Landing page, reader, graph view, search UI, diff UI all need implementation
