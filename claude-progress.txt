@@ -1,5 +1,44 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #13, #26, #14)
+
+### Completed Features
+
+#### Feature #13: GET /api/versions/[year]/structure returns hierarchical data
+- Enhanced structure API endpoint to return proper tree instead of flat list
+- Built tree structure from flat structural_units using parentId relationships
+- Included articles at leaf level grouped by structural unit ID
+- Used Promise.all for parallel DB queries (units + articles)
+- Verified 2003: 8 top-level Titles, sections present, 157 articles in tree
+- Verified 1952: 11 top-level Chapters, 105 articles in tree
+- Biome lint: 0 errors, TS: 0 errors
+
+#### Feature #26: Table of Contents sidebar displays hierarchical structure
+- Created TocSidebar client component (src/components/reader/toc-sidebar.tsx)
+- Collapsible tree showing Titles > Chapters > Sections > Articles
+- Auto-expands the branch containing the current article
+- Highlights current article with primary color
+- Desktop sidebar (280px, sticky, left side), hidden on mobile (lg breakpoint)
+- Loading skeleton while fetching structure data
+- Updated reader page layout from single-column to sidebar + content
+
+#### Feature #14: GET /api/versions/[year]/graph returns nodes and edges
+- Endpoint was already properly implemented from previous sessions
+- Verified 2003: 183 nodes (8 titlu, 10 capitol, 8 sectiune, 157 articol)
+- 208 edges (175 hierarchy, 33 reference)
+- All node types have correct labels and parentId references
+- Reference edges correctly link inter-article cross-references
+
+### Components Created/Modified
+- src/app/api/versions/[year]/structure/route.ts - Enhanced: returns hierarchical tree
+- src/components/reader/toc-sidebar.tsx - NEW: Collapsible TOC sidebar
+- src/app/[year]/[[...slug]]/page.tsx - Updated: added sidebar layout
+
+### Current Status
+- Features passing: ~39 (was ~36)
+- Total features: 140
+- Percentage: ~27.9%
+
 ## Session: 2026-02-28 (Agent handling features #73, #129, #74)
 
 ### Completed Features
