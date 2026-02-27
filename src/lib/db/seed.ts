@@ -13,22 +13,30 @@
  * 4. Detects inter-article references
  * 5. Generates TipTap JSON for each article
  * 6. Inserts everything into the database
+ *
+ * Note: Uses non-pooled Neon connection for consistent writes.
  */
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { neon } from "@neondatabase/serverless";
+import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
 import { type ParsedVersion, contentToTipTap, parseConstitution } from "../parser/index.js";
 import * as schema from "./schema.js";
 
 // Load environment
-const DATABASE_URL = process.env.DATABASE_URL;
+let DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
   console.error("ERROR: DATABASE_URL environment variable is required.");
   console.error("See .env.example for setup instructions.");
   process.exit(1);
 }
+
+// For seeding, use non-pooled connection to ensure write consistency.
+// Neon pooled connections (with -pooler in hostname) can route writes
+// to different connections causing FK visibility issues.
+DATABASE_URL = DATABASE_URL.replace("-pooler.", ".");
 
 const sqlClient = neon(DATABASE_URL);
 const db = drizzle(sqlClient, { schema });
@@ -47,17 +55,30 @@ function readConstitutionFile(year: number): string {
   }
 }
 
+// ---------- Batch insert helper ----------
+
+async function insertBatch<T extends Record<string, unknown>>(
+  table: Parameters<typeof db.insert>[0],
+  rows: T[],
+  batchSize = 50,
+): Promise<Array<{ id: number }>> {
+  const results: Array<{ id: number }> = [];
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const batch = rows.slice(i, i + batchSize);
+    const inserted = await (db.insert(table) as any).values(batch).returning({ id: sql`id` });
+    results.push(...inserted);
+  }
+  return results;
+}
+
 // ---------- Database operations ----------
 
 async function clearDatabase() {
   console.log("Clearing existing data...");
-  // Delete in reverse order of dependencies
-  await db.delete(schema.articleReferences);
-  await db.delete(schema.comments);
-  await db.delete(schema.votes);
-  await db.delete(schema.articles);
-  await db.delete(schema.structuralUnits);
-  await db.delete(schema.constitutionVersions);
+  // Use TRUNCATE CASCADE with RESTART IDENTITY to reset serial sequences
+  await db.execute(
+    sql`TRUNCATE TABLE article_references, comments, votes, articles, structural_units, constitution_versions RESTART IDENTITY CASCADE`,
+  );
   console.log("Database cleared.");
 }
 
@@ -81,16 +102,14 @@ async function seedVersion(parsed: ParsedVersion) {
   const versionId = version.id;
   console.log(`  Version ID: ${versionId}`);
 
-  // 2. Insert structural units (need to maintain order for parent references)
-  // Map from parser index to database ID
+  // 2. Insert structural units in two passes:
+  //    Pass 1: Insert all units WITHOUT parent_id to get their DB IDs
+  //    Pass 2: UPDATE parent_ids using the ID map
   const unitIdMap: Map<number, number> = new Map();
 
+  // Pass 1: Insert without parents
   for (let i = 0; i < parsed.units.length; i++) {
     const unit = parsed.units[i];
-
-    // Resolve parent ID from the map
-    const parentId =
-      unit.parentIndex !== undefined ? (unitIdMap.get(unit.parentIndex) ?? null) : null;
 
     const [inserted] = await db
       .insert(schema.structuralUnits)
@@ -99,7 +118,7 @@ async function seedVersion(parsed: ParsedVersion) {
         type: unit.type,
         number: unit.number,
         name: unit.name,
-        parentId,
+        parentId: null,
         orderIndex: unit.orderIndex,
         slug: unit.slug,
       })
@@ -108,26 +127,39 @@ async function seedVersion(parsed: ParsedVersion) {
     unitIdMap.set(i, inserted.id);
   }
 
+  // Pass 2: Update parent_ids
+  for (let i = 0; i < parsed.units.length; i++) {
+    const unit = parsed.units[i];
+    if (unit.parentIndex === undefined) continue;
+
+    const dbId = unitIdMap.get(i);
+    const parentDbId = unitIdMap.get(unit.parentIndex);
+    if (dbId === undefined || parentDbId === undefined) continue;
+
+    await db.execute(
+      sql`UPDATE structural_units SET parent_id = ${parentDbId} WHERE id = ${dbId}`,
+    );
+  }
+
   console.log(`  Inserted ${unitIdMap.size} structural units`);
 
-  // 3. Insert articles
-  // Map from article number to database ID (for reference resolution)
+  // 3. Insert articles in batches
   const articleDbIds: Map<number, number[]> = new Map();
 
-  for (const article of parsed.articles) {
-    const structuralUnitId = unitIdMap.get(article.parentUnitIndex);
-    if (structuralUnitId === undefined) {
-      console.warn(
-        `  WARNING: Article ${article.number} has no valid parent unit (index ${article.parentUnitIndex})`,
-      );
-      continue;
-    }
+  // Prepare all article rows
+  const articleRows = parsed.articles
+    .map((article) => {
+      const structuralUnitId = unitIdMap.get(article.parentUnitIndex);
+      if (structuralUnitId === undefined) {
+        console.warn(
+          `  WARNING: Article ${article.number} has no valid parent unit (index ${article.parentUnitIndex})`,
+        );
+        return null;
+      }
 
-    const tiptapContent = contentToTipTap(article.content);
+      const tiptapContent = contentToTipTap(article.content);
 
-    const [inserted] = await db
-      .insert(schema.articles)
-      .values({
+      return {
         versionId,
         structuralUnitId,
         number: article.number,
@@ -138,19 +170,37 @@ async function seedVersion(parsed: ParsedVersion) {
         slug: article.slug,
         agreeCount: 0,
         disagreeCount: 0,
-      })
-      .returning();
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
 
-    // Track by article number (may have duplicates in case of data irregularities)
-    const existing = articleDbIds.get(article.number) || [];
-    existing.push(inserted.id);
-    articleDbIds.set(article.number, existing);
+  // Insert in batches and collect IDs
+  const articleBatchSize = 30;
+  let articleIdx = 0;
+  for (let i = 0; i < articleRows.length; i += articleBatchSize) {
+    const batch = articleRows.slice(i, i + articleBatchSize);
+    const inserted = await db.insert(schema.articles).values(batch).returning();
+
+    for (const row of inserted) {
+      const articleNum = parsed.articles[articleIdx]?.number;
+      if (articleNum !== undefined) {
+        const existing = articleDbIds.get(articleNum) || [];
+        existing.push(row.id);
+        articleDbIds.set(articleNum, existing);
+      }
+      articleIdx++;
+    }
   }
 
-  console.log(`  Inserted ${articleDbIds.size} unique article numbers`);
+  console.log(`  Inserted ${articleIdx} articles (${articleDbIds.size} unique numbers)`);
 
-  // 4. Insert inter-article references
-  let refCount = 0;
+  // 4. Insert inter-article references in batches
+  const refRows: Array<{
+    sourceArticleId: number;
+    targetArticleId: number;
+    referenceText: string;
+  }> = [];
+
   for (const article of parsed.articles) {
     if (article.references.length === 0) continue;
 
@@ -159,7 +209,6 @@ async function seedVersion(parsed: ParsedVersion) {
     const sourceArticleId = sourceIds[0];
 
     for (const refText of article.references) {
-      // Extract target article number from reference text
       const numMatch = refText.match(/(\d+)/);
       if (!numMatch) continue;
       const targetNum = Number.parseInt(numMatch[1], 10);
@@ -171,22 +220,21 @@ async function seedVersion(parsed: ParsedVersion) {
       if (!targetIds || targetIds.length === 0) continue;
       const targetArticleId = targetIds[0];
 
-      await db.insert(schema.articleReferences).values({
-        sourceArticleId,
-        targetArticleId,
-        referenceText: refText,
-      });
-      refCount++;
+      refRows.push({ sourceArticleId, targetArticleId, referenceText: refText });
     }
   }
 
-  console.log(`  Inserted ${refCount} article references`);
+  if (refRows.length > 0) {
+    await db.insert(schema.articleReferences).values(refRows);
+  }
+
+  console.log(`  Inserted ${refRows.length} article references`);
 
   return {
     versionId,
     articleCount: parsed.articles.length,
     unitCount: parsed.units.length,
-    refCount,
+    refCount: refRows.length,
   };
 }
 
