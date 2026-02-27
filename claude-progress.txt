@@ -1,5 +1,41 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #139)
+
+### Completed Features
+
+#### Feature #139: Look and feel — unDraw illustrations ✅
+- Created 8 unDraw-style SVG illustration components in src/components/illustrations/:
+  - illustration-explore.tsx — Person reading a book (article exploration)
+  - illustration-compare.tsx — Two documents side-by-side with diff markers
+  - illustration-graph.tsx — Node graph with interconnected hierarchy
+  - illustration-search.tsx — Magnifying glass over documents
+  - illustration-feedback.tsx — People with speech bubbles (feedback/comments)
+  - illustration-not-found.tsx — Person confused at broken page (404)
+  - illustration-constitution.tsx — Grand legal document with seal (hero)
+  - illustration-statistics.tsx — Bar chart with stats cards
+- Integrated illustrations into:
+  - Landing page hero section (Constitution illustration)
+  - Landing page feature cards (5 cards: Explore, Compare, Graph, Search, Feedback)
+  - 404 page (Not Found illustration)
+  - Graph page placeholder (Graph illustration)
+  - Statistics page placeholder (Statistics illustration)
+- All illustrations use Tailwind CSS classes (fill-primary, fill-muted-foreground, etc.)
+  for automatic dark/light mode adaptation
+- No raster images used as illustrations anywhere in the codebase
+- All illustrations follow unDraw visual style: flat, minimal vector art with indigo accent
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: 18+ (was 17)
+- Total features: 139
+
+### Notes
+- The public/images/ directory contains logo PNGs from a previous version — they are not
+  used as illustrations in the current codebase
+- Illustration components are tree-shakeable (only bundled when imported)
+- SVG components are inline (no network requests) for instant rendering
+
 ## Session: 2026-02-28 (Agent handling features #66, #67, #97)
 
 ### Completed Features
