@@ -162,11 +162,11 @@ export default function ComparePage() {
   const unchangedArticles = diffData?.diff.filter((d) => d.status === "unchanged") ?? [];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto max-w-full overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8">
       {/* Page Title */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Compară Versiuni</h1>
-        <p className="mt-2 text-muted-foreground">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Compară Versiuni</h1>
+        <p className="mt-1 text-sm text-muted-foreground sm:mt-2 sm:text-base">
           Selectează două versiuni ale Constituției pentru a vedea diferențele articol cu articol.
         </p>
       </div>
@@ -240,20 +240,22 @@ export default function ComparePage() {
 
       {/* Summary Bar */}
       {diffData && (
-        <div className="mb-6 flex flex-wrap gap-3">
-          <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400">
+        <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-6 sm:flex sm:flex-wrap sm:gap-3">
+          <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400 justify-center py-1.5 sm:justify-start sm:py-0.5">
             <Plus className="mr-1 h-3 w-3" />
             {diffData.summary.added} adăugate
           </Badge>
-          <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400">
+          <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400 justify-center py-1.5 sm:justify-start sm:py-0.5">
             <Minus className="mr-1 h-3 w-3" />
             {diffData.summary.removed} eliminate
           </Badge>
-          <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400">
+          <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400 justify-center py-1.5 sm:justify-start sm:py-0.5">
             <FileText className="mr-1 h-3 w-3" />
             {diffData.summary.modified} modificate
           </Badge>
-          <Badge variant="secondary">{diffData.summary.unchanged} neschimbate</Badge>
+          <Badge variant="secondary" className="justify-center py-1.5 sm:justify-start sm:py-0.5">
+            {diffData.summary.unchanged} neschimbate
+          </Badge>
         </div>
       )}
 
@@ -402,7 +404,39 @@ function useInlineDiff(
   }, [textA, textB]);
 }
 
-/** Individual diff article card with side-by-side content and inline diff */
+/** Render one side of the diff (version content panel) */
+function DiffSideContent({
+  article,
+  side,
+  year,
+  diffContent,
+}: {
+  article: DiffArticle;
+  side: "a" | "b";
+  year: string;
+  diffContent: ReactNode;
+}) {
+  const content = side === "a" ? article.a : article.b;
+  const showDiff = article.status === "modified";
+
+  return (
+    <div className="p-4">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">{year}</div>
+      {content ? (
+        <div className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+          {showDiff ? diffContent : content.content}
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 italic text-sm opacity-50 py-4">
+          {side === "a" ? <Plus className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+          {side === "a" ? "Nu există în această versiune" : "Eliminat din această versiune"}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Individual diff article card with side-by-side (desktop) and tabbed (mobile) view */
 function DiffArticleCard({
   article,
   statusColor,
@@ -417,6 +451,7 @@ function DiffArticleCard({
   yearB: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"a" | "b">("a");
   const { left: diffLeft, right: diffRight } = useInlineDiff(
     article.a?.content,
     article.b?.content,
@@ -440,19 +475,21 @@ function DiffArticleCard({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-accent/30 transition-colors"
+        className="flex w-full items-center justify-between px-3 py-3 text-left hover:bg-accent/30 transition-colors sm:px-4"
       >
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 font-semibold">
+        <div className="flex items-center gap-2 min-w-0 sm:gap-3">
+          <span className="flex shrink-0 items-center gap-1.5 font-semibold text-sm sm:text-base">
             {statusIcon(article.status)}
-            Articolul {article.articleNumber}
+            Art. {article.articleNumber}
           </span>
           {(article.a?.title || article.b?.title) && (
-            <span className="text-sm opacity-80">{article.a?.title || article.b?.title}</span>
+            <span className="truncate text-xs opacity-80 sm:text-sm">
+              {article.a?.title || article.b?.title}
+            </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium uppercase tracking-wider opacity-70">
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="hidden text-xs font-medium uppercase tracking-wider opacity-70 sm:inline">
             {statusLabel(article.status)}
           </span>
           {expanded ? (
@@ -463,43 +500,48 @@ function DiffArticleCard({
         </div>
       </button>
 
-      {/* Expanded content - side by side with inline diff */}
+      {/* Expanded content */}
       {expanded && (
         <div className="border-t border-inherit">
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-inherit">
-            {/* Version A content (left) */}
-            <div className="p-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
-                {yearA}
-              </div>
-              {article.a ? (
-                <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {article.status === "modified" ? diffLeft : article.a.content}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 italic text-sm opacity-50 py-4">
-                  <Plus className="h-4 w-4" />
-                  Nu există în această versiune
-                </div>
-              )}
-            </div>
+          {/* Mobile: A/B tab toggle (visible below md) */}
+          <div className="flex border-b border-inherit md:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileTab("a")}
+              className={`flex-1 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                mobileTab === "a"
+                  ? "bg-background text-foreground border-b-2 border-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {yearA} (A)
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab("b")}
+              className={`flex-1 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                mobileTab === "b"
+                  ? "bg-background text-foreground border-b-2 border-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {yearB} (B)
+            </button>
+          </div>
 
-            {/* Version B content (right) */}
-            <div className="p-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
-                {yearB}
-              </div>
-              {article.b ? (
-                <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {article.status === "modified" ? diffRight : article.b.content}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 italic text-sm opacity-50 py-4">
-                  <Minus className="h-4 w-4" />
-                  Eliminat din această versiune
-                </div>
-              )}
-            </div>
+          {/* Mobile: tabbed content (below md) */}
+          <div className="md:hidden">
+            {mobileTab === "a" ? (
+              <DiffSideContent article={article} side="a" year={yearA} diffContent={diffLeft} />
+            ) : (
+              <DiffSideContent article={article} side="b" year={yearB} diffContent={diffRight} />
+            )}
+          </div>
+
+          {/* Desktop: side-by-side (md and above) */}
+          <div className="hidden md:grid md:grid-cols-2 md:divide-x divide-inherit">
+            <DiffSideContent article={article} side="a" year={yearA} diffContent={diffLeft} />
+            <DiffSideContent article={article} side="b" year={yearB} diffContent={diffRight} />
           </div>
         </div>
       )}
