@@ -1,4 +1,5 @@
 import { CommentsSection } from "@/components/feedback/comments-section";
+import { VoteButtons } from "@/components/feedback/vote-buttons";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 import { and, asc, eq } from "drizzle-orm";
@@ -161,6 +162,18 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           ))}
         </div>
       </article>
+
+      {/* Vote Buttons */}
+      <div className="mt-8 border-t border-border pt-6">
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Ce părere ai despre acest articol?
+        </h3>
+        <VoteButtons
+          articleId={article.id}
+          initialAgreeCount={article.agreeCount ?? 0}
+          initialDisagreeCount={article.disagreeCount ?? 0}
+        />
+      </div>
 
       {/* Article Navigation (Prev/Next) */}
       <nav className="mt-10 flex items-center justify-between border-t border-border pt-6">
