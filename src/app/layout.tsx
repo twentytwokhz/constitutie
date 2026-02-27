@@ -1,3 +1,4 @@
+import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -45,6 +46,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
+          <Header />
           {children}
         </ThemeProvider>
       </body>

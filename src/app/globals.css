@@ -69,4 +69,11 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
+
+  /* Smooth theme transitions */
+  html:not([data-loading]) * {
+    transition-property: background-color, border-color, color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+  }
 }
