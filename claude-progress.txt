@@ -117,3 +117,45 @@
 - AI moderation integration for comments (OpenRouter)
 - Arcjet rate limiting integration
 - Many UI features remaining
+
+## Session: 2026-02-28 (Agent handling features #8, #89, #90)
+
+### Completed Features
+
+#### Feature #8: Dark/light mode toggle works ✅
+- Created shadcn Button component (src/components/ui/button.tsx)
+- Created ThemeToggle component with animated sun/moon icons (Lucide)
+- Created Header component with logo, nav links, search trigger, mobile menu
+- Added Header to root layout (src/app/layout.tsx)
+- Added smooth CSS transitions for theme switching (200ms ease-in-out)
+- next-themes already configured with class attribute, system detection, localStorage
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #89: Dark mode applied consistently on all pages ✅
+- Verified all pages use semantic Tailwind tokens (no hardcoded colors)
+- Scanned for bg-white, bg-black, text-gray, hex/rgb/hsl values - zero matches
+- CSS variables fully defined for both :root (light) and .dark
+- Fixed pre-existing formatting issue in src/lib/moderation.ts
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #90: Light mode applied consistently on all pages ✅
+- Verified all 16 CSS variable tokens have light mode values in :root
+- Only dark: prefixes in codebase are in theme-toggle (correct icon switching)
+- Cleaned stale .next/types cache that was causing false TS errors
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: ~12 (was ~9)
+- Total features: 138
+- Percentage: ~8.7%
+
+### Components Created
+- src/components/ui/button.tsx - shadcn Button (Vega style, CVA variants)
+- src/components/layout/theme-toggle.tsx - Dark/light toggle
+- src/components/layout/header.tsx - Global header with nav, search, mobile menu
+
+### Notes
+- All pages use semantic Tailwind tokens that auto-adapt to dark/light mode
+- Header uses sticky positioning with backdrop blur
+- Theme transitions are smooth (200ms) with no flash on page load
+- next-themes handles localStorage persistence and system preference detection
