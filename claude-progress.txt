@@ -1,5 +1,46 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #140)
+
+### Completed Features
+
+#### Feature #140: Look and feel of UI - Monaco diff viewer ✅
+- Replaced custom inline diff with Monaco Editor's DiffEditor (VS Code diff engine)
+- Installed @monaco-editor/react package
+- Created MonacoDiffViewer component (src/components/diff/monaco-diff-viewer.tsx)
+  - Uses VS Code's diff algorithm for line-by-line comparison
+  - Red/green highlighting for removed/added text (like GitHub/VS Code)
+  - Side-by-side and inline/unified view toggle
+  - Dark/light theme sync via next-themes
+  - Auto-height calculation based on content line count
+  - Word wrap enabled for legal text, line numbers off
+  - Read-only, no minimap, no context menu
+  - Loading state with placeholder animation
+- Updated compare page (src/app/compare/page.tsx)
+  - Replaced old useInlineDiff + DiffSideContent with MonacoDiffViewer
+  - Added Side-by-side / Inline toggle button group
+  - Version labels above Monaco diff panels
+  - For added/removed articles, shows plain text (no comparison needed)
+  - For modified articles, shows full Monaco DiffEditor
+- Biome lint: 0 errors | TypeScript: 0 errors (only pre-existing error in page.tsx)
+- Server: HTTP 200 on /compare, page renders correctly
+- Mock data check: zero matches for all prohibited patterns
+
+### Components Created/Modified
+- src/components/diff/monaco-diff-viewer.tsx - NEW: Monaco DiffEditor wrapper
+- src/app/compare/page.tsx - REWRITTEN: Uses Monaco instead of custom inline diff
+
+### Current Status
+- Features passing: 25 (was 24)
+- Total features: 140
+- Percentage: ~17.9%
+
+### Notes
+- Monaco Editor is ~30MB but lazy-loaded (only loads when user expands a diff card)
+- The DiffEditor provides synchronized scrolling, gutter indicators, and inline diff highlights
+- Previous implementation used `diffWords` from the `diff` library - now uses Monaco's built-in diff engine
+- Pre-existing TS error in src/app/page.tsx (IllustrationProps) unrelated to this change
+
 ## Session: 2026-02-28 (Agent handling features #11, #99, #12)
 
 ### Completed Features
