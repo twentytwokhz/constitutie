@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Override dark mode to use class strategy (for next-themes compatibility) */
+@custom-variant dark (&:is(.dark *));
+
 /*
  * Constituția României - Global Styles
  * Design System: Bold civic-modern
