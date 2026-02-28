@@ -60,39 +60,39 @@ export function GridBackground({ className = "" }: { className?: string }) {
               d="M30 5 L55 30 L30 55 L5 30 Z"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.8"
-              className="text-primary/[0.22] dark:text-primary/[0.30]"
+              strokeWidth="1.0"
+              className="text-primary/[0.28] dark:text-primary/[0.38]"
             />
             {/* Inner concentric diamond */}
             <path
               d="M30 15 L45 30 L30 45 L15 30 Z"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.5"
-              className="text-primary/[0.15] dark:text-primary/[0.22]"
+              strokeWidth="0.7"
+              className="text-primary/[0.20] dark:text-primary/[0.28]"
             />
             {/* Cross-stitch accent at center */}
             <path
               d="M28 30 L32 30 M30 28 L30 32"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.8"
-              className="text-primary/[0.25] dark:text-primary/[0.35]"
+              strokeWidth="1.0"
+              className="text-primary/[0.30] dark:text-primary/[0.42]"
             />
             {/* Small crosses at diamond corners */}
             <path
               d="M29 5 L31 5 M30 4 L30 6"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.6"
-              className="text-primary/[0.18] dark:text-primary/[0.25]"
+              strokeWidth="0.8"
+              className="text-primary/[0.22] dark:text-primary/[0.32]"
             />
             <path
               d="M29 55 L31 55 M30 54 L30 56"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.6"
-              className="text-primary/[0.18] dark:text-primary/[0.25]"
+              strokeWidth="0.8"
+              className="text-primary/[0.22] dark:text-primary/[0.32]"
             />
           </pattern>
 
@@ -113,16 +113,16 @@ export function GridBackground({ className = "" }: { className?: string }) {
               d="M0 15 L10 5 L20 15 L30 5 L40 15"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.6"
-              className="text-primary/[0.14] dark:text-primary/[0.20]"
+              strokeWidth="0.8"
+              className="text-primary/[0.20] dark:text-primary/[0.28]"
             />
             {/* Parallel shifted zigzag for depth */}
             <path
               d="M0 18 L10 8 L20 18 L30 8 L40 18"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.4"
-              className="text-primary/[0.10] dark:text-primary/[0.15]"
+              strokeWidth="0.5"
+              className="text-primary/[0.14] dark:text-primary/[0.20]"
             />
           </pattern>
 
@@ -143,8 +143,8 @@ export function GridBackground({ className = "" }: { className?: string }) {
               d="M10 10 L14 14 M14 10 L10 14"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.7"
-              className="text-primary/[0.18] dark:text-primary/[0.25]"
+              strokeWidth="0.9"
+              className="text-primary/[0.24] dark:text-primary/[0.32]"
             />
           </pattern>
 
@@ -198,7 +198,7 @@ export function GridBackground({ className = "" }: { className?: string }) {
       ))}
 
       {/* Radial glow behind hero content */}
-      <div className="absolute top-1/3 left-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.08] blur-3xl dark:bg-primary/[0.16]" />
+      <div className="absolute top-1/3 left-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.10] blur-3xl dark:bg-primary/[0.18]" />
     </div>
   );
 }

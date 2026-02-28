@@ -25,22 +25,46 @@ interface FolkDividerProps {
 
 const intensityMap: Record<
   FolkDividerIntensity,
-  { stroke: string; darkStroke: string; height: number }
+  {
+    stroke: string;
+    darkStroke: string;
+    height: number;
+    strokeWidth: number;
+    innerStrokeWidth: number;
+    accentStrokeWidth: number;
+    bgOpacity: string;
+    darkBgOpacity: string;
+  }
 > = {
   strong: {
-    stroke: "text-primary/[0.18]",
-    darkStroke: "dark:text-primary/[0.22]",
-    height: 48,
+    stroke: "text-primary/[0.35]",
+    darkStroke: "dark:text-primary/[0.40]",
+    height: 56,
+    strokeWidth: 1.2,
+    innerStrokeWidth: 0.8,
+    accentStrokeWidth: 0.9,
+    bgOpacity: "bg-primary/[0.04]",
+    darkBgOpacity: "dark:bg-primary/[0.06]",
   },
   medium: {
-    stroke: "text-primary/[0.12]",
-    darkStroke: "dark:text-primary/[0.16]",
-    height: 36,
+    stroke: "text-primary/[0.25]",
+    darkStroke: "dark:text-primary/[0.30]",
+    height: 44,
+    strokeWidth: 1.0,
+    innerStrokeWidth: 0.7,
+    accentStrokeWidth: 0.8,
+    bgOpacity: "bg-primary/[0.03]",
+    darkBgOpacity: "dark:bg-primary/[0.04]",
   },
   subtle: {
-    stroke: "text-primary/[0.06]",
-    darkStroke: "dark:text-primary/[0.10]",
-    height: 24,
+    stroke: "text-primary/[0.15]",
+    darkStroke: "dark:text-primary/[0.20]",
+    height: 32,
+    strokeWidth: 0.8,
+    innerStrokeWidth: 0.6,
+    accentStrokeWidth: 0.7,
+    bgOpacity: "bg-primary/[0.02]",
+    darkBgOpacity: "dark:bg-primary/[0.03]",
   },
 };
 
@@ -53,7 +77,7 @@ export function FolkDivider({
 
   return (
     <div
-      className={`pointer-events-none w-full overflow-hidden ${className}`}
+      className={`pointer-events-none w-full overflow-hidden ${config.bgOpacity} ${config.darkBgOpacity} ${className}`}
       aria-hidden="true"
       style={{ transform: flip ? "scaleY(-1)" : undefined }}
     >
@@ -80,7 +104,7 @@ export function FolkDivider({
               d={`M24 ${config.height * 0.15} L${24 + config.height * 0.35} ${config.height * 0.5} L24 ${config.height * 0.85} L${24 - config.height * 0.35} ${config.height * 0.5} Z`}
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.8"
+              strokeWidth={config.strokeWidth}
               className={`${config.stroke} ${config.darkStroke}`}
             />
             {/* Inner diamond */}
@@ -88,7 +112,7 @@ export function FolkDivider({
               d={`M24 ${config.height * 0.3} L${24 + config.height * 0.2} ${config.height * 0.5} L24 ${config.height * 0.7} L${24 - config.height * 0.2} ${config.height * 0.5} Z`}
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.5"
+              strokeWidth={config.innerStrokeWidth}
               className={`${config.stroke} ${config.darkStroke}`}
             />
             {/* Cross at center */}
@@ -98,7 +122,7 @@ export function FolkDivider({
               x2="26"
               y2={config.height * 0.5}
               stroke="currentColor"
-              strokeWidth="0.6"
+              strokeWidth={config.accentStrokeWidth}
               className={`${config.stroke} ${config.darkStroke}`}
             />
             <line
@@ -107,7 +131,7 @@ export function FolkDivider({
               x2="24"
               y2={config.height * 0.5 + 2}
               stroke="currentColor"
-              strokeWidth="0.6"
+              strokeWidth={config.accentStrokeWidth}
               className={`${config.stroke} ${config.darkStroke}`}
             />
           </pattern>
@@ -125,7 +149,7 @@ export function FolkDivider({
               d="M0 6 L6 2 L12 6 L18 2 L24 6"
               fill="none"
               stroke="currentColor"
-              strokeWidth="0.6"
+              strokeWidth={config.accentStrokeWidth}
               className={`${config.stroke} ${config.darkStroke}`}
             />
           </pattern>
