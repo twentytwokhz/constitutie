@@ -1368,3 +1368,39 @@
 - All 3 features were style/verification features requiring no code changes
 - Graph view fully implemented with correct node sizing, coloring, legend, and click interactions
 - Landing page feature cards section is complete with 5 cards + illustrations
+
+## Session: 2026-02-28 (Agent handling features #68, #72)
+
+### Completed Features
+
+#### Feature #68: Rejected comment shows explanation message ✅
+- Enhanced rejection feedback UI with AlertTriangle icon and amber border
+- Shows "Comentariul nu poate fi adăugat" heading + specific AI reason
+- Added CheckCircle2 icon for success, XCircle for errors
+- All feedback types (success/rejected/error) now have icons and styled borders
+- Verified: POST with rejected content returns status:"rejected" + rejectionReason
+- Verified: rejected comments do NOT appear in GET /api/articles/[id]/comments
+- Textarea preserves text after rejection so user can edit and retry
+- Biome lint: 0 errors
+
+#### Feature #72: Empty state for articles without comments ✅
+- Enhanced empty state with centered MessageCircle icon (40px, muted)
+- Dashed border container with text-center layout
+- Shows "Niciun comentariu încă" heading + encouraging subtitle
+- Comment form always accessible above empty state
+- Verified: articles with no comments render empty state correctly
+- Biome lint: 0 errors
+
+### Components Modified
+- src/components/feedback/comments-section.tsx - Enhanced rejection UI + empty state
+
+### Current Status
+- Features passing: 94 (was 92)
+- Total features: 144
+- Percentage: ~65.3%
+
+### Notes
+- Both features were already partially implemented, enhancements were visual polish
+- Pre-existing TS error in statistics/page.tsx (totalArticles null type) - not my change
+- Mock data grep: zero matches for all prohibited patterns
+- Dev server running on port 3000 with turbopack
