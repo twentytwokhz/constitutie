@@ -3131,3 +3131,63 @@
 
 ### Current Status
 - Feature #200 marked as passing
+
+## Session: 2026-02-28 (Agent handling feature #203)
+
+### Completed Features
+
+#### Feature #203: Add 5 older Romanian constitutions (1866, 1923, 1938, 1948, 1965) ✅
+- **Content acquisition**: Downloaded full constitution texts from cdep.ro (Chamber of
+  Deputies) for all 5 historical versions. Files are in ISO-8859-2 encoding.
+- **HTML-to-markdown parser**: Created `scripts/parse-html-constitutions.mjs` that:
+  - Decodes ISO-8859-2 HTML to UTF-8
+  - Strips HTML tags while preserving paragraph structure
+  - Detects TITLUL (with Roman numerals), CAPITOLUL (Roman or Arabic numerals),
+    SECTIUNEA, and Art. N patterns
+  - Generates markdown in the same format as existing constitution files
+  - Handles edge cases: name on same line vs next line, lettered sub-items
+- **Article counts**:
+  - 1866: 127 articles (8 Titluri, 5 Capitole)
+  - 1923: 137 articles (8 Titluri, 5 Capitole)
+  - 1938: 98 articles (8 Titluri, 8 Capitole)
+  - 1948: 104 articles (10 Titluri)
+  - 1965: 121 articles (9 Titluri)
+- **Parser updates** (src/lib/parser/index.ts):
+  - Added VERSION_META for all 5 new years with historical descriptions
+  - Refactored `detectHeading()` from hardcoded year checks to Set-based groupings:
+    YEARS_WITH_ARTICLE_TITLES, YEARS_WITH_H3_ARTICLES, YEARS_WITH_H2_CHAPTERS, etc.
+  - Exported ALL_CONSTITUTION_YEARS constant for use across codebase
+- **Seed script updates** (src/lib/db/seed.ts):
+  - Now processes all 9 versions (was 4)
+  - Added expected article counts for all new years
+  - Total: 1,122 articles, 132 structural units, 87 references across 9 versions
+- **Codebase updates**:
+  - SEO metadata (layout.tsx, json-ld.tsx): Updated version lists
+  - Graph client: Updated fallback version array
+  - Coat of Arms: Mapped 1948→1952 emblem, 1965→1986 emblem (same eras)
+  - Added keywords for all new years
+- **Verification**: All 9 /api/versions return correctly, all new article pages
+  return HTTP 200, API stats show 1122 articles and 9 versions
+- Biome lint: 0 errors (98 files), TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Created
+- public/1866.md - Constitution of 1866 (Kingdom of Romania)
+- public/1923.md - Constitution of 1923 (Greater Romania)
+- public/1938.md - Constitution of 1938 (King Carol II)
+- public/1948.md - Constitution of 1948 (People's Republic)
+- public/1965.md - Constitution of 1965 (Socialist Republic)
+- scripts/parse-html-constitutions.mjs - HTML-to-markdown conversion script
+
+### Files Modified
+- src/lib/parser/index.ts - VERSION_META, Set-based detectHeading, ALL_CONSTITUTION_YEARS
+- src/lib/db/seed.ts - 9-version seeding, updated expected counts
+- src/app/layout.tsx - SEO metadata, keywords
+- src/components/seo/json-ld.tsx - JSON-LD descriptions
+- src/components/national-symbols/coat-of-arms.tsx - Added 1948, 1965 mappings
+- src/app/[locale]/graph/graph-client.tsx - Fallback version list
+
+### Current Status
+- Feature #203 marked as passing
+- Features passing: 201/203
+- Total features: 203
