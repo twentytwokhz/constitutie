@@ -1887,3 +1887,35 @@
 - Both features were "Default & Reset" category - ensuring clean state transitions
 - Both fixes are minimal (2-7 lines each) but critical for UX correctness
 - Dev server running on port 3000 with turbopack
+
+## Session: 2026-02-28 (Agent handling features #115, #116)
+
+### Completed Features
+
+#### Feature #115: Statistics update correctly after new votes and comments ✅
+- Added total_votes count to /api/stats response (queries votes table directly)
+- Added `export const dynamic = "force-dynamic"` to prevent Next.js stale caching
+- Updated AppStats type to include total_votes field
+- All 5 stat fields now query real Neon PostgreSQL: articles, versions, references, comments (approved only), votes
+- No caching layers — each GET /api/stats returns fresh COUNT(*) queries
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #116: Rejected comments not counted in public statistics ✅
+- Verified all 4 public surfaces filter by status = 'approved':
+  1. GET /api/stats — WHERE status = 'approved'
+  2. GET /api/articles/[id]/comments — WHERE status = 'approved'
+  3. /statistics page (Server Component) — WHERE status = 'approved'
+  4. Landing page stats section — WHERE status = 'approved'
+- POST /api/articles/[id]/comments correctly assigns status from AI moderation
+- Rejected comments stored in DB but never exposed publicly
+- No code changes needed — existing implementation was already correct
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Files Modified
+- src/app/api/stats/route.ts — Added votes import, votes count query, force-dynamic, total_votes field
+- src/types/index.ts — Added total_votes to AppStats interface
+
+### Current Status
+- Features passing: ~128 (was ~126)
+- Total features: 144
+- Percentage: ~88.9%
