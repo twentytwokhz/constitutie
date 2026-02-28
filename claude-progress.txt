@@ -1623,3 +1623,40 @@
 - Features passing: ~108 (was ~105)
 - Total features: 144
 - Percentage: ~75%
+
+## Session: 2026-02-28 (Agent handling features #95, #96)
+
+### Completed Features
+
+#### Feature #95: Fingerprint prevents duplicate votes on same article ✅
+- Already fully implemented with three-layer deduplication:
+  1. Database UNIQUE constraint on (articleId, fingerprintHash) in votes table
+  2. API pre-check query returns 409 for duplicate votes
+  3. Frontend localStorage prevents unnecessary network requests
+- Tested: same fingerprint on same article → 409 rejected
+- Tested: different vote type on same article with same fingerprint → 409 rejected
+- Tested: same fingerprint on different article → 201 success
+- No code changes needed - existing implementation met all criteria
+- Biome lint: 0 errors
+
+#### Feature #96: Input validation on comment submission ✅
+- Added max length validation (10000 char limit) with descriptive Romanian error message
+- Added HTML/script tag sanitization via regex strip (/<[^>]*>/g)
+- Added empty-after-sanitization check (HTML-only submissions rejected with 400)
+- Sanitized content used for both AI moderation and database storage
+- Tested: empty string → 400, whitespace → 400, 10001 chars → 400, script tags → stripped, valid → 201
+- Biome lint: 0 errors
+
+### Files Modified
+- src/app/api/articles/[id]/comments/route.ts - Added max length + HTML sanitization + sanitized content flow
+
+### Current Status
+- Features passing: ~113 (was ~111)
+- Total features: 144
+- Percentage: ~78.5%
+
+### Notes
+- Vote deduplication works at DB, API, and UI layers
+- Comment sanitization strips ALL HTML tags before storage (XSS prevention)
+- AI moderation runs on sanitized content (second layer after input validation)
+- Dev server running on port 3000 with turbopack
