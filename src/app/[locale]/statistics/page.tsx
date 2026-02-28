@@ -8,6 +8,7 @@ import {
   votes,
 } from "@/lib/db/schema";
 import { count, eq, inArray, sql } from "drizzle-orm";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   BookOpen,
@@ -18,7 +19,8 @@ import {
   ThumbsUp,
   TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 
 /**
  * Statistics Dashboard Page
@@ -29,15 +31,35 @@ import Link from "next/link";
  * plus per-version article counts and voting statistics.
  */
 
+export const metadata: Metadata = {
+  title: "Statistici — Constituția României",
+  description:
+    "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
+  openGraph: {
+    title: "Statistici — Constituția României",
+    description:
+      "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
+    type: "website",
+    locale: "ro_RO",
+  },
+  twitter: {
+    card: "summary",
+    title: "Statistici — Constituția României",
+    description:
+      "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
+  },
+};
+
 interface StatCardProps {
   icon: React.ReactNode;
   value: number;
   label: string;
   description: string;
   trend?: string;
+  locale: string;
 }
 
-function StatCard({ icon, value, label, description, trend }: StatCardProps) {
+function StatCard({ icon, value, label, description, trend, locale }: StatCardProps) {
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between">
@@ -47,7 +69,7 @@ function StatCard({ icon, value, label, description, trend }: StatCardProps) {
         </div>
       </div>
       <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums">
-        {value.toLocaleString("ro-RO")}
+        {value.toLocaleString(locale === "ro" ? "ro-RO" : "en-US")}
       </p>
       <div className="mt-1 flex items-center gap-1">
         {trend && <TrendingUp className="h-3 w-3 text-emerald-500" />}
@@ -139,7 +161,7 @@ async function getStatistics() {
 }
 
 export default async function StatisticsPage() {
-  const stats = await getStatistics();
+  const [stats, locale] = await Promise.all([getStatistics(), getLocale()]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -158,24 +180,28 @@ export default async function StatisticsPage() {
           label="Total Articole"
           description="Din toate cele 4 versiuni"
           trend="active"
+          locale={locale}
         />
         <StatCard
           icon={<GitCompareArrows className="h-5 w-5" />}
           value={stats.totalVersions}
           label="Versiuni"
           description="1952, 1986, 1991, 2003"
+          locale={locale}
         />
         <StatCard
           icon={<Link2 className="h-5 w-5" />}
           value={stats.totalReferences}
           label="Referințe inter-articol"
           description="Legături între articole"
+          locale={locale}
         />
         <StatCard
           icon={<MessageSquare className="h-5 w-5" />}
           value={stats.totalComments}
           label="Comentarii"
           description="Aprobate de moderare AI"
+          locale={locale}
         />
       </div>
 
@@ -186,18 +212,21 @@ export default async function StatisticsPage() {
           value={stats.agreeVotes}
           label="Voturi De Acord"
           description="Pe toate articolele"
+          locale={locale}
         />
         <StatCard
           icon={<ThumbsDown className="h-5 w-5" />}
           value={stats.disagreeVotes}
           label="Voturi Dezacord"
           description="Pe toate articolele"
+          locale={locale}
         />
         <StatCard
           icon={<TrendingUp className="h-5 w-5" />}
           value={stats.totalVotes}
           label="Total Voturi"
           description="Participare cetățeni"
+          locale={locale}
         />
       </div>
 

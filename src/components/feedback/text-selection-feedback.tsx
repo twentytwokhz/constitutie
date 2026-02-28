@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, MessageSquarePlus, Send, X } from "lucide-react";
+import { Loader2, MessageSquarePlus, Send, Share2, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Generate a simple browser fingerprint hash for abuse prevention */
@@ -23,6 +23,10 @@ function generateFingerprint(): string {
 
 interface TextSelectionFeedbackProps {
   articleId: number;
+  /** Article number for share text formatting (e.g. 15) */
+  articleNumber?: number;
+  /** Constitution year for share text formatting (e.g. 2003) */
+  year?: number;
   /** Ref to the container whose text selection should be monitored */
   children: React.ReactNode;
   /** Callback when an inline comment is successfully submitted */
@@ -40,6 +44,8 @@ interface TextSelectionFeedbackProps {
  */
 export function TextSelectionFeedback({
   articleId,
+  articleNumber,
+  year,
   children,
   onCommentSubmitted,
 }: TextSelectionFeedbackProps) {
@@ -119,11 +125,66 @@ export function TextSelectionFeedback({
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [showForm]);
 
+  /** Share the selected quote via native share or fallback share URLs */
+  const handleShareQuote = useCallback(async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const artLabel = articleNumber != null ? `Art. ${articleNumber}` : "Articol";
+    const yearSuffix = year ? ` (${year})` : "";
+    const shareText = `\u201E${selectedText}\u201D \u2014 ${artLabel}, Constitu\u021bia Rom\u00e2niei${yearSuffix}\n${url}`;
+
+    // Try native share (mobile)
+    if (typeof navigator !== "undefined" && "share" in navigator) {
+      try {
+        await navigator.share({
+          title: `${artLabel} \u2014 Constitu\u021bia Rom\u00e2niei${yearSuffix}`,
+          text: shareText,
+          url,
+        });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to fallback
+      }
+    }
+
+    // Desktop fallback: open WhatsApp, LinkedIn, or X in a small popup menu
+    // For simplicity, open WhatsApp as the default desktop fallback
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  }, [selectedText, articleNumber, year]);
+
+  /** Share quote to a specific platform */
+  const handleShareToPlatform = useCallback(
+    (platform: "whatsapp" | "linkedin" | "x") => {
+      const url = typeof window !== "undefined" ? window.location.href : "";
+      const artLabel = articleNumber != null ? `Art. ${articleNumber}` : "Articol";
+      const yearSuffix = year ? ` (${year})` : "";
+      const shareText = `\u201E${selectedText}\u201D \u2014 ${artLabel}, Constitu\u021bia Rom\u00e2niei${yearSuffix}\n${url}`;
+
+      let shareUrl: string;
+      switch (platform) {
+        case "whatsapp":
+          shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+          break;
+        case "linkedin":
+          shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+          break;
+        case "x":
+          shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText.replace(`\n${url}`, ""))}&url=${encodeURIComponent(url)}`;
+          break;
+      }
+      window.open(shareUrl, "_blank", "noopener,noreferrer");
+    },
+    [selectedText, articleNumber, year],
+  );
+
+  const [showShareMenu, setShowShareMenu] = useState(false);
+
   function openForm() {
     setShowForm(true);
     setButtonPos(null);
     setSubmitResult(null);
     setCommentText("");
+    setShowShareMenu(false);
   }
 
   function closeForm() {
@@ -132,6 +193,7 @@ export function TextSelectionFeedback({
     setButtonPos(null);
     setSubmitResult(null);
     setCommentText("");
+    setShowShareMenu(false);
     // Clear the browser selection
     window.getSelection()?.removeAllRanges();
   }
@@ -184,7 +246,7 @@ export function TextSelectionFeedback({
     <div ref={containerRef} className="relative">
       {children}
 
-      {/* Floating feedback button — appears near selection */}
+      {/* Floating feedback buttons — appears near selection */}
       {buttonPos && selectedText && !showForm && (
         <div
           className="absolute z-50 animate-in fade-in slide-in-from-bottom-2 duration-200"
@@ -194,14 +256,56 @@ export function TextSelectionFeedback({
             transform: "translateX(-50%)",
           }}
         >
-          <button
-            type="button"
-            onClick={openForm}
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
-          >
-            <MessageSquarePlus className="h-3.5 w-3.5" />
-            Comentează selecția
-          </button>
+          <div className="flex items-center gap-1 rounded-full bg-primary shadow-lg">
+            <button
+              type="button"
+              onClick={openForm}
+              className="inline-flex items-center gap-1.5 rounded-l-full pl-3 pr-2 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
+            >
+              <MessageSquarePlus className="h-3.5 w-3.5" />
+              Comentează selecția
+            </button>
+            <div className="w-px h-4 bg-primary-foreground/30" />
+            {!showShareMenu ? (
+              <button
+                type="button"
+                onClick={() => setShowShareMenu(true)}
+                className="inline-flex items-center gap-1.5 rounded-r-full pl-2 pr-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
+                title="Distribuie citatul"
+                aria-label="Distribuie citatul"
+              >
+                <Share2 className="h-3.5 w-3.5" />
+                Distribuie
+              </button>
+            ) : (
+              <div className="flex items-center gap-0.5 pr-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleShareToPlatform("whatsapp")}
+                  className="rounded-md px-2 py-1 text-[10px] font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
+                  title="WhatsApp"
+                >
+                  WhatsApp
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleShareToPlatform("x")}
+                  className="rounded-md px-2 py-1 text-[10px] font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
+                  title="X (Twitter)"
+                >
+                  X
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleShareToPlatform("linkedin")}
+                  className="rounded-r-full px-2 py-1 text-[10px] font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
+                  title="LinkedIn"
+                >
+                  LinkedIn
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

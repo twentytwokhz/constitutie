@@ -1,20 +1,14 @@
 "use client";
 
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { VersionSelector } from "@/components/layout/version-selector";
 import { Button } from "@/components/ui/button";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, Scale, Search, X } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-
-const navLinks = [
-  { href: "/2003", label: "Explorare" },
-  { href: "/compare", label: "Compară" },
-  { href: "/graph", label: "Graf" },
-  { href: "/statistics", label: "Statistici" },
-];
 
 /**
  * Global Header
@@ -28,7 +22,15 @@ const navLinks = [
  */
 export function Header() {
   const pathname = usePathname();
+  const t = useTranslations();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: "/2003" as const, label: t("nav.explore") },
+    { href: "/compare" as const, label: t("nav.compare") },
+    { href: "/graph" as const, label: t("nav.graph") },
+    { href: "/statistics" as const, label: t("nav.statistics") },
+  ];
 
   // Close mobile menu on route change
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally react to pathname changes
@@ -55,7 +57,8 @@ export function Header() {
         >
           <Scale className="h-5 w-5 text-primary" />
           <span>
-            Constituția <span className="text-primary">României</span>
+            {t("common.appName").replace(t("common.appNameHighlight"), "")}{" "}
+            <span className="text-primary">{t("common.appNameHighlight")}</span>
           </span>
         </Link>
 
@@ -88,13 +91,16 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Căutare (Ctrl+K)"
-            title="Căutare (Ctrl+K)"
+            aria-label={t("common.searchShortcut")}
+            title={t("common.searchShortcut")}
             className="text-muted-foreground"
             onClick={() => document.dispatchEvent(new CustomEvent("open-command-palette"))}
           >
             <Search className="h-5 w-5" />
           </Button>
+
+          {/* Language Switcher */}
+          <LanguageSwitcher />
 
           {/* Theme Toggle */}
           <ThemeToggle />
@@ -105,7 +111,7 @@ export function Header() {
             size="icon"
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Închide meniul" : "Deschide meniul"}
+            aria-label={mobileMenuOpen ? t("common.closeMenu") : t("common.openMenu")}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -127,7 +133,9 @@ export function Header() {
             <div className="container mx-auto px-4 pt-2 flex flex-col gap-1">
               {/* Mobile version selector */}
               <div className="px-3 py-2 sm:hidden">
-                <p className="text-xs font-medium text-muted-foreground mb-1.5">Versiune</p>
+                <p className="text-xs font-medium text-muted-foreground mb-1.5">
+                  {t("common.version")}
+                </p>
                 <VersionSelector />
               </div>
               {navLinks.map((link) => (

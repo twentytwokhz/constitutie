@@ -382,7 +382,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
       {/* Comments List */}
       {comments.length === 0 ? (
         <div className="mt-6 flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-8 px-4 text-center">
-          <MessageCircle className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <MessageCircle className="h-10 w-10 text-muted-foreground/60 mb-3" />
           <p className="text-sm font-medium text-muted-foreground">Niciun comentariu încă</p>
           <p className="mt-1 text-xs text-muted-foreground/70">
             Fii primul care își exprimă opinia despre acest articol!

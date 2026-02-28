@@ -1,38 +1,40 @@
-import { BookOpen, GitCompareArrows, MessageSquare } from "lucide-react";
+"use client";
 
-const steps = [
-  {
-    number: 1,
-    title: "Alege o versiune",
-    description:
-      "Selectează una din cele 4 versiuni istorice ale Constituției: 1952, 1986, 1991 sau 2003. Navighează articol cu articol prin table of contents interactiv.",
-    icon: BookOpen,
-  },
-  {
-    number: 2,
-    title: "Compară și analizează",
-    description:
-      "Folosește diff viewer-ul pentru a vedea exact ce s-a schimbat între versiuni. Vizualizează structura prin graful interactiv.",
-    icon: GitCompareArrows,
-  },
-  {
-    number: 3,
-    title: "Exprimă-ți opinia",
-    description:
-      "Votează de acord sau dezacord pe fiecare articol și lasă comentarii anonime, moderate automat de AI pentru calitate.",
-    icon: MessageSquare,
-  },
-];
+import { BookOpen, GitCompareArrows, MessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function HowItWorks() {
+  const t = useTranslations();
+
+  const steps = [
+    {
+      number: 1,
+      title: t("howItWorks.step1Title"),
+      description: t("howItWorks.step1Desc"),
+      icon: BookOpen,
+    },
+    {
+      number: 2,
+      title: t("howItWorks.step2Title"),
+      description: t("howItWorks.step2Desc"),
+      icon: GitCompareArrows,
+    },
+    {
+      number: 3,
+      title: t("howItWorks.step3Title"),
+      description: t("howItWorks.step3Desc"),
+      icon: MessageSquare,
+    },
+  ];
+
   return (
     <section className="py-12 sm:py-20">
       <div className="container mx-auto px-4">
         <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-          Cum funcționează
+          {t("howItWorks.sectionTitle")}
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
-          Trei pași simpli pentru a explora legea fundamentală a României
+          {t("howItWorks.sectionDescription")}
         </p>
 
         <div className="mx-auto mt-10 max-w-4xl sm:mt-14">

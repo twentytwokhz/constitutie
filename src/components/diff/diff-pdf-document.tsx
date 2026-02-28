@@ -1,19 +1,143 @@
+import path from "node:path";
 import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import type { Style } from "@react-pdf/types";
 
-// Register Inter font with latin-ext support (Romanian diacritics: ț, ș, ă, î, â)
+/**
+ * Font registration for PDF export with Romanian diacritics.
+ *
+ * We use TWO Inter subsets (both static WOFF — variable WOFF2 crashes
+ * fontkit's subsetter in @react-pdf):
+ *
+ * • InterLatin  — Google Fonts "latin" subset. Covers U+0000-00FF
+ *   (basic Latin, â/î), plus U+2000-206F (General Punctuation: „ " — –)
+ *   and U+20AC (€). This is the DEFAULT font for all text.
+ *
+ * • InterExt — Google Fonts "latin-ext" subset. Covers U+0100-02AF
+ *   (Extended Latin A/B) where Romanian ă/ș/ț live.
+ *
+ * The RoText component splits text into character runs, routing each
+ * character to the subset font that contains it. Both are Inter so
+ * metrics (ascenders, advance widths, x-height) match perfectly,
+ * preventing layout glitches at font boundaries.
+ *
+ * Previous approach used Helvetica for basic Latin which caused:
+ * 1. Black rectangles for chars like „ " — (U+2000-206F) routed to
+ *    InterExt which doesn't cover that range
+ * 2. Line-breaking issues from mismatched Helvetica/Inter metrics
+ */
+const fontsDir = path.join(process.cwd(), "public", "fonts");
+
 Font.register({
-  family: "Inter",
+  family: "InterLatin",
   fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf",
-      fontWeight: 400,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf",
-      fontWeight: 700,
-    },
+    { src: path.join(fontsDir, "Inter-Latin-Regular.woff"), fontWeight: 400 },
+    { src: path.join(fontsDir, "Inter-Latin-Bold.woff"), fontWeight: 700 },
   ],
 });
+
+Font.register({
+  family: "InterExt",
+  fonts: [
+    { src: path.join(fontsDir, "Inter-Regular.woff"), fontWeight: 400 },
+    { src: path.join(fontsDir, "Inter-Bold.woff"), fontWeight: 700 },
+  ],
+});
+
+// Allow word-level line breaking but prevent mid-word hyphenation.
+// @react-pdf always breaks at whitespace; this callback controls
+// whether a single word can be split with a hyphen. Returning [word]
+// keeps each word as one unbreakable unit (no hyphens inserted).
+Font.registerHyphenationCallback((word) => [word]);
+
+/**
+ * Determine if a character needs the Latin-ext font (InterExt).
+ *
+ * Only the Extended Latin A/B range (U+0100-02FF) is routed to InterExt.
+ * Everything else goes to InterLatin, which covers:
+ * - U+0000-00FF (basic Latin + Latin-1 supplement: a-z, â, î, etc.)
+ * - U+2000-206F (General Punctuation: „ " – — … etc.)
+ * - U+20AC (€), and other scattered code points
+ *
+ * The old code used `charCode >= 0x100` which incorrectly sent
+ * characters like „ (U+201E) and — (U+2014) to InterExt where they
+ * don't exist, causing black rectangles in the PDF.
+ */
+function needsExtFont(charCode: number): boolean {
+  return charCode >= 0x0100 && charCode <= 0x02ff;
+}
+
+/**
+ * Split a string into runs of characters that use the same font.
+ * Adjacent characters needing the same font are grouped into one run
+ * to minimize the number of <Text> elements.
+ */
+function splitTextRuns(text: string): Array<{ text: string; isExt: boolean }> {
+  if (!text) return [];
+
+  const runs: Array<{ text: string; isExt: boolean }> = [];
+  let currentRun = "";
+  let currentIsExt = needsExtFont(text.charCodeAt(0));
+
+  for (let i = 0; i < text.length; i++) {
+    const charIsExt = needsExtFont(text.charCodeAt(i));
+    if (charIsExt === currentIsExt) {
+      currentRun += text[i];
+    } else {
+      runs.push({ text: currentRun, isExt: currentIsExt });
+      currentRun = text[i];
+      currentIsExt = charIsExt;
+    }
+  }
+
+  if (currentRun) {
+    runs.push({ text: currentRun, isExt: currentIsExt });
+  }
+
+  return runs;
+}
+
+/**
+ * RoText: Renders Romanian text with proper diacritics in @react-pdf.
+ *
+ * Splits text into character runs and assigns each run to the correct
+ * font family: InterLatin for most characters and InterExt for
+ * Extended Latin characters like ă/ș/ț (U+0100-02FF).
+ * Both fonts are Inter, so metrics match and line wrapping works correctly.
+ */
+function RoText({
+  children,
+  style,
+  bold,
+}: {
+  children: string | number;
+  style?: Style | Style[];
+  bold?: boolean;
+}) {
+  const text = String(children);
+  const runs = splitTextRuns(text);
+  const fontWeight = bold ? 700 : 400;
+
+  const baseStyles: Style[] = Array.isArray(style) ? style : style ? [style] : [];
+
+  // Optimization: if all characters are in the same font, render directly
+  if (runs.length <= 1) {
+    const fontFamily = runs[0]?.isExt ? "InterExt" : "InterLatin";
+    return <Text style={[...baseStyles, { fontFamily, fontWeight }]}>{text}</Text>;
+  }
+
+  return (
+    <Text style={[...baseStyles, { fontWeight }]}>
+      {runs.map((run, i) => (
+        <Text
+          key={`${i}-${run.isExt ? "ext" : "lat"}`}
+          style={{ fontFamily: run.isExt ? "InterExt" : "InterLatin" }}
+        >
+          {run.text}
+        </Text>
+      ))}
+    </Text>
+  );
+}
 
 /**
  * Diff article data passed to the PDF renderer.
@@ -65,7 +189,7 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     paddingRight: 40,
     paddingBottom: 72,
-    fontFamily: "Inter",
+    fontFamily: "InterLatin",
     fontSize: 10,
     color: colors.textPrimary,
     backgroundColor: colors.bgPage,
@@ -78,7 +202,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontFamily: "Inter",
     fontWeight: 700,
     color: colors.primary,
     marginBottom: 4,
@@ -111,7 +234,6 @@ const styles = StyleSheet.create({
   },
   summaryNumber: {
     fontSize: 18,
-    fontFamily: "Inter",
     fontWeight: 700,
     marginBottom: 2,
   },
@@ -134,7 +256,6 @@ const styles = StyleSheet.create({
   },
   articleNumber: {
     fontSize: 11,
-    fontFamily: "Inter",
     fontWeight: 700,
   },
   articleTitle: {
@@ -144,7 +265,6 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     fontSize: 7,
-    fontFamily: "Inter",
     fontWeight: 700,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -164,7 +284,6 @@ const styles = StyleSheet.create({
   },
   contentColumnLabel: {
     fontSize: 7,
-    fontFamily: "Inter",
     fontWeight: 700,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -203,6 +322,7 @@ const styles = StyleSheet.create({
   pageNumber: {
     fontSize: 8,
     color: colors.textMuted,
+    fontFamily: "InterLatin",
   },
 });
 
@@ -249,8 +369,8 @@ function SummaryStat({
 }: { count: number; label: string; color: string; bgColor: string }) {
   return (
     <View style={[styles.summaryItem, { backgroundColor: bgColor }]}>
-      <Text style={[styles.summaryNumber, { color }]}>{count}</Text>
-      <Text style={[styles.summaryLabel, { color }]}>{label}</Text>
+      <Text style={[styles.summaryNumber, { color, fontFamily: "InterLatin" }]}>{count}</Text>
+      <RoText style={[styles.summaryLabel, { color }]}>{label}</RoText>
     </View>
   );
 }
@@ -270,50 +390,54 @@ function ArticleCard({
         styles.articleCard,
         { border: `1px solid ${status.border}`, backgroundColor: status.bg },
       ]}
-      wrap={false}
     >
       {/* Article header */}
       <View style={[styles.articleHeader, { borderBottom: `1px solid ${status.border}` }]}>
-        <Text style={[styles.articleNumber, { color: status.text }]}>
-          Articolul {article.articleNumber}
-        </Text>
-        {title && <Text style={styles.articleTitle}>{title}</Text>}
-        <Text
+        <RoText style={[styles.articleNumber, { color: status.text }]} bold>
+          {`Articolul ${article.articleNumber}`}
+        </RoText>
+        {title && <RoText style={styles.articleTitle}>{title}</RoText>}
+        <RoText
           style={[
             styles.statusBadge,
             { color: status.text, backgroundColor: `${status.border}40` },
           ]}
+          bold
         >
           {status.label}
-        </Text>
+        </RoText>
       </View>
 
       {/* Content */}
       {article.status === "modified" && article.a && article.b && (
         <View style={styles.contentRow}>
           <View style={[styles.contentColumn, { backgroundColor: `${colors.removedBg}` }]}>
-            <Text style={styles.contentColumnLabel}>{yearA}</Text>
-            <Text style={styles.contentText}>{article.a.content}</Text>
+            <Text style={[styles.contentColumnLabel, { fontFamily: "InterLatin" }]}>{yearA}</Text>
+            <RoText style={styles.contentText}>{article.a.content}</RoText>
           </View>
           <View style={styles.divider} />
           <View style={[styles.contentColumn, { backgroundColor: `${colors.addedBg}` }]}>
-            <Text style={styles.contentColumnLabel}>{yearB}</Text>
-            <Text style={styles.contentText}>{article.b.content}</Text>
+            <Text style={[styles.contentColumnLabel, { fontFamily: "InterLatin" }]}>{yearB}</Text>
+            <RoText style={styles.contentText}>{article.b.content}</RoText>
           </View>
         </View>
       )}
 
       {article.status === "added" && article.b && (
         <View style={styles.singleContent}>
-          <Text style={styles.contentColumnLabel}>{yearB} (Adăugat)</Text>
-          <Text style={styles.contentText}>{article.b.content}</Text>
+          <RoText style={styles.contentColumnLabel} bold>
+            {`${yearB} (Adăugat)`}
+          </RoText>
+          <RoText style={styles.contentText}>{article.b.content}</RoText>
         </View>
       )}
 
       {article.status === "removed" && article.a && (
         <View style={styles.singleContent}>
-          <Text style={styles.contentColumnLabel}>{yearA} (Eliminat)</Text>
-          <Text style={styles.contentText}>{article.a.content}</Text>
+          <RoText style={styles.contentColumnLabel} bold>
+            {`${yearA} (Eliminat)`}
+          </RoText>
+          <RoText style={styles.contentText}>{article.a.content}</RoText>
         </View>
       )}
     </View>
@@ -326,6 +450,11 @@ function ArticleCard({
  * Renders a styled comparison between two constitutional versions
  * with color-coded article status (added, removed, modified).
  * Only changed articles are included to keep the PDF focused.
+ *
+ * Uses InterLatin (Google Fonts "latin" subset) as default font and
+ * InterExt (Google Fonts "latin-ext" subset) for Romanian diacritics
+ * (ă, ș, ț). Both are Inter so metrics match perfectly, avoiding the
+ * black-rectangle and line-break bugs from the old Helvetica+InterExt mix.
  */
 export function DiffPdfDocument({ yearA, yearB, summary, articles }: DiffPdfProps) {
   const changedArticles = articles.filter((a) => a.status !== "unchanged");
@@ -347,11 +476,13 @@ export function DiffPdfDocument({ yearA, yearB, summary, articles }: DiffPdfProp
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Comparație Constituție</Text>
-          <Text style={styles.subtitle}>
-            Constituția din {yearA} vs Constituția din {yearB}
-          </Text>
-          <Text style={styles.dateText}>Generat la {dateStr}</Text>
+          <RoText style={styles.title} bold>
+            {"Comparație Constituție"}
+          </RoText>
+          <RoText style={styles.subtitle}>
+            {`Constituția din ${yearA} vs Constituția din ${yearB}`}
+          </RoText>
+          <RoText style={styles.dateText}>{`Generat la ${dateStr}`}</RoText>
         </View>
 
         {/* Summary Stats */}
@@ -390,17 +521,17 @@ export function DiffPdfDocument({ yearA, yearB, summary, articles }: DiffPdfProp
         {/* Empty state */}
         {changedArticles.length === 0 && (
           <View style={{ padding: 20, alignItems: "center" }}>
-            <Text style={{ color: colors.textMuted, fontSize: 12 }}>
-              Nu există diferențe între cele două versiuni.
-            </Text>
+            <RoText style={{ color: colors.textMuted, fontSize: 12 }}>
+              {"Nu există diferențe între cele două versiuni."}
+            </RoText>
           </View>
         )}
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>
-            Constituția României — Comparație {yearA} vs {yearB}
-          </Text>
+          <RoText style={styles.footerText}>
+            {`Constituția României — Comparație ${yearA} vs ${yearB}`}
+          </RoText>
           <Text
             style={styles.pageNumber}
             render={({ pageNumber, totalPages }) => `Pagina ${pageNumber} / ${totalPages}`}

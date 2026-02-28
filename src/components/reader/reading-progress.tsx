@@ -52,7 +52,7 @@ export function ReadingProgress({
         <span className="tabular-nums font-medium">
           {currentArticle} / {totalArticles}
         </span>
-        <span className="text-muted-foreground/60">({articlePercent}%)</span>
+        <span className="text-muted-foreground/70">({articlePercent}%)</span>
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ export function VoteButtons({
           userVote === "agree"
             ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-700 scale-105"
             : userVote !== null
-              ? "border-border text-muted-foreground cursor-not-allowed opacity-50"
+              ? "border-border text-muted-foreground cursor-not-allowed opacity-60"
               : "border-border hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-950 dark:hover:text-emerald-400"
         }`}
         aria-label="De acord"
@@ -136,7 +136,7 @@ export function VoteButtons({
           userVote === "disagree"
             ? "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-700 scale-105"
             : userVote !== null
-              ? "border-border text-muted-foreground cursor-not-allowed opacity-50"
+              ? "border-border text-muted-foreground cursor-not-allowed opacity-60"
               : "border-border hover:border-rose-500 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950 dark:hover:text-rose-400"
         }`}
         aria-label="Dezacord"

@@ -1,6 +1,7 @@
 "use client";
 
 import type * as React from "react";
+import { useLocale } from "next-intl";
 import * as RechartsPrimitive from "recharts";
 
 // Format: { SERIES_KEY: { label: string; color: string } }
@@ -58,9 +59,11 @@ export function ChartTooltipContent({
   formatter,
   hideLabel,
 }: ChartTooltipContentProps) {
+  const locale = useLocale();
   if (!active || !payload?.length) return null;
 
   const displayLabel = labelKey ? (payload[0]?.payload?.[labelKey] as string) : label;
+  const numLocale = locale === "ro" ? "ro-RO" : "en-US";
 
   return (
     <div className="rounded-lg border bg-background px-3 py-2 shadow-md">
@@ -75,7 +78,7 @@ export function ChartTooltipContent({
           />
           <span className="text-muted-foreground">{entry.name}:</span>
           <span className="font-semibold tabular-nums">
-            {formatter ? formatter(entry.value, entry.name) : entry.value.toLocaleString("ro-RO")}
+            {formatter ? formatter(entry.value, entry.name) : entry.value.toLocaleString(numLocale)}
           </span>
         </div>
       ))}

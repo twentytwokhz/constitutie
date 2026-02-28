@@ -1,38 +1,41 @@
 import { BookOpen, GitCompareArrows, Network, Search } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 
-const navLinks = [
-  {
-    label: "Explorează",
-    href: "/2003",
-    icon: BookOpen,
-  },
-  {
-    label: "Compară",
-    href: "/compare",
-    icon: GitCompareArrows,
-  },
-  {
-    label: "Graf",
-    href: "/graph",
-    icon: Network,
-  },
-  {
-    label: "Căutare",
-    href: "/#",
-    icon: Search,
-    isSearch: true,
-  },
-];
+export async function Footer() {
+  const t = await getTranslations();
 
-const versionLinks = [
-  { label: "Constituția 1952", href: "/1952" },
-  { label: "Constituția 1986", href: "/1986" },
-  { label: "Constituția 1991", href: "/1991" },
-  { label: "Constituția 2003", href: "/2003" },
-];
+  const navLinks = [
+    {
+      label: t("footer.explore"),
+      href: "/2003",
+      icon: BookOpen,
+    },
+    {
+      label: t("footer.compare"),
+      href: "/compare",
+      icon: GitCompareArrows,
+    },
+    {
+      label: t("footer.graph"),
+      href: "/graph",
+      icon: Network,
+    },
+    {
+      label: t("footer.search"),
+      href: "/#",
+      icon: Search,
+      isSearch: true,
+    },
+  ];
 
-export function Footer() {
+  const versionLinks = [
+    { label: t("footer.constitution1952"), href: "/1952" },
+    { label: t("footer.constitution1986"), href: "/1986" },
+    { label: t("footer.constitution1991"), href: "/1991" },
+    { label: t("footer.constitution2003"), href: "/2003" },
+  ];
+
   return (
     <footer className="border-t bg-muted/30">
       <div className="container mx-auto px-4 py-10 sm:py-14">
@@ -40,16 +43,16 @@ export function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="text-lg font-bold tracking-tight">
-              Constituția României
+              {t("common.appName")}
             </Link>
             <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-              Platformă interactivă pentru explorarea tuturor versiunilor Constituției României.
+              {t("footer.description")}
             </p>
           </div>
 
           {/* Navigation */}
           <div>
-            <h3 className="text-sm font-semibold">Navigare</h3>
+            <h3 className="text-sm font-semibold">{t("footer.navigation")}</h3>
             <ul className="mt-3 space-y-2">
               {navLinks.map((link) => (
                 <li key={link.href + link.label}>
@@ -67,7 +70,7 @@ export function Footer() {
 
           {/* Versions */}
           <div>
-            <h3 className="text-sm font-semibold">Versiuni</h3>
+            <h3 className="text-sm font-semibold">{t("footer.versions")}</h3>
             <ul className="mt-3 space-y-2">
               {versionLinks.map((link) => (
                 <li key={link.href}>
@@ -84,10 +87,9 @@ export function Footer() {
 
           {/* About */}
           <div>
-            <h3 className="text-sm font-semibold">Despre proiect</h3>
+            <h3 className="text-sm font-semibold">{t("footer.about")}</h3>
             <p className="mt-3 text-sm text-muted-foreground">
-              Proiect open-source pentru accesibilizarea Constituției României. Datele provin din
-              textele oficiale ale constituțiilor din 1952, 1986, 1991 și 2003.
+              {t("footer.aboutText")}
             </p>
           </div>
         </div>
@@ -95,10 +97,10 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Constituția României. Proiect open-source.
+            &copy; {new Date().getFullYear()} {t("footer.copyright")}
           </p>
           <p className="text-xs text-muted-foreground">
-            Realizat cu Next.js, Tailwind CSS și shadcn/ui
+            {t("footer.builtWith")}
           </p>
         </div>
       </div>

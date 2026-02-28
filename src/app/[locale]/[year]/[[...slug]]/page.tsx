@@ -1,6 +1,7 @@
 import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
+import { CoatOfArms, TricolorStripe } from "@/components/national-symbols";
 import { MobileToc } from "@/components/reader/mobile-toc";
 import { ReadingProgress } from "@/components/reader/reading-progress";
 import { ShareButton } from "@/components/reader/share-button";
@@ -10,8 +11,102 @@ import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 import { and, asc, eq } from "drizzle-orm";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+
+/**
+ * Generate per-article Open Graph and Twitter metadata for SEO and social sharing.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ year: string; slug?: string[] }>;
+}): Promise<Metadata> {
+  const { year, slug } = await params;
+  const yearNum = Number.parseInt(year, 10);
+
+  if (Number.isNaN(yearNum) || !/^\d+$/.test(year)) {
+    return {};
+  }
+
+  const [version] = await db
+    .select()
+    .from(constitutionVersions)
+    .where(eq(constitutionVersions.year, yearNum))
+    .limit(1);
+
+  if (!version) {
+    return {};
+  }
+
+  // Extract article number from slug
+  let articleNumber: number | null = null;
+  if (slug && slug.length > 0) {
+    const lastSegment = slug[slug.length - 1];
+    const match = lastSegment.match(/^articolul-(\d+)$/);
+    if (match) {
+      articleNumber = Number.parseInt(match[1], 10);
+    }
+  }
+
+  // If no article specified, resolve to the first article of the version
+  if (articleNumber === null) {
+    const [firstArticle] = await db
+      .select({ number: articles.number })
+      .from(articles)
+      .where(eq(articles.versionId, version.id))
+      .orderBy(asc(articles.orderIndex))
+      .limit(1);
+    if (firstArticle) {
+      articleNumber = firstArticle.number;
+    }
+  }
+
+  if (articleNumber === null) {
+    return {
+      title: `Constituția României (${year})`,
+    };
+  }
+
+  const [article] = await db
+    .select({
+      number: articles.number,
+      title: articles.title,
+      content: articles.content,
+    })
+    .from(articles)
+    .where(and(eq(articles.versionId, version.id), eq(articles.number, articleNumber)))
+    .limit(1);
+
+  if (!article) {
+    return {};
+  }
+
+  const titleParts = [`Art. ${article.number}`];
+  if (article.title) {
+    titleParts.push(`\u2014 ${article.title}`);
+  }
+  const ogTitle = `${titleParts.join(" ")} | Constituția României (${year})`;
+  const ogDescription = article.content.substring(0, 200).trim();
+
+  return {
+    title: ogTitle,
+    description: ogDescription,
+    openGraph: {
+      title: ogTitle,
+      description: ogDescription,
+      type: "article",
+      locale: "ro_RO",
+    },
+    twitter: {
+      card: "summary",
+      title: ogTitle,
+      description: ogDescription,
+    },
+  };
+}
 
 /**
  * Constitution Reader Page
@@ -194,15 +289,20 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     breadcrumbParts.push(...chain);
   }
 
+  // Load translations for reader namespace
+  const t = await getTranslations("reader");
+  const tCommon = await getTranslations("common");
+  const tFeedback = await getTranslations("feedback");
+
   // Get the structural unit heading label (Titlu/Capitol/Secțiune)
   const getTypeLabel = (type: string): string => {
     switch (type) {
       case "titlu":
-        return "Titlul";
+        return t("title");
       case "capitol":
-        return "Capitolul";
+        return t("chapter");
       case "sectiune":
-        return "Secțiunea";
+        return t("section");
       default:
         return type;
     }
@@ -224,12 +324,26 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
 
         {/* Main content area */}
         <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-8 max-w-4xl mx-auto w-full">
+          {/* Version header with coat of arms (Feature 160) */}
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3">
+            <CoatOfArms year={yearNum} size={40} className="shrink-0" />
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold tracking-tight sm:text-base">
+                {t("constitutionFrom")} {year}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                {allArticles.length} {tCommon("articles")}
+              </p>
+            </div>
+            <TricolorStripe height="3px" className="ml-auto w-16 rounded-full overflow-hidden hidden sm:flex" />
+          </div>
+
           {/* Breadcrumb */}
           <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
             <Link href="/" className="hover:text-foreground transition-colors">
-              Acasă
+              {tCommon("home")}
             </Link>
-            <span className="text-muted-foreground/50">/</span>
+            <span className="text-muted-foreground/70">/</span>
             <Link href={`/${year}`} className="hover:text-foreground transition-colors">
               {year}
             </Link>
@@ -241,15 +355,15 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                 .join("/")}`;
               return (
                 <span key={part.slug} className="flex items-center gap-2">
-                  <span className="text-muted-foreground/50">/</span>
+                  <span className="text-muted-foreground/70">/</span>
                   <Link href={cumulativePath} className="hover:text-foreground transition-colors">
                     {getTypeLabel(part.type)} {part.name}
                   </Link>
                 </span>
               );
             })}
-            <span className="text-muted-foreground/50">/</span>
-            <span className="text-foreground font-medium">Articolul {article.number}</span>
+            <span className="text-muted-foreground/70">/</span>
+            <span className="text-foreground font-medium">{t("article")} {article.number}</span>
           </nav>
 
           {/* Structural Unit Heading (Titlu/Capitol/Secțiune) */}
@@ -263,7 +377,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                       ? "text-xs font-semibold uppercase tracking-widest text-primary"
                       : part.type === "capitol"
                         ? "text-xs font-medium uppercase tracking-wide text-muted-foreground"
-                        : "text-xs font-medium italic text-muted-foreground/80"
+                        : "text-xs font-medium italic text-muted-foreground"
                   }
                 >
                   {getTypeLabel(part.type)} {part.name}
@@ -284,19 +398,19 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             </div>
             {!article.title && (
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-1">
-                Articolul {article.number}
+                {t("article")} {article.number}
               </h1>
             )}
             <div className="mt-2 flex items-center gap-3">
               <p className="text-sm text-muted-foreground">
-                Constituția din {year} &middot; {allArticles.length} articole
+                {t("constitutionFrom")} {year} &middot; {allArticles.length} {tCommon("articles")}
               </p>
-              <ShareButton />
+              <ShareButton articleNumber={article.number} articleTitle={article.title ?? undefined} year={yearNum} />
             </div>
           </header>
 
           {/* Article Content via TipTap — wrapped with inline feedback on text selection */}
-          <TextSelectionFeedback articleId={article.id}>
+          <TextSelectionFeedback articleId={article.id} articleNumber={article.number} year={yearNum}>
             <article className="max-w-none">
               {tiptapContent ? (
                 <TipTapReader content={tiptapContent} />
@@ -318,16 +432,31 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             </article>
           </TextSelectionFeedback>
 
-          {/* Vote Buttons */}
+          {/* Article Engagement: Vote & Share */}
           <div className="mt-8 border-t border-border pt-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-3">
-              Ce părere ai despre acest articol?
-            </h3>
-            <VoteButtons
-              articleId={article.id}
-              initialAgreeCount={article.agreeCount ?? 0}
-              initialDisagreeCount={article.disagreeCount ?? 0}
-            />
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                  {tFeedback("whatDoYouThink")}
+                </h3>
+                <VoteButtons
+                  articleId={article.id}
+                  initialAgreeCount={article.agreeCount ?? 0}
+                  initialDisagreeCount={article.disagreeCount ?? 0}
+                />
+              </div>
+              <div className="sm:text-right">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                  {t("shareArticle")}
+                </h3>
+                <ShareButton
+                  articleNumber={article.number}
+                  articleTitle={article.title ?? undefined}
+                  year={yearNum}
+                  variant="footer"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Article Navigation (Prev/Next) — full deep links */}
@@ -335,12 +464,12 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             {prevArticle ? (
               <Link
                 href={buildArticlePath(prevArticle)}
-                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
                 <div className="text-left">
-                  <span className="block text-xs uppercase tracking-wide text-muted-foreground/70">
-                    Anterior
+                  <span className="block text-xs uppercase tracking-wide text-muted-foreground">
+                    {tCommon("previous")}
                   </span>
                   <span className="block font-medium text-foreground">
                     Art. {prevArticle.number}
@@ -359,11 +488,11 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             {nextArticle ? (
               <Link
                 href={buildArticlePath(nextArticle)}
-                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <div className="text-right">
-                  <span className="block text-xs uppercase tracking-wide text-muted-foreground/70">
-                    Următor
+                  <span className="block text-xs uppercase tracking-wide text-muted-foreground">
+                    {tCommon("next")}
                   </span>
                   <span className="block font-medium text-foreground">
                     Art. {nextArticle.number}

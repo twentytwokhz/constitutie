@@ -8,7 +8,8 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 const RECENT_SEARCHES_KEY = "constitution-recent-searches";
@@ -292,7 +293,7 @@ export function CommandPalette() {
         {!loading && query.length >= 2 && results.length === 0 && (
           <div className="py-4 px-3">
             <div className="text-center text-sm text-muted-foreground mb-4">
-              <Search className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
+              <Search className="mx-auto mb-2 h-8 w-8 text-muted-foreground/70" />
               Niciun rezultat pentru „{query}".
             </div>
             <div className="space-y-1">

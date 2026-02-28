@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface TocArticle {
@@ -93,7 +93,7 @@ function TocNodeItem({
       </button>
 
       {expanded && hasChildren && (
-        <ul className="ml-3 border-l border-border/50">
+        <ul className="ml-3 border-l border-border/70">
           {/* Nested structural units */}
           {node.children.map((child) => (
             <TocNodeItem

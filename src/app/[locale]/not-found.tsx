@@ -1,5 +1,5 @@
 import { IllustrationNotFound } from "@/components/illustrations";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 /**
  * Custom 404 Page

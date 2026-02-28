@@ -22,8 +22,10 @@ import {
   Minus,
   Plus,
   Rows2,
+  Share2,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Constitution version metadata from the API */
@@ -77,7 +79,8 @@ interface SingleArticleDiffResponse {
  * - Collapsible unchanged sections
  * - Side-by-side / unified diff toggle
  */
-export default function ComparePage() {
+export function ComparePageClient() {
+  const t = useTranslations();
   const [versions, setVersions] = useState<Version[]>([]);
   const [versionA, setVersionA] = useState<string>("");
   const [versionB, setVersionB] = useState<string>("");
@@ -216,27 +219,27 @@ export default function ComparePage() {
   const statusColor = (status: DiffArticle["status"]) => {
     switch (status) {
       case "added":
-        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-400";
+        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300";
       case "removed":
-        return "bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400";
+        return "bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300";
       case "modified":
-        return "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400";
+        return "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300";
       default:
         return "bg-muted/50 border-border text-muted-foreground";
     }
   };
 
-  /** Get status label in Romanian */
+  /** Get status label via translations */
   const statusLabel = (status: DiffArticle["status"]) => {
     switch (status) {
       case "added":
-        return "Adăugat";
+        return t("compare.statusAdded");
       case "removed":
-        return "Eliminat";
+        return t("compare.statusRemoved");
       case "modified":
-        return "Modificat";
+        return t("compare.statusModified");
       default:
-        return "Neschimbat";
+        return t("compare.statusUnchanged");
     }
   };
 
@@ -290,7 +293,7 @@ export default function ComparePage() {
       });
       if (!res.ok) {
         const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.error || "Eroare la generarea PDF-ului");
+        throw new Error(errBody?.error || "PDF export error");
       }
       // Create blob and trigger download
       const blob = await res.blob();
@@ -304,12 +307,39 @@ export default function ComparePage() {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error("[PDF Export]", err);
-      setError(err instanceof Error ? err.message : "Eroare la generarea PDF-ului");
+      setError(err instanceof Error ? err.message : "PDF export error");
     } finally {
       setExportingPdf(false);
       isExportingRef.current = false;
     }
   }, [diffData, versionA, versionB]);
+
+  /** Share the comparison URL */
+  const handleShare = useCallback(async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const shareTitle = `${t("compare.title")}: ${versionA} vs ${versionB}`;
+    const shareText = `${shareTitle}\n${url}`;
+
+    if (typeof navigator !== "undefined" && "share" in navigator) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url,
+        });
+        return;
+      } catch {
+        // User cancelled — fall through
+      }
+    }
+
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Silent fallback
+    }
+  }, [versionA, versionB]);
 
   /** Keyboard shortcuts: Alt+↓ next change, Alt+↑ previous change */
   useEffect(() => {
@@ -331,9 +361,9 @@ export default function ComparePage() {
     <div className="container mx-auto max-w-full overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8">
       {/* Page Title */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Compară Versiuni</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("compare.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground sm:mt-2 sm:text-base">
-          Selectează două versiuni ale Constituției pentru a vedea diferențele articol cu articol.
+          {t("compare.subtitle")}
         </p>
       </div>
 
@@ -345,16 +375,16 @@ export default function ComparePage() {
             htmlFor="version-a"
             className="mb-2 block text-sm font-medium text-muted-foreground"
           >
-            Versiunea A (stânga)
+            {t("compare.selectVersionA")}
           </label>
           <Select value={versionA} onValueChange={setVersionA} disabled={versionsLoading}>
             <SelectTrigger id="version-a" className="w-full">
-              <SelectValue placeholder="Alege versiunea A" />
+              <SelectValue placeholder={t("compare.placeholderA")} />
             </SelectTrigger>
             <SelectContent>
               {versions.map((v) => (
                 <SelectItem key={v.year} value={String(v.year)}>
-                  {v.name} ({v.totalArticles} articole)
+                  {v.name} ({v.totalArticles} {t("common.articles")})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -367,8 +397,8 @@ export default function ComparePage() {
           size="icon"
           onClick={handleSwap}
           className="shrink-0 self-end"
-          aria-label="Inversează versiunile"
-          title="Inversează versiunile"
+          aria-label={t("compare.swapVersions")}
+          title={t("compare.swapVersions")}
           disabled={!versionA || !versionB}
         >
           <ArrowLeftRight className="h-4 w-4" />
@@ -380,16 +410,16 @@ export default function ComparePage() {
             htmlFor="version-b"
             className="mb-2 block text-sm font-medium text-muted-foreground"
           >
-            Versiunea B (dreapta)
+            {t("compare.selectVersionB")}
           </label>
           <Select value={versionB} onValueChange={setVersionB} disabled={versionsLoading}>
             <SelectTrigger id="version-b" className="w-full">
-              <SelectValue placeholder="Alege versiunea B" />
+              <SelectValue placeholder={t("compare.placeholderB")} />
             </SelectTrigger>
             <SelectContent>
               {versions.map((v) => (
                 <SelectItem key={v.year} value={String(v.year)}>
-                  {v.name} ({v.totalArticles} articole)
+                  {v.name} ({v.totalArticles} {t("common.articles")})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -400,7 +430,7 @@ export default function ComparePage() {
       {/* Same version warning */}
       {versionA && versionB && versionA === versionB && (
         <div className="mb-6 rounded-md border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
-          Selectează două versiuni diferite pentru a vedea diferențele.
+          {t("compare.selectDifferent")}
         </div>
       )}
 
@@ -409,15 +439,15 @@ export default function ComparePage() {
         <div className="mb-6 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
-              <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-500/30 dark:text-emerald-400">
+              <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-500/30 dark:text-emerald-300">
                 <Plus className="mr-1 h-3 w-3" />
                 {diffData.summary.added} adăugate
               </Badge>
-              <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400">
+              <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300">
                 <Minus className="mr-1 h-3 w-3" />
                 {diffData.summary.removed} eliminate
               </Badge>
-              <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400">
+              <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300">
                 <FileText className="mr-1 h-3 w-3" />
                 {diffData.summary.modified} modificate
               </Badge>
@@ -490,6 +520,17 @@ export default function ComparePage() {
                   <Download className="h-3.5 w-3.5" />
                 )}
                 {exportingPdf ? "Se generează..." : "Export PDF"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShare}
+                className="h-7 gap-1.5 px-3 text-xs"
+                title="Distribuie comparația"
+                aria-label="Distribuie comparația"
+              >
+                <Share2 className="h-3.5 w-3.5" />
+                Distribuie
               </Button>
             </div>
           </div>

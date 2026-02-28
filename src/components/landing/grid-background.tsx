@@ -16,12 +16,19 @@ const PARTICLES = [
 ];
 
 /**
- * GridBackground — MagicUI-style animated grid pattern with floating particles.
+ * GridBackground — Romanian folk motif geometric pattern background.
  *
- * Renders an SVG grid with a radial gradient mask that fades at edges,
- * subtle floating particles, and a radial glow. All effects are
- * performance-safe: CSS-only animations using will-change and GPU compositing.
+ * Replaces the plain grid with SVG patterns inspired by traditional Romanian
+ * "ie" (folk blouse) embroidery motifs: rhombus/diamond shapes, chevron/zigzag
+ * patterns, and cross-stitch style geometry.
+ *
+ * Retains floating particles and radial glow from the original component.
+ * All effects use CSS-only animations with GPU compositing.
  * Respects prefers-reduced-motion.
+ *
+ * The patterns use indigo primary with stone neutrals from the app's palette.
+ * Light mode: subtle light strokes on white/stone background.
+ * Dark mode: faint strokes on dark background.
  */
 export function GridBackground({ className = "" }: { className?: string }) {
   return (
@@ -29,31 +36,153 @@ export function GridBackground({ className = "" }: { className?: string }) {
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       aria-hidden="true"
     >
-      {/* Animated grid pattern */}
+      {/* Romanian folk motif SVG patterns */}
       <svg
         className="absolute inset-0 h-full w-full animate-grid-fade"
         role="img"
-        aria-label="Grid background pattern"
+        aria-label="Romanian folk motif background pattern"
       >
         <defs>
-          <pattern id="hero-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+          {/*
+           * Pattern 1: Diamond/Rhombus chain — the central motif of Romanian ie embroidery.
+           * A repeating diamond grid with small accent crosses at intersections.
+           */}
+          <pattern
+            id="folk-diamond"
+            x="0"
+            y="0"
+            width="60"
+            height="60"
+            patternUnits="userSpaceOnUse"
+          >
+            {/* Main diamond shape */}
             <path
-              d="M 40 0 L 0 0 0 40"
+              d="M30 5 L55 30 L30 55 L5 30 Z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.6"
+              className="text-primary/[0.10] dark:text-primary/[0.14]"
+            />
+            {/* Inner concentric diamond */}
+            <path
+              d="M30 15 L45 30 L30 45 L15 30 Z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.4"
+              className="text-primary/[0.07] dark:text-primary/[0.10]"
+            />
+            {/* Cross-stitch accent at center */}
+            <path
+              d="M28 30 L32 30 M30 28 L30 32"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.6"
+              className="text-primary/[0.12] dark:text-primary/[0.16]"
+            />
+            {/* Small crosses at diamond corners */}
+            <path
+              d="M29 5 L31 5 M30 4 L30 6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-primary/[0.08] dark:text-primary/[0.12]"
+            />
+            <path
+              d="M29 55 L31 55 M30 54 L30 56"
               fill="none"
               stroke="currentColor"
               strokeWidth="0.5"
               className="text-primary/[0.08] dark:text-primary/[0.12]"
             />
           </pattern>
-          <radialGradient id="hero-grid-mask" cx="50%" cy="40%" r="60%">
+
+          {/*
+           * Pattern 2: Chevron/zigzag border — traditional band motif from ie sleeves.
+           * Alternating chevron rows creating a woven-fabric appearance.
+           */}
+          <pattern
+            id="folk-chevron"
+            x="0"
+            y="0"
+            width="40"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            {/* Zigzag row */}
+            <path
+              d="M0 15 L10 5 L20 15 L30 5 L40 15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-primary/[0.06] dark:text-primary/[0.09]"
+            />
+            {/* Parallel shifted zigzag for depth */}
+            <path
+              d="M0 18 L10 8 L20 18 L30 8 L40 18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.3"
+              className="text-primary/[0.04] dark:text-primary/[0.06]"
+            />
+          </pattern>
+
+          {/*
+           * Pattern 3: Cross-stitch dots — small X marks arranged in a grid,
+           * evoking the counted cross-stitch technique used on traditional ie.
+           */}
+          <pattern
+            id="folk-crosses"
+            x="0"
+            y="0"
+            width="24"
+            height="24"
+            patternUnits="userSpaceOnUse"
+          >
+            {/* Cross-stitch X at grid intersections */}
+            <path
+              d="M10 10 L14 14 M14 10 L10 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-primary/[0.08] dark:text-primary/[0.12]"
+            />
+          </pattern>
+
+          {/* Radial gradient mask — fades pattern at edges for soft vignette */}
+          <radialGradient id="folk-mask-gradient" cx="50%" cy="40%" r="60%">
             <stop offset="0%" stopColor="white" />
             <stop offset="100%" stopColor="black" />
           </radialGradient>
-          <mask id="hero-grid-fade">
-            <rect width="100%" height="100%" fill="url(#hero-grid-mask)" />
+          <mask id="folk-pattern-fade">
+            <rect width="100%" height="100%" fill="url(#folk-mask-gradient)" />
           </mask>
         </defs>
-        <rect width="100%" height="100%" fill="url(#hero-grid)" mask="url(#hero-grid-fade)" />
+
+        {/* Layer 1: Diamond pattern (primary motif) */}
+        <rect
+          width="100%"
+          height="100%"
+          fill="url(#folk-diamond)"
+          mask="url(#folk-pattern-fade)"
+        />
+
+        {/* Layer 2: Chevron pattern (secondary, offset) */}
+        <rect
+          width="100%"
+          height="100%"
+          fill="url(#folk-chevron)"
+          mask="url(#folk-pattern-fade)"
+          style={{ opacity: 0.7 }}
+        />
+
+        {/* Layer 3: Cross-stitch dots (texture fill) */}
+        <rect
+          width="100%"
+          height="100%"
+          fill="url(#folk-crosses)"
+          mask="url(#folk-pattern-fade)"
+          style={{ opacity: 0.5 }}
+        />
       </svg>
 
       {/* Floating particles — subtle, CSS-animated dots */}
@@ -73,7 +202,7 @@ export function GridBackground({ className = "" }: { className?: string }) {
       ))}
 
       {/* Radial glow behind hero content */}
-      <div className="absolute top-1/3 left-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.04] blur-3xl dark:bg-primary/[0.08]" />
+      <div className="absolute top-1/3 left-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.06] blur-3xl dark:bg-primary/[0.12]" />
     </div>
   );
 }

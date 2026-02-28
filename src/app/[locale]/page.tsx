@@ -18,6 +18,7 @@ import { Footer } from "@/components/layout/footer";
 import { RomanianFlag, TricolorDivider } from "@/components/national-symbols";
 import { Link } from "@/i18n/navigation";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 /**
@@ -32,7 +33,8 @@ import { Suspense } from "react";
  * - Folk-inspired section dividers (FolkDivider) with progressive intensity
  * - All patterns adapt to dark/light mode and respect prefers-reduced-motion
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getTranslations();
   return (
     <main className="flex min-h-screen flex-col">
       {/* Hero Section — full viewport, animated headline, grid background */}
@@ -81,17 +83,17 @@ export default function HomePage() {
                 <RomanianFlag className="w-28 h-[76px] sm:w-36 sm:h-24 md:w-44 md:h-[120px] drop-shadow-md" />
                 <div className="flex flex-col items-start">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                    Rom&acirc;nia
+                    {t("hero.romania")}
                   </span>
                   <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 sm:text-xs">
-                    Legea Fundamentală
+                    {t("hero.fundamentalLaw")}
                   </span>
                 </div>
               </div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-7xl">
                 <AnimatedText
-                  text="Constituția României"
-                  highlightWords={["României"]}
+                  text={`${t("hero.headline")} ${t("hero.headlineHighlight")}`}
+                  highlightWords={[t("hero.headlineHighlight")]}
                   highlightClass="text-primary"
                   staggerMs={120}
                 />
@@ -100,8 +102,7 @@ export default function HomePage() {
                 className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:mt-6 sm:text-lg md:mx-0 animate-word-reveal"
                 style={{ animationDelay: "400ms" }}
               >
-                Explorează legea fundamentală a României prin toate versiunile sale istorice: 1952,
-                1986, 1991, 2003.
+                {t("hero.subtitle")} {t("hero.years")}
               </p>
               <div
                 className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4 md:justify-start animate-word-reveal"
@@ -111,13 +112,13 @@ export default function HomePage() {
                   href="/2003"
                   className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 sm:h-11"
                 >
-                  Explorează Constituția
+                  {t("hero.ctaExplore")}
                 </Link>
                 <Link
                   href="/compare"
                   className="inline-flex h-12 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground sm:h-11"
                 >
-                  Compară Versiuni
+                  {t("hero.ctaCompare")}
                 </Link>
               </div>
             </div>
@@ -126,6 +127,16 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Tricolor bottom bar accent — mirrors the top bar to frame the hero */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-1 opacity-60 dark:opacity-40"
+          aria-hidden="true"
+          style={{
+            background:
+              "linear-gradient(to right, #002B7F 0%, #002B7F 33.33%, #FCD116 33.33%, #FCD116 66.66%, #CE1126 66.66%, #CE1126 100%)",
+          }}
+        />
       </section>
 
       {/* Folk divider: Hero → Features (strong intensity — most prominent near hero) */}
@@ -136,10 +147,10 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-              Descoperă funcționalitățile
+              {t("features.sectionTitle")}
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
-              Tot ce ai nevoie pentru a explora și înțelege Constituția României
+              {t("features.sectionDescription")}
             </p>
           </ScrollReveal>
           <div className="mt-8 grid gap-6 sm:mt-14 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -149,11 +160,10 @@ export default function HomePage() {
                 <IllustrationExplore className="mx-auto h-36 w-36" />
                 <div className="mt-4 flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Explorare articole</h3>
+                  <h3 className="font-semibold">{t("features.exploreArticles")}</h3>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Navighează articol cu articol prin toate versiunile constituției, cu table of
-                  contents interactiv și deep linking.
+                  {t("features.exploreArticlesDesc")}
                 </p>
               </div>
             </ScrollReveal>
@@ -163,11 +173,10 @@ export default function HomePage() {
                 <IllustrationCompare className="mx-auto h-36 w-36" />
                 <div className="mt-4 flex items-center gap-2">
                   <GitCompareArrows className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Comparare versiuni</h3>
+                  <h3 className="font-semibold">{t("features.compareVersions")}</h3>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Compară orice două versiuni ale Constituției cu diff viewer modern, vizualizare
-                  adăugări, eliminări și modificări.
+                  {t("features.compareVersionsDesc")}
                 </p>
               </div>
             </ScrollReveal>
@@ -177,11 +186,10 @@ export default function HomePage() {
                 <IllustrationGraph className="mx-auto h-36 w-36" />
                 <div className="mt-4 flex items-center gap-2">
                   <Network className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Vizualizare graf</h3>
+                  <h3 className="font-semibold">{t("features.graphView")}</h3>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Vizualizează structura ierarhică și referințele inter-articol printr-un graf
-                  interactiv.
+                  {t("features.graphViewDesc")}
                 </p>
               </div>
             </ScrollReveal>
@@ -191,11 +199,10 @@ export default function HomePage() {
                 <IllustrationSearch className="mx-auto h-36 w-36" />
                 <div className="mt-4 flex items-center gap-2">
                   <Search className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Căutare cross-versiune</h3>
+                  <h3 className="font-semibold">{t("features.crossSearch")}</h3>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Caută instantaneu articole prin toate versiunile, cu command palette (Ctrl+K) și
-                  preview cu highlight.
+                  {t("features.crossSearchDesc")}
                 </p>
               </div>
             </ScrollReveal>
@@ -205,11 +212,10 @@ export default function HomePage() {
                 <IllustrationFeedback className="mx-auto h-36 w-36" />
                 <div className="mt-4 flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Feedback anonim</h3>
+                  <h3 className="font-semibold">{t("features.feedback")}</h3>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Exprimă-ți acordul sau dezacordul și lasă comentarii anonime, moderate automat de
-                  AI.
+                  {t("features.feedbackDesc")}
                 </p>
               </div>
             </ScrollReveal>
@@ -217,7 +223,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Tricolor divider */}
+      {/* Folk divider + tricolor: Features → How It Works (medium intensity) */}
+      <FolkDivider intensity="medium" />
       <TricolorDivider />
 
       {/* How It Works — 3-step visual section */}
@@ -225,15 +232,17 @@ export default function HomePage() {
         <HowItWorks />
       </ScrollReveal>
 
-      {/* Tricolor divider */}
+      {/* Folk divider + tricolor: How It Works → Timeline (medium, flipped for variety) */}
       <TricolorDivider />
+      <FolkDivider intensity="medium" flip />
 
       {/* Timeline — interactive constitution versions */}
       <ScrollReveal>
         <Timeline />
       </ScrollReveal>
 
-      {/* Tricolor divider */}
+      {/* Folk divider + tricolor: Timeline → Statistics (subtle intensity) */}
+      <FolkDivider intensity="subtle" />
       <TricolorDivider />
 
       {/* Statistics Section */}
@@ -260,15 +269,17 @@ export default function HomePage() {
         </Suspense>
       </ScrollReveal>
 
-      {/* Tricolor divider */}
+      {/* Folk divider + tricolor: Statistics → FAQ (subtle, flipped) */}
       <TricolorDivider />
+      <FolkDivider intensity="subtle" flip />
 
       {/* FAQ Section */}
       <ScrollReveal>
         <FaqSection />
       </ScrollReveal>
 
-      {/* Tricolor divider */}
+      {/* Folk divider: FAQ → CTA (subtle — lightest near footer) */}
+      <FolkDivider intensity="subtle" />
       <TricolorDivider />
 
       {/* Final CTA Section */}
@@ -277,24 +288,23 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Pregătit să explorezi legea fundamentală?
+                {t("cta.title")}
               </h2>
               <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-                Navighează prin toate versiunile Constituției României, compară modificările și
-                descoperă evoluția drepturilor tale.
+                {t("cta.description")}
               </p>
               <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <Link
                   href="/2003"
                   className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-10 text-base font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90"
                 >
-                  Explorează Constituția
+                  {t("cta.explore")}
                 </Link>
                 <Link
                   href="/compare"
                   className="inline-flex h-12 items-center justify-center rounded-md border border-input bg-background px-10 text-base font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
-                  Compară Versiuni
+                  {t("cta.compare")}
                 </Link>
               </div>
             </div>

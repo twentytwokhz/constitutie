@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GraphNode {
@@ -53,7 +53,7 @@ const EDGE_LEGEND = [
   { type: "reference", label: "Referință", style: "border-t-2 border-dashed border-indigo-400" },
 ];
 
-export default function GraphPage() {
+export function GraphPageClient() {
   const [versions, setVersions] = useState<VersionInfo[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("2003");
   const [graphData, setGraphData] = useState<GraphData | null>(null);

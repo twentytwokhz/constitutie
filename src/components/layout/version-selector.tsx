@@ -1,5 +1,6 @@
 "use client";
 
+import { CoatOfArms } from "@/components/national-symbols";
 import {
   Select,
   SelectContent,
@@ -7,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { BookOpen } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 
 const VERSIONS = [
   { year: "2003", label: "Constituția 2003" },
@@ -47,7 +48,10 @@ export function VersionSelector() {
       <SelectContent>
         {VERSIONS.map((v) => (
           <SelectItem key={v.year} value={v.year}>
-            {v.label}
+            <span className="inline-flex items-center gap-2">
+              <CoatOfArms year={Number(v.year)} size={20} className="shrink-0" />
+              {v.label}
+            </span>
           </SelectItem>
         ))}
       </SelectContent>

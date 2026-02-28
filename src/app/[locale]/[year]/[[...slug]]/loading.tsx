@@ -37,9 +37,9 @@ export default function ReaderLoading() {
           {/* Breadcrumb skeleton */}
           <nav className="mb-6 flex items-center gap-2">
             <div className="h-4 w-12 animate-pulse rounded bg-muted" />
-            <span className="text-muted-foreground/50">/</span>
+            <span className="text-muted-foreground/70">/</span>
             <div className="h-4 w-10 animate-pulse rounded bg-muted" />
-            <span className="text-muted-foreground/50">/</span>
+            <span className="text-muted-foreground/70">/</span>
             <div className="h-4 w-24 animate-pulse rounded bg-muted" />
           </nav>
 
