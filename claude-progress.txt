@@ -1,5 +1,58 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #204, #198)
+
+### Completed Features
+
+#### Feature #204: UI bug — sidebar skeleton reload on article click ✅
+- **Root cause**: TocSidebar was rendered inside `page.tsx` (Server Component).
+  Every article navigation re-rendered the page, which triggered `loading.tsx`
+  (Suspense fallback) showing the full skeleton including the sidebar.
+- **Fix**: Created `src/app/[locale]/[year]/layout.tsx` containing the TOC sidebar
+  and MobileToc. Next.js layouts persist across child navigations and never
+  re-mount, so the sidebar stays visible when clicking between articles.
+- Updated TocSidebar to derive `currentArticleNumber` from `usePathname()`
+  instead of receiving it as a prop from the page. Uses `useMemo` to parse
+  the article number from URL segments (pattern: `articolul-(\d+)`).
+- Updated MobileToc to remove `currentArticleNumber` prop (TocSidebar handles
+  it internally via URL).
+- Removed sidebar and MobileToc from `page.tsx` and sidebar skeleton from
+  `loading.tsx` — they now live in the persistent layout.
+- Added `setLoading(true)` to TocSidebar's useEffect so it correctly shows
+  skeleton when year or locale changes (different content).
+- Biome lint: 0 new errors, TypeScript tsc: 0 errors
+- All pages return HTTP 200
+
+#### Feature #198: Compare page scroll — sticky controls ✅
+- **Root cause**: Classic CSS flexbox gotcha. The scrollable content area had
+  `flex-1 overflow-y-auto` but flex items have an implicit `min-height: auto`
+  which prevents them from shrinking below content height. The content expanded
+  beyond the container, causing page-level scroll instead of container scroll.
+- **Fix**: Added `min-h-0` to the scrollable content div to override the
+  default `min-height: auto`. This allows `overflow-y-auto` to activate
+  within the flex container, keeping the controls panel fixed.
+- Controls (version selectors, summary badges, filters, navigation) stay
+  visible while diff content scrolls independently.
+- Biome lint: 0 new errors, TypeScript tsc: 0 errors
+- Compare page returns HTTP 200
+
+### Files Created
+- src/app/[locale]/[year]/layout.tsx — Year-level layout with persistent TOC sidebar
+
+### Files Modified
+- src/app/[locale]/[year]/[[...slug]]/page.tsx — Removed sidebar, MobileToc, outer wrappers
+- src/app/[locale]/[year]/[[...slug]]/loading.tsx — Removed sidebar skeleton
+- src/components/reader/toc-sidebar.tsx — usePathname() for active article, setLoading(true)
+- src/components/reader/mobile-toc.tsx — Removed currentArticleNumber prop
+- src/app/[locale]/compare/compare-client.tsx — Added min-h-0 for flex overflow fix
+
+### Current Status
+- Features #204 and #198 marked as passing
+- Zero Biome lint errors on changed files
+- Zero TypeScript errors
+- All pages return HTTP 200
+- No mock data patterns in codebase
+
 ## Session: 2026-02-28 (Agent handling feature #196)
 
 ### Completed Features
