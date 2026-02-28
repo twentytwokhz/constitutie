@@ -1,5 +1,40 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #35, #36, #37)
+
+### Completed Features
+
+#### Feature #35: Command palette opens with keyboard shortcut ✅
+- Already implemented in previous session (cmdk-based CommandPalette component)
+- ⌘K/Ctrl+K shortcut registered via useEffect keydown listener
+- Dialog opens with search input, backdrop blur overlay
+- Escape closes modal (Radix Dialog default behavior)
+- Integrated into root layout.tsx
+- Biome lint: 0 errors
+
+#### Feature #36: Search by article number returns results ✅
+- Added extractArticleNumber() helper to parse patterns like "Art. 15", "Articolul 15", "art15"
+- Previously "Art. 15" returned empty results because the number extraction was too strict
+- Now correctly extracts "15" from "Art. 15" and matches against article.number
+- Tested: "15", "Art. 15", "Articolul 15", "art15" all return Art. 15 from all 4 versions
+- Results include article number and version year as required
+- Biome lint: 0 errors
+
+#### Feature #37: Search by article title returns results ✅
+- Search by title already worked via ilike(articles.title, searchTerm)
+- Tested: "Universalitatea" returns Art. 15 from 1991 and 2003 (titled articles)
+- Tested: "Suveranitate" returns Art. 2 from 1991/2003 + content matches from 1952
+- Click navigation verified: /1991/articolul-15 and /2003/articolul-15 both return 200
+- Biome lint: 0 errors
+
+### Files Modified
+- src/app/api/articles/search/route.ts - Added extractArticleNumber() for smart article number parsing
+
+### Current Status
+- Features passing: 62 (was 59)
+- Total features: 144
+- Percentage: ~43.1%
+
 ## Session: 2026-02-28 (Agent handling feature #141)
 
 ### Completed Features
