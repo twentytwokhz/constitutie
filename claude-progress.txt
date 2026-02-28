@@ -1,5 +1,54 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #53, #55, #58)
+
+### Completed Features
+
+#### Feature #53: Diff on individual article selection works ✅
+- Added article-level filter dropdown in compare page toolbar
+- Dropdown lists all articles from the full diff with status labels (Adăugat/Eliminat/Modificat)
+- Selecting a specific article fetches from /api/diff/article?a=X&b=Y&article=N
+- Shows Monaco diff viewer for the single article (side-by-side or inline)
+- Handles articles that exist only in one version (added/removed) with content display
+- Clear button ("Resetează") returns to full diff view
+- Article selection resets when version selectors change
+- Version presence badges show if article exists in each version
+- Jump navigation hidden during single-article mode (not applicable)
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #55: Graph version selector works ✅
+- Already implemented by prior agent session
+- Version selector dropdown in graph toolbar fetches from /api/versions
+- Changing version triggers graph reload via useEffect on selectedYear
+- Verified different node counts per version: 1952(221), 1991(365), 2003(391)
+- Loading state clears selected node on version change
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #58: Click on graph node opens preview panel ✅
+- Enhanced graph API to include contentSnippet (first 200 chars) and articleNumber per article node
+- Updated GraphNode interface in both graph page and force-graph component
+- Preview panel now shows text fragment with line-clamp-4 and ellipsis
+- Added slide-in-from-right animation to preview panel (animate-in classes)
+- Descriptive fallback text for non-article nodes (Titlu/Capitol/Secțiune)
+- "Deschide articolul →" link navigates to reader page
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Modified
+- src/app/compare/page.tsx - Added article filter dropdown and single-article diff mode
+- src/app/api/versions/[year]/graph/route.ts - Added contentSnippet + articleNumber to article nodes
+- src/app/graph/page.tsx - Enhanced preview panel with text fragment and animation
+- src/components/graph/force-graph.tsx - Updated GraphNode interface
+
+### Current Status
+- Features passing: 91 (was 88)
+- Total features: 144
+- Percentage: ~63.2%
+
+### Notes
+- Pre-existing TypeScript error in src/app/statistics/page.tsx (totalArticles null type)
+- No mock data patterns found in codebase
+- All APIs use real Drizzle ORM queries against Neon PostgreSQL
+
 ## Session: 2026-02-28 (Agent handling features #47, #48, #49)
 
 ### Completed Features
