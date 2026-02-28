@@ -1,4 +1,19 @@
-import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+
+// Register Inter font with latin-ext support (Romanian diacritics: ț, ș, ă, î, â)
+Font.register({
+  family: "Inter",
+  fonts: [
+    {
+      src: "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf",
+      fontWeight: 400,
+    },
+    {
+      src: "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf",
+      fontWeight: 700,
+    },
+  ],
+});
 
 /**
  * Diff article data passed to the PDF renderer.
@@ -46,8 +61,11 @@ const colors = {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontFamily: "Helvetica",
+    paddingTop: 40,
+    paddingLeft: 40,
+    paddingRight: 40,
+    paddingBottom: 72,
+    fontFamily: "Inter",
     fontSize: 10,
     color: colors.textPrimary,
     backgroundColor: colors.bgPage,
@@ -60,7 +78,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Inter",
+    fontWeight: 700,
     color: colors.primary,
     marginBottom: 4,
   },
@@ -92,7 +111,8 @@ const styles = StyleSheet.create({
   },
   summaryNumber: {
     fontSize: 18,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Inter",
+    fontWeight: 700,
     marginBottom: 2,
   },
   summaryLabel: {
@@ -114,7 +134,8 @@ const styles = StyleSheet.create({
   },
   articleNumber: {
     fontSize: 11,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Inter",
+    fontWeight: 700,
   },
   articleTitle: {
     fontSize: 10,
@@ -123,7 +144,8 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     fontSize: 7,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Inter",
+    fontWeight: 700,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     paddingHorizontal: 6,
@@ -142,7 +164,8 @@ const styles = StyleSheet.create({
   },
   contentColumnLabel: {
     fontSize: 7,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Inter",
+    fontWeight: 700,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: colors.textMuted,
@@ -164,21 +187,21 @@ const styles = StyleSheet.create({
   // Footer
   footer: {
     position: "absolute",
-    bottom: 20,
+    bottom: 28,
     left: 40,
     right: 40,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderTop: `1px solid ${colors.border}`,
-    paddingTop: 8,
+    paddingTop: 12,
   },
   footerText: {
-    fontSize: 7,
+    fontSize: 8,
     color: colors.textMuted,
   },
   pageNumber: {
-    fontSize: 7,
+    fontSize: 8,
     color: colors.textMuted,
   },
 });

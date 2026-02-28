@@ -17,6 +17,8 @@
     "db:seed": "tsx src/lib/db/seed.ts"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource/inter": "^5.2.8",
     "@monaco-editor/react": "^4.7.0",
     "@neondatabase/serverless": "^0.10.0",
     "@radix-ui/react-accordion": "^1.2.0",
