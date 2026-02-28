@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**/*.ts", "src/**/*.tsx"]
+    "include": ["src/**/*.ts", "src/**/*.tsx"]
   },
   "formatter": {
     "enabled": true,
@@ -27,7 +27,7 @@
       }
     }
   },
-  "assist": {
+  "assists": {
     "enabled": true
   },
   "javascript": {

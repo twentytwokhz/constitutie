@@ -7,7 +7,9 @@ export interface ConstitutionVersion {
   id: number;
   year: number;
   name: string;
+  nameEn: string | null;
   description: string | null;
+  descriptionEn: string | null;
   sourceFile: string | null;
   totalArticles: number;
   createdAt: Date;
@@ -20,6 +22,7 @@ export interface StructuralUnit {
   type: "titlu" | "capitol" | "sectiune";
   number: number;
   name: string;
+  nameEn: string | null;
   parentId: number | null;
   orderIndex: number;
   slug: string;
@@ -34,8 +37,11 @@ export interface Article {
   structuralUnitId: number;
   number: number;
   title: string | null;
+  titleEn: string | null;
   content: string;
+  contentEn: string | null;
   contentTiptap: Record<string, unknown> | null;
+  contentTiptapEn: Record<string, unknown> | null;
   orderIndex: number;
   slug: string;
   agreeCount: number;
