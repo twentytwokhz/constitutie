@@ -76,6 +76,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     .where(eq(structuralUnits.versionId, version.id));
 
   const unitMap = new Map(allUnits.map((u) => [u.id, u]));
+  const unitBySlug = new Map(allUnits.map((u) => [u.slug, u]));
 
   /** Build full hierarchical URL path for an article: /year/titlul-X/capitolul-Y/articolul-Z */
   function buildArticlePath(art: { slug: string; structuralUnitId: number }): string {
@@ -89,6 +90,41 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     }
     pathParts.push(art.slug);
     return `/${year}/${pathParts.join("/")}`;
+  }
+
+  /** Collect all descendant unit IDs for a structural unit (including itself) */
+  function getDescendantUnitIds(unitId: number): Set<number> {
+    const ids = new Set<number>([unitId]);
+    for (const u of allUnits) {
+      if (u.parentId && ids.has(u.parentId)) {
+        ids.add(u.id);
+      }
+    }
+    // Multi-level: repeat until stable (handles deep nesting)
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const u of allUnits) {
+        if (u.parentId && ids.has(u.parentId) && !ids.has(u.id)) {
+          ids.add(u.id);
+          changed = true;
+        }
+      }
+    }
+    return ids;
+  }
+
+  // If slug points to a structural unit (not an article), find first article within it
+  if (articleNumber === null && slug && slug.length > 0) {
+    const targetSlug = slug[slug.length - 1];
+    const targetUnit = unitBySlug.get(targetSlug);
+    if (targetUnit) {
+      const descendantIds = getDescendantUnitIds(targetUnit.id);
+      const firstInUnit = allArticles.find((a) => descendantIds.has(a.structuralUnitId));
+      if (firstInUnit) {
+        articleNumber = firstInUnit.number;
+      }
+    }
   }
 
   // If no specific article requested, show the first article
@@ -183,14 +219,21 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           <Link href={`/${year}`} className="hover:text-foreground transition-colors">
             {year}
           </Link>
-          {breadcrumbParts.map((part) => (
-            <span key={part.slug} className="flex items-center gap-2">
-              <span className="text-muted-foreground/50">/</span>
-              <span>
-                {getTypeLabel(part.type)} {part.name}
+          {breadcrumbParts.map((part, idx) => {
+            // Build cumulative path: /year/titlul-X or /year/titlul-X/capitolul-Y
+            const cumulativePath = `/${year}/${breadcrumbParts
+              .slice(0, idx + 1)
+              .map((p) => p.slug)
+              .join("/")}`;
+            return (
+              <span key={part.slug} className="flex items-center gap-2">
+                <span className="text-muted-foreground/50">/</span>
+                <Link href={cumulativePath} className="hover:text-foreground transition-colors">
+                  {getTypeLabel(part.type)} {part.name}
+                </Link>
               </span>
-            </span>
-          ))}
+            );
+          })}
           <span className="text-muted-foreground/50">/</span>
           <span className="text-foreground font-medium">Articolul {article.number}</span>
         </nav>
