@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { CommandPalette } from "@/components/search/command-palette";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           <Header />
+          <CommandPalette />
           {children}
         </ThemeProvider>
       </body>

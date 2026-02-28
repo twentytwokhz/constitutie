@@ -81,13 +81,14 @@ export function Header() {
             <VersionSelector />
           </div>
 
-          {/* Search trigger */}
+          {/* Search trigger - dispatches custom event to open CommandPalette */}
           <Button
             variant="ghost"
             size="icon"
             aria-label="Căutare (Ctrl+K)"
             title="Căutare (Ctrl+K)"
             className="text-muted-foreground"
+            onClick={() => document.dispatchEvent(new CustomEvent("open-command-palette"))}
           >
             <Search className="h-5 w-5" />
           </Button>
