@@ -1,9 +1,9 @@
-import { and, desc, eq, gt } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { articles, comments } from "@/lib/db/schema";
 import { moderateComment } from "@/lib/moderation";
-import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { RATE_LIMITS, checkRateLimit } from "@/lib/rate-limit";
+import { and, desc, eq, gt } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

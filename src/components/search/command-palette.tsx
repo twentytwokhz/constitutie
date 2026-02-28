@@ -1,9 +1,5 @@
 "use client";
 
-import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import {
   CommandDialog,
   CommandGroup,
@@ -12,6 +8,10 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 const RECENT_SEARCHES_KEY = "constitution-recent-searches";
 const MAX_RECENT_SEARCHES = 5;

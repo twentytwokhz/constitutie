@@ -1,12 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useTranslations } from "next-intl";
 
 export function FaqSection() {
   const t = useTranslations();

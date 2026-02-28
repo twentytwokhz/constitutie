@@ -1,5 +1,3 @@
-import { count, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import {
   articleReferences,
@@ -8,6 +6,8 @@ import {
   constitutionVersions,
   votes,
 } from "@/lib/db/schema";
+import { count, eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
 
 // Ensure stats are always fresh — never cached
 export const dynamic = "force-dynamic";

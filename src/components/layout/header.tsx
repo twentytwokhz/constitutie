@@ -1,8 +1,5 @@
 "use client";
 
-import { Menu, Scale, Search, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { VersionSelector } from "@/components/layout/version-selector";
@@ -10,6 +7,9 @@ import { TricolorStripe } from "@/components/national-symbols";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { Menu, Scale, Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 /**
  * Global Header

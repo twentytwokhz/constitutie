@@ -1,7 +1,7 @@
+import { detectBot } from "@/lib/bot-protection";
+import createIntlMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
-import { detectBot } from "@/lib/bot-protection";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);

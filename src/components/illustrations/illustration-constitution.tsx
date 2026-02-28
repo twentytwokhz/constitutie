@@ -24,7 +24,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="180"
         height="252"
         rx="6"
-        className="fill-muted-foreground/12 dark:fill-muted-foreground/15"
+        className="fill-muted-foreground/12 dark:fill-muted-foreground/25"
       />
       {/* Main document */}
       <rect
@@ -33,7 +33,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="180"
         height="252"
         rx="6"
-        className="fill-card stroke-border dark:stroke-border/80"
+        className="fill-card stroke-border dark:stroke-border/90"
         strokeWidth="1.5"
       />
       {/* Document header decoration */}
@@ -43,7 +43,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="140"
         height="3"
         rx="1.5"
-        className="fill-primary/50 dark:fill-primary/55"
+        className="fill-primary/50 dark:fill-primary/75"
       />
       {/* Title area */}
       <rect
@@ -52,7 +52,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="90"
         height="7"
         rx="3.5"
-        className="fill-primary/60 dark:fill-primary/65"
+        className="fill-primary/60 dark:fill-primary/85"
       />
       <rect
         x="165"
@@ -60,7 +60,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="70"
         height="5"
         rx="2.5"
-        className="fill-primary/40 dark:fill-primary/45"
+        className="fill-primary/40 dark:fill-primary/65"
       />
       {/* Horizontal rule */}
       <line
@@ -68,7 +68,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         y1="88"
         x2="260"
         y2="88"
-        className="stroke-border dark:stroke-border/80"
+        className="stroke-border dark:stroke-border/90"
         strokeWidth="1"
       />
       {/* Article lines */}
@@ -78,7 +78,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="30"
         height="4"
         rx="2"
-        className="fill-primary/35 dark:fill-primary/40"
+        className="fill-primary/35 dark:fill-primary/55"
       />
       <rect
         x="130"
@@ -86,7 +86,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="140"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -94,7 +94,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="130"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -102,7 +102,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="136"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -110,7 +110,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="30"
         height="4"
         rx="2"
-        className="fill-primary/35 dark:fill-primary/40"
+        className="fill-primary/35 dark:fill-primary/55"
       />
       <rect
         x="130"
@@ -118,7 +118,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="140"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -126,7 +126,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="125"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -134,7 +134,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="135"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -142,7 +142,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="120"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -150,7 +150,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="30"
         height="4"
         rx="2"
-        className="fill-primary/35 dark:fill-primary/40"
+        className="fill-primary/35 dark:fill-primary/55"
       />
       <rect
         x="130"
@@ -158,7 +158,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="138"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="130"
@@ -166,17 +166,17 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         width="128"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Official seal */}
       <circle
         cx="200"
         cy="252"
         r="14"
-        className="fill-primary/25 dark:fill-primary/30 stroke-primary/50 dark:stroke-primary/55"
+        className="fill-primary/25 dark:fill-primary/45 stroke-primary/50 dark:stroke-primary/75"
         strokeWidth="1.5"
       />
-      <circle cx="200" cy="252" r="8" className="fill-primary/40 dark:fill-primary/45" />
+      <circle cx="200" cy="252" r="8" className="fill-primary/40 dark:fill-primary/65" />
       {/* Decorative elements - scales of justice */}
       <g transform="translate(330, 50)">
         <line
@@ -184,7 +184,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
           y1="0"
           x2="0"
           y2="40"
-          className="stroke-primary/40 dark:stroke-primary/45"
+          className="stroke-primary/40 dark:stroke-primary/65"
           strokeWidth="2"
         />
         <line
@@ -192,13 +192,13 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
           y1="0"
           x2="20"
           y2="0"
-          className="stroke-primary/40 dark:stroke-primary/45"
+          className="stroke-primary/40 dark:stroke-primary/65"
           strokeWidth="2"
         />
         {/* Left plate */}
-        <path d="M-20 0 L-28 18 H-12 Z" className="fill-primary/30 dark:fill-primary/35" />
+        <path d="M-20 0 L-28 18 H-12 Z" className="fill-primary/30 dark:fill-primary/50" />
         {/* Right plate */}
-        <path d="M20 0 L12 22 H28 Z" className="fill-primary/25 dark:fill-primary/30" />
+        <path d="M20 0 L12 22 H28 Z" className="fill-primary/25 dark:fill-primary/45" />
         {/* Base */}
         <rect
           x="-8"
@@ -206,7 +206,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
           width="16"
           height="4"
           rx="2"
-          className="fill-primary/35 dark:fill-primary/40"
+          className="fill-primary/35 dark:fill-primary/55"
         />
       </g>
       {/* Flying decorative papers */}
@@ -217,7 +217,7 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         height="35"
         rx="3"
         transform="rotate(-12 55 97)"
-        className="fill-card stroke-border dark:stroke-border/60"
+        className="fill-card stroke-border dark:stroke-border/80"
         strokeWidth="1"
       />
       <rect
@@ -227,13 +227,13 @@ export function IllustrationConstitution({ className = "w-64 h-64" }: Illustrati
         height="35"
         rx="3"
         transform="rotate(8 345 197)"
-        className="fill-card stroke-border dark:stroke-border/60"
+        className="fill-card stroke-border dark:stroke-border/80"
         strokeWidth="1"
       />
       {/* Decorative circles */}
-      <circle cx="50" cy="40" r="5" className="fill-primary/20 dark:fill-primary/25" />
-      <circle cx="370" cy="120" r="4" className="fill-primary/25 dark:fill-primary/30" />
-      <circle cx="360" cy="270" r="3" className="fill-primary/15 dark:fill-primary/20" />
+      <circle cx="50" cy="40" r="5" className="fill-primary/20 dark:fill-primary/40" />
+      <circle cx="370" cy="120" r="4" className="fill-primary/25 dark:fill-primary/45" />
+      <circle cx="360" cy="270" r="3" className="fill-primary/15 dark:fill-primary/30" />
     </svg>
   );
 }

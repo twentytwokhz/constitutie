@@ -24,7 +24,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="260"
         height="200"
         rx="8"
-        className="fill-card stroke-border dark:stroke-border/80"
+        className="fill-card stroke-border dark:stroke-border/90"
         strokeWidth="1.5"
       />
       {/* Chart axes */}
@@ -33,7 +33,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         y1="200"
         x2="310"
         y2="200"
-        className="stroke-muted-foreground/35 dark:stroke-muted-foreground/40"
+        className="stroke-muted-foreground/35 dark:stroke-muted-foreground/55"
         strokeWidth="1.5"
       />
       <line
@@ -41,7 +41,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         y1="200"
         x2="110"
         y2="55"
-        className="stroke-muted-foreground/35 dark:stroke-muted-foreground/40"
+        className="stroke-muted-foreground/35 dark:stroke-muted-foreground/55"
         strokeWidth="1.5"
       />
       {/* Grid lines */}
@@ -50,7 +50,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         y1="165"
         x2="310"
         y2="165"
-        className="stroke-muted-foreground/15 dark:stroke-muted-foreground/20"
+        className="stroke-muted-foreground/15 dark:stroke-muted-foreground/30"
         strokeWidth="1"
         strokeDasharray="4 4"
       />
@@ -59,7 +59,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         y1="130"
         x2="310"
         y2="130"
-        className="stroke-muted-foreground/15 dark:stroke-muted-foreground/20"
+        className="stroke-muted-foreground/15 dark:stroke-muted-foreground/30"
         strokeWidth="1"
         strokeDasharray="4 4"
       />
@@ -68,7 +68,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         y1="95"
         x2="310"
         y2="95"
-        className="stroke-muted-foreground/15 dark:stroke-muted-foreground/20"
+        className="stroke-muted-foreground/15 dark:stroke-muted-foreground/30"
         strokeWidth="1"
         strokeDasharray="4 4"
       />
@@ -80,12 +80,12 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="32"
         height="80"
         rx="4"
-        className="fill-primary/50 dark:fill-primary/55"
+        className="fill-primary/50 dark:fill-primary/85"
       />
       <text
         x="146"
         y="210"
-        className="fill-muted-foreground/50 dark:fill-muted-foreground/55"
+        className="fill-muted-foreground/50 dark:fill-muted-foreground/75"
         fontSize="9"
         textAnchor="middle"
       >
@@ -98,12 +98,12 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="32"
         height="90"
         rx="4"
-        className="fill-primary/65 dark:fill-primary/70"
+        className="fill-primary/65 dark:fill-primary/85"
       />
       <text
         x="194"
         y="210"
-        className="fill-muted-foreground/50 dark:fill-muted-foreground/55"
+        className="fill-muted-foreground/50 dark:fill-muted-foreground/75"
         fontSize="9"
         textAnchor="middle"
       >
@@ -116,12 +116,12 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="32"
         height="120"
         rx="4"
-        className="fill-primary/75 dark:fill-primary/80"
+        className="fill-primary/75 dark:fill-primary/95"
       />
       <text
         x="242"
         y="210"
-        className="fill-muted-foreground/50 dark:fill-muted-foreground/55"
+        className="fill-muted-foreground/50 dark:fill-muted-foreground/75"
         fontSize="9"
         textAnchor="middle"
       >
@@ -139,7 +139,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
       <text
         x="290"
         y="210"
-        className="fill-muted-foreground/50 dark:fill-muted-foreground/55"
+        className="fill-muted-foreground/50 dark:fill-muted-foreground/75"
         fontSize="9"
         textAnchor="middle"
       >
@@ -149,7 +149,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
       <text
         x="146"
         y="115"
-        className="fill-primary/85 dark:fill-primary/90"
+        className="fill-primary/85 dark:fill-primary/95"
         fontSize="9"
         textAnchor="middle"
         fontWeight="600"
@@ -159,7 +159,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
       <text
         x="194"
         y="105"
-        className="fill-primary/85 dark:fill-primary/90"
+        className="fill-primary/85 dark:fill-primary/95"
         fontSize="9"
         textAnchor="middle"
         fontWeight="600"
@@ -169,7 +169,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
       <text
         x="242"
         y="75"
-        className="fill-primary/85 dark:fill-primary/90"
+        className="fill-primary/85 dark:fill-primary/95"
         fontSize="9"
         textAnchor="middle"
         fontWeight="600"
@@ -179,7 +179,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
       <text
         x="290"
         y="70"
-        className="fill-primary/85 dark:fill-primary/90"
+        className="fill-primary/85 dark:fill-primary/95"
         fontSize="9"
         textAnchor="middle"
         fontWeight="600"
@@ -190,7 +190,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
       <text
         x="95"
         y="130"
-        className="fill-muted-foreground/40 dark:fill-muted-foreground/45"
+        className="fill-muted-foreground/40 dark:fill-muted-foreground/65"
         fontSize="8"
         textAnchor="end"
         transform="rotate(-90 95 130)"
@@ -198,15 +198,15 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         Articole
       </text>
       {/* Person analyzing chart */}
-      <circle cx="55" cy="180" r="16" className="fill-primary/85 dark:fill-primary/90" />
+      <circle cx="55" cy="180" r="16" className="fill-primary/85 dark:fill-primary/95" />
       <path
         d="M43 196 C43 196 39 225 42 250 L68 250 C71 225 67 196 67 196 Z"
-        className="fill-primary/70 dark:fill-primary/75"
+        className="fill-primary/70 dark:fill-primary/85"
       />
       {/* Arm pointing at chart */}
       <path
         d="M65 210 Q80 200 95 190"
-        className="stroke-primary/70 dark:stroke-primary/75"
+        className="stroke-primary/70 dark:stroke-primary/85"
         strokeWidth="5"
         strokeLinecap="round"
       />
@@ -217,7 +217,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="80"
         height="30"
         rx="5"
-        className="fill-primary/15 dark:fill-primary/20"
+        className="fill-primary/15 dark:fill-primary/45"
       />
       <rect
         x="90"
@@ -225,7 +225,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="30"
         height="4"
         rx="2"
-        className="fill-primary/60 dark:fill-primary/65"
+        className="fill-primary/60 dark:fill-primary/85"
       />
       <rect
         x="90"
@@ -233,7 +233,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="50"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="175"
@@ -241,7 +241,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="80"
         height="30"
         rx="5"
-        className="fill-primary/15 dark:fill-primary/20"
+        className="fill-primary/15 dark:fill-primary/45"
       />
       <rect
         x="185"
@@ -249,7 +249,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="30"
         height="4"
         rx="2"
-        className="fill-primary/60 dark:fill-primary/65"
+        className="fill-primary/60 dark:fill-primary/85"
       />
       <rect
         x="185"
@@ -257,7 +257,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="50"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="270"
@@ -265,7 +265,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="80"
         height="30"
         rx="5"
-        className="fill-primary/15 dark:fill-primary/20"
+        className="fill-primary/15 dark:fill-primary/45"
       />
       <rect
         x="280"
@@ -273,7 +273,7 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="30"
         height="4"
         rx="2"
-        className="fill-primary/60 dark:fill-primary/65"
+        className="fill-primary/60 dark:fill-primary/85"
       />
       <rect
         x="280"
@@ -281,11 +281,11 @@ export function IllustrationStatistics({ className = "w-64 h-64" }: Illustration
         width="50"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Decorative */}
-      <circle cx="365" cy="40" r="3" className="fill-primary/25 dark:fill-primary/30" />
-      <circle cx="30" cy="140" r="4" className="fill-primary/20 dark:fill-primary/25" />
+      <circle cx="365" cy="40" r="3" className="fill-primary/25 dark:fill-primary/45" />
+      <circle cx="30" cy="140" r="4" className="fill-primary/20 dark:fill-primary/40" />
     </svg>
   );
 }

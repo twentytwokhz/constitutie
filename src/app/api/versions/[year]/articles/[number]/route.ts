@@ -1,7 +1,7 @@
-import { and, eq } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
+import { and, eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * Build the structural breadcrumb chain for an article.

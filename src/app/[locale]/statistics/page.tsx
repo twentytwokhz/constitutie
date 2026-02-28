@@ -1,3 +1,13 @@
+import { VersionBarChart } from "@/components/statistics/version-bar-chart";
+import { Link } from "@/i18n/navigation";
+import { db } from "@/lib/db";
+import {
+  articleReferences,
+  articles,
+  comments,
+  constitutionVersions,
+  votes,
+} from "@/lib/db/schema";
 import { count, eq, inArray, sql } from "drizzle-orm";
 import {
   ArrowRight,
@@ -11,16 +21,6 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { VersionBarChart } from "@/components/statistics/version-bar-chart";
-import { Link } from "@/i18n/navigation";
-import { db } from "@/lib/db";
-import {
-  articleReferences,
-  articles,
-  comments,
-  constitutionVersions,
-  votes,
-} from "@/lib/db/schema";
 
 /**
  * Statistics Dashboard Page

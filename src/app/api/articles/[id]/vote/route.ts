@@ -1,8 +1,8 @@
-import { and, eq, sql } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { articles, votes } from "@/lib/db/schema";
-import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { RATE_LIMITS, checkRateLimit } from "@/lib/rate-limit";
+import { and, eq, sql } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

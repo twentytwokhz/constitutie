@@ -1,18 +1,24 @@
 import path from "node:path";
 import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-import type { Style } from "@react-pdf/types";
+
+/**
+ * Style type for @react-pdf/renderer components.
+ * Defined locally because @react-pdf/types may not be hoisted in pnpm.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: @react-pdf/types not hoisted in pnpm
+type Style = any;
 
 /**
  * Font registration for PDF export with Romanian diacritics.
  *
- * We use TWO Inter subsets (both static WOFF — variable WOFF2 crashes
- * fontkit's subsetter in @react-pdf):
+ * We use TWO Inter subsets as raw OTF files (decompressed from WOFF to avoid
+ * @react-pdf/fontkit WOFF parsing bugs that cause glyph lookup failures):
  *
- * • InterLatin  — Google Fonts "latin" subset. Covers U+0000-00FF
+ * • InterLatin  — Google Fonts "latin" subset (OTF). Covers U+0000-00FF
  *   (basic Latin, â/î), plus U+2000-206F (General Punctuation: „ " — –)
  *   and U+20AC (€). This is the DEFAULT font for all text.
  *
- * • InterExt — Google Fonts "latin-ext" subset. Covers U+0100-02AF
+ * • InterExt — Google Fonts "latin-ext" subset (OTF). Covers U+0100-02AF
  *   (Extended Latin A/B) where Romanian ă/ș/ț live.
  *
  * The RoText component splits text into character runs, routing each
@@ -20,26 +26,27 @@ import type { Style } from "@react-pdf/types";
  * metrics (ascenders, advance widths, x-height) match perfectly,
  * preventing layout glitches at font boundaries.
  *
- * Previous approach used Helvetica for basic Latin which caused:
- * 1. Black rectangles for chars like „ " — (U+2000-206F) routed to
- *    InterExt which doesn't cover that range
- * 2. Line-breaking issues from mismatched Helvetica/Inter metrics
+ * Why OTF instead of WOFF:
+ * @react-pdf v4's fontkit has known issues parsing WOFF files where the
+ * zlib-compressed table decompression can corrupt glyph mappings for
+ * certain Unicode ranges (especially U+0100-02FF Extended Latin).
+ * Converting WOFF → raw OTF (decompressing tables) solves this entirely.
  */
 const fontsDir = path.join(process.cwd(), "public", "fonts");
 
 Font.register({
   family: "InterLatin",
   fonts: [
-    { src: path.join(fontsDir, "Inter-Latin-Regular.woff"), fontWeight: 400 },
-    { src: path.join(fontsDir, "Inter-Latin-Bold.woff"), fontWeight: 700 },
+    { src: path.join(fontsDir, "Inter-Latin-Regular.otf"), fontWeight: 400 },
+    { src: path.join(fontsDir, "Inter-Latin-Bold.otf"), fontWeight: 700 },
   ],
 });
 
 Font.register({
   family: "InterExt",
   fonts: [
-    { src: path.join(fontsDir, "Inter-Regular.woff"), fontWeight: 400 },
-    { src: path.join(fontsDir, "Inter-Bold.woff"), fontWeight: 700 },
+    { src: path.join(fontsDir, "Inter-LatinExt-Regular.otf"), fontWeight: 400 },
+    { src: path.join(fontsDir, "Inter-LatinExt-Bold.otf"), fontWeight: 700 },
   ],
 });
 

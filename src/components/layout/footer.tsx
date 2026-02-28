@@ -1,6 +1,6 @@
+import { Link } from "@/i18n/navigation";
 import { BookOpen, GitCompareArrows, Network, Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 
 export async function Footer() {
   const t = await getTranslations();

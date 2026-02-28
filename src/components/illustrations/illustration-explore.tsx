@@ -24,9 +24,9 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="240"
         height="180"
         rx="8"
-        className="fill-primary/15 dark:fill-primary/25"
+        className="fill-primary/15 dark:fill-primary/40"
       />
-      <path d="M200 80 V260" className="stroke-primary/40 dark:stroke-primary/50" strokeWidth="2" />
+      <path d="M200 80 V260" className="stroke-primary/40 dark:stroke-primary/70" strokeWidth="2" />
       {/* Left page lines */}
       <rect
         x="100"
@@ -34,7 +34,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="80"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -42,7 +42,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="75"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -50,7 +50,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="82"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -58,7 +58,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="70"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -66,7 +66,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="78"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -74,7 +74,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="65"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -82,7 +82,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="80"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="100"
@@ -90,7 +90,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="72"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       {/* Right page lines */}
       <rect
@@ -99,7 +99,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="80"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="220"
@@ -107,7 +107,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="75"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="220"
@@ -115,7 +115,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="82"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="220"
@@ -123,7 +123,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="70"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="220"
@@ -131,7 +131,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="78"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="220"
@@ -139,7 +139,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="65"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       {/* Highlighted article on right page */}
       <rect
@@ -148,7 +148,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="86"
         height="24"
         rx="4"
-        className="fill-primary/20 dark:fill-primary/30"
+        className="fill-primary/20 dark:fill-primary/45"
       />
       <rect
         x="222"
@@ -156,7 +156,7 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="60"
         height="4"
         rx="2"
-        className="fill-primary/70 dark:fill-primary/75"
+        className="fill-primary/70 dark:fill-primary/85"
       />
       <rect
         x="222"
@@ -164,38 +164,38 @@ export function IllustrationExplore({ className = "w-64 h-64" }: IllustrationPro
         width="50"
         height="4"
         rx="2"
-        className="fill-primary/50 dark:fill-primary/55"
+        className="fill-primary/50 dark:fill-primary/75"
       />
       {/* Person sitting and reading */}
       {/* Head */}
-      <circle cx="54" cy="145" r="18" className="fill-primary/85 dark:fill-primary/90" />
+      <circle cx="54" cy="145" r="18" className="fill-primary/85 dark:fill-primary/95" />
       {/* Body */}
       <path
         d="M40 163 C40 163 35 200 38 220 L68 220 C70 200 67 163 67 163 Z"
-        className="fill-primary/70 dark:fill-primary/75"
+        className="fill-primary/70 dark:fill-primary/85"
       />
       {/* Arm reaching to book */}
       <path
         d="M65 175 Q75 170 85 168"
-        className="stroke-primary/70 dark:stroke-primary/75"
+        className="stroke-primary/70 dark:stroke-primary/85"
         strokeWidth="6"
         strokeLinecap="round"
       />
       {/* Legs */}
       <path
         d="M42 220 L30 260 M62 220 L70 260"
-        className="stroke-primary/70 dark:stroke-primary/75"
+        className="stroke-primary/70 dark:stroke-primary/85"
         strokeWidth="6"
         strokeLinecap="round"
       />
       {/* Small decorative elements */}
-      <circle cx="340" cy="60" r="4" className="fill-primary/35 dark:fill-primary/40" />
-      <circle cx="355" cy="75" r="3" className="fill-primary/25 dark:fill-primary/30" />
-      <circle cx="50" cy="60" r="5" className="fill-primary/25 dark:fill-primary/30" />
+      <circle cx="340" cy="60" r="4" className="fill-primary/35 dark:fill-primary/55" />
+      <circle cx="355" cy="75" r="3" className="fill-primary/25 dark:fill-primary/45" />
+      <circle cx="50" cy="60" r="5" className="fill-primary/25 dark:fill-primary/45" />
       {/* Floor line */}
       <path
         d="M20 270 H380"
-        className="stroke-muted-foreground/25 dark:stroke-muted-foreground/30"
+        className="stroke-muted-foreground/25 dark:stroke-muted-foreground/45"
         strokeWidth="2"
         strokeDasharray="8 4"
       />

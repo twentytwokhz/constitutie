@@ -24,7 +24,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="140"
         height="200"
         rx="8"
-        className="fill-card stroke-border dark:stroke-border/80"
+        className="fill-card stroke-border dark:stroke-border/90"
         strokeWidth="1.5"
       />
       <rect
@@ -33,7 +33,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="50"
         height="6"
         rx="3"
-        className="fill-muted-foreground/40 dark:fill-muted-foreground/45"
+        className="fill-muted-foreground/40 dark:fill-muted-foreground/85"
       />
       <rect
         x="55"
@@ -41,7 +41,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="110"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="55"
@@ -49,7 +49,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="100"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Green added line */}
       <rect
@@ -58,7 +58,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="114"
         height="14"
         rx="3"
-        className="fill-emerald-500/20 dark:fill-emerald-500/25"
+        className="fill-emerald-500/20 dark:fill-emerald-500/40"
       />
       <rect
         x="57"
@@ -66,7 +66,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="80"
         height="4"
         rx="2"
-        className="fill-emerald-500/60 dark:fill-emerald-400/65"
+        className="fill-emerald-500/60 dark:fill-emerald-400/85"
       />
       <rect
         x="55"
@@ -74,7 +74,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="105"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="55"
@@ -82,7 +82,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="95"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Yellow modified line */}
       <rect
@@ -91,7 +91,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="114"
         height="14"
         rx="3"
-        className="fill-amber-500/20 dark:fill-amber-500/25"
+        className="fill-amber-500/20 dark:fill-amber-500/40"
       />
       <rect
         x="57"
@@ -99,7 +99,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="70"
         height="4"
         rx="2"
-        className="fill-amber-500/60 dark:fill-amber-400/65"
+        className="fill-amber-500/60 dark:fill-amber-400/85"
       />
       <rect
         x="55"
@@ -107,7 +107,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="100"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="55"
@@ -115,7 +115,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="90"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="55"
@@ -123,7 +123,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="108"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Right document */}
       <rect
@@ -132,7 +132,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="140"
         height="200"
         rx="8"
-        className="fill-card stroke-border dark:stroke-border/80"
+        className="fill-card stroke-border dark:stroke-border/90"
         strokeWidth="1.5"
       />
       <rect
@@ -141,7 +141,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="50"
         height="6"
         rx="3"
-        className="fill-muted-foreground/40 dark:fill-muted-foreground/45"
+        className="fill-muted-foreground/40 dark:fill-muted-foreground/85"
       />
       <rect
         x="235"
@@ -149,7 +149,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="110"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="235"
@@ -157,7 +157,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="100"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="235"
@@ -165,7 +165,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="105"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="235"
@@ -173,7 +173,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="95"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Red removed line */}
       <rect
@@ -182,7 +182,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="114"
         height="14"
         rx="3"
-        className="fill-rose-500/20 dark:fill-rose-500/25"
+        className="fill-rose-500/20 dark:fill-rose-500/40"
       />
       <rect
         x="237"
@@ -190,7 +190,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="85"
         height="4"
         rx="2"
-        className="fill-rose-500/60 dark:fill-rose-400/65"
+        className="fill-rose-500/60 dark:fill-rose-400/85"
       />
       {/* Yellow modified line */}
       <rect
@@ -199,7 +199,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="114"
         height="14"
         rx="3"
-        className="fill-amber-500/20 dark:fill-amber-500/25"
+        className="fill-amber-500/20 dark:fill-amber-500/40"
       />
       <rect
         x="237"
@@ -207,7 +207,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="74"
         height="4"
         rx="2"
-        className="fill-amber-500/60 dark:fill-amber-400/65"
+        className="fill-amber-500/60 dark:fill-amber-400/85"
       />
       <rect
         x="235"
@@ -215,7 +215,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="100"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="235"
@@ -223,7 +223,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="90"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       <rect
         x="235"
@@ -231,7 +231,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         width="108"
         height="4"
         rx="2"
-        className="fill-muted-foreground/25 dark:fill-muted-foreground/30"
+        className="fill-muted-foreground/25 dark:fill-muted-foreground/45"
       />
       {/* Comparison arrows in center */}
       <path
@@ -261,13 +261,13 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
         strokeLinejoin="round"
       />
       {/* Decorative circles */}
-      <circle cx="200" cy="30" r="6" className="fill-primary/25 dark:fill-primary/30" />
-      <circle cx="200" cy="270" r="4" className="fill-primary/20 dark:fill-primary/25" />
+      <circle cx="200" cy="30" r="6" className="fill-primary/25 dark:fill-primary/45" />
+      <circle cx="200" cy="270" r="4" className="fill-primary/20 dark:fill-primary/40" />
       {/* Labels */}
       <text
         x="85"
         y="30"
-        className="fill-muted-foreground/60 dark:fill-muted-foreground/65"
+        className="fill-muted-foreground/60 dark:fill-muted-foreground/85"
         fontSize="11"
         textAnchor="middle"
       >
@@ -276,7 +276,7 @@ export function IllustrationCompare({ className = "w-64 h-64" }: IllustrationPro
       <text
         x="290"
         y="30"
-        className="fill-muted-foreground/60 dark:fill-muted-foreground/65"
+        className="fill-muted-foreground/60 dark:fill-muted-foreground/85"
         fontSize="11"
         textAnchor="middle"
       >

@@ -1,7 +1,7 @@
-import { asc, eq, ilike, or, sql } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions } from "@/lib/db/schema";
+import { asc, eq, ilike, or, sql } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * Extract article number from common search patterns:

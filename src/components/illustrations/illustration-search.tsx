@@ -22,18 +22,18 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         cx="220"
         cy="120"
         r="70"
-        className="stroke-primary/50 dark:stroke-primary/55"
+        className="stroke-primary/50 dark:stroke-primary/75"
         strokeWidth="8"
         fill="none"
       />
-      <circle cx="220" cy="120" r="62" className="fill-primary/8 dark:fill-primary/15" />
+      <circle cx="220" cy="120" r="62" className="fill-primary/8 dark:fill-primary/40" />
       {/* Handle */}
       <line
         x1="270"
         y1="170"
         x2="330"
         y2="240"
-        className="stroke-primary/50 dark:stroke-primary/55"
+        className="stroke-primary/50 dark:stroke-primary/75"
         strokeWidth="10"
         strokeLinecap="round"
       />
@@ -44,7 +44,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="80"
         height="5"
         rx="2.5"
-        className="fill-primary/40 dark:fill-primary/45"
+        className="fill-primary/40 dark:fill-primary/85"
       />
       <rect
         x="180"
@@ -52,7 +52,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="65"
         height="5"
         rx="2.5"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="180"
@@ -60,7 +60,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="75"
         height="5"
         rx="2.5"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       {/* Highlighted match */}
       <rect
@@ -69,7 +69,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="84"
         height="13"
         rx="3"
-        className="fill-primary/20 dark:fill-primary/25"
+        className="fill-primary/20 dark:fill-primary/40"
       />
       <rect
         x="182"
@@ -77,7 +77,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="55"
         height="5"
         rx="2.5"
-        className="fill-primary/60 dark:fill-primary/65"
+        className="fill-primary/60 dark:fill-primary/85"
       />
       {/* Floating document cards behind */}
       <rect
@@ -86,7 +86,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="90"
         height="70"
         rx="6"
-        className="fill-card stroke-border dark:stroke-border/60"
+        className="fill-card stroke-border dark:stroke-border/80"
         strokeWidth="1"
       />
       <rect
@@ -95,7 +95,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="40"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="52"
@@ -103,7 +103,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="66"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="52"
@@ -111,7 +111,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="58"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="52"
@@ -119,7 +119,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="62"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="52"
@@ -127,7 +127,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="50"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="60"
@@ -135,7 +135,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="90"
         height="70"
         rx="6"
-        className="fill-card stroke-border dark:stroke-border/60"
+        className="fill-card stroke-border dark:stroke-border/80"
         strokeWidth="1"
       />
       <rect
@@ -144,7 +144,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="40"
         height="4"
         rx="2"
-        className="fill-muted-foreground/30 dark:fill-muted-foreground/35"
+        className="fill-muted-foreground/30 dark:fill-muted-foreground/50"
       />
       <rect
         x="72"
@@ -152,7 +152,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="66"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="72"
@@ -160,7 +160,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="58"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="72"
@@ -168,7 +168,7 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="62"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       <rect
         x="72"
@@ -176,18 +176,18 @@ export function IllustrationSearch({ className = "w-64 h-64" }: IllustrationProp
         width="50"
         height="3"
         rx="1.5"
-        className="fill-muted-foreground/20 dark:fill-muted-foreground/25"
+        className="fill-muted-foreground/20 dark:fill-muted-foreground/40"
       />
       {/* Person figure */}
-      <circle cx="100" cy="250" r="15" className="fill-primary/85 dark:fill-primary/90" />
+      <circle cx="100" cy="250" r="15" className="fill-primary/85 dark:fill-primary/95" />
       <path
         d="M88 265 C88 265 85 290 88 300 L112 300 C115 290 112 265 112 265 Z"
-        className="fill-primary/70 dark:fill-primary/75"
+        className="fill-primary/70 dark:fill-primary/85"
       />
       {/* Decorative sparkles */}
-      <circle cx="340" cy="60" r="3" className="fill-primary/30 dark:fill-primary/35" />
-      <circle cx="360" cy="80" r="2" className="fill-primary/20 dark:fill-primary/25" />
-      <circle cx="30" cy="280" r="4" className="fill-primary/20 dark:fill-primary/25" />
+      <circle cx="340" cy="60" r="3" className="fill-primary/30 dark:fill-primary/50" />
+      <circle cx="360" cy="80" r="2" className="fill-primary/20 dark:fill-primary/40" />
+      <circle cx="30" cy="280" r="4" className="fill-primary/20 dark:fill-primary/40" />
     </svg>
   );
 }

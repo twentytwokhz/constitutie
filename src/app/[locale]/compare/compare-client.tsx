@@ -1,5 +1,15 @@
 "use client";
 
+import { MonacoDiffViewer } from "@/components/diff/monaco-diff-viewer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   ArrowLeftRight,
   ChevronDown,
@@ -17,16 +27,6 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MonacoDiffViewer } from "@/components/diff/monaco-diff-viewer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 /** Constitution version metadata from the API */
 interface Version {

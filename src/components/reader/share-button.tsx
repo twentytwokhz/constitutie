@@ -1,8 +1,5 @@
 "use client";
 
-import { Check, Link2, Linkedin, Share2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Check, Link2, Linkedin, Share2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 
 /** WhatsApp SVG icon (simple monochrome, designed to match Lucide style) */
 function WhatsAppIcon({ className }: { className?: string }) {
