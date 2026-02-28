@@ -1,6 +1,14 @@
 "use client";
 
-import { Loader2, MessageSquare, Send } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  MessageCircle,
+  MessageSquare,
+  Send,
+  XCircle,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Comment {
@@ -201,25 +209,40 @@ export function CommentsSection({ articleId }: { articleId: number }) {
         </div>
         {submitResult && (
           <div
-            className={`mt-2 rounded-md px-4 py-2 text-sm ${
+            className={`mt-3 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm ${
               submitResult.type === "success"
-                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                 : submitResult.type === "rejected"
-                  ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
-                  : "bg-destructive/10 text-destructive"
+                  ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                  : "border-destructive/30 bg-destructive/10 text-destructive"
             }`}
           >
-            {submitResult.type === "rejected" && <strong>Comentariu respins: </strong>}
-            {submitResult.message}
+            {submitResult.type === "success" && (
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            )}
+            {submitResult.type === "rejected" && (
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            )}
+            {submitResult.type === "error" && <XCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+            <div>
+              {submitResult.type === "rejected" && (
+                <p className="font-semibold mb-1">Comentariul nu poate fi adăugat</p>
+              )}
+              <p>{submitResult.message}</p>
+            </div>
           </div>
         )}
       </form>
 
       {/* Comments List */}
       {comments.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Niciun comentariu încă. Fii primul care comentează!
-        </p>
+        <div className="mt-6 flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-8 px-4 text-center">
+          <MessageCircle className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">Niciun comentariu încă</p>
+          <p className="mt-1 text-xs text-muted-foreground/70">
+            Fii primul care își exprimă opinia despre acest articol!
+          </p>
+        </div>
       ) : (
         <div className="mt-4 space-y-3">
           {comments.map((comment) => (
