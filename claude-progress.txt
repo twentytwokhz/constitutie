@@ -971,3 +971,39 @@
 - Features passing: ~28 (was ~25)
 - Total features: 140
 - Percentage: ~20%
+
+## Session: 2026-02-28 (Agent handling features #82, #85, #56)
+
+### Completed Features
+
+#### Feature #82: unDraw illustrations display correctly - PASSED
+- Verified all 8 SVG illustration components in src/components/illustrations/
+- All use Tailwind CSS semantic classes (fill-primary/*, fill-card, stroke-border, fill-muted-foreground/*)
+- No hardcoded hex/rgb/hsl colors (grep confirmed zero matches)
+- Landing page uses 6 illustrations (hero + 5 feature cards), 404 page uses NotFound illustration
+- All illustrations have aria-hidden="true" and proper viewBox
+- Biome lint 0 errors, tsc 0 errors
+
+#### Feature #85: Illustrations adapt for dark mode visibility - PASSED
+- Audited all 8 illustrations for dark mode contrast and visibility
+- 10 explicit dark: variant overrides boost opacity for subtle elements
+- fill-emerald-600 to dark:fill-emerald-400 and fill-rose-600 to dark:fill-rose-400 in feedback
+- Primary color (#6366f1 indigo) is same in both modes, always visible
+- fill-card + stroke-border combination ensures document outlines visible in both modes
+
+#### Feature #56: Graph title nodes displayed large in indigo - PASSED
+- NODE_CONFIG.titlu has size 14 (largest vs capitol 10, sectiune 7, articol 4)
+- Color #6366f1 (indigo-500 light) / #818cf8 (indigo-400 dark)
+- Labels always visible for titlu nodes regardless of zoom level, bold font
+- Legend correctly shows Titlu as largest with bg-indigo-500
+- Preview panel badge uses bg-indigo-500 for Titlu nodes
+
+### Current Status
+- Features passing: ~66 (was ~63)
+- Total features: 144
+- Percentage: ~45.8%
+
+### Notes
+- All three features were verification/style features, no code changes needed
+- Existing implementations from Feature #139 (illustrations) and graph page already met requirements
+- Dark mode CSS variables: primary stays same (#6366f1) in both modes, other tokens adapt correctly
