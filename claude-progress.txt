@@ -2042,3 +2042,41 @@
 - Features passing: 137 (was 136)
 - Total features: 145
 - Percentage: ~94.5%
+
+## Session: 2026-02-28 (Agent handling features #133, #134)
+
+### Completed Features
+
+#### Feature #133: Comment timestamps displayed correctly with locale ✅
+- Enhanced formatDate() to return both relative and absolute timestamps
+- Recent comments (<60s): "acum câteva secunde"
+- Minutes: "acum 1 minut" / "acum X minute"
+- Hours: "acum 1 oră" / "acum X ore"
+- Yesterday: "ieri"
+- Days (2-6): "acum X zile"
+- Older (≥7 days): absolute Romanian date (e.g., "28 februarie 2026")
+- Full absolute date+time shown as tooltip (title attribute) on hover
+- Uses ro-RO locale for all formatting
+- dateTime attribute preserved for machine-readable ISO format
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #134: Comments sorted by date descending (newest first) ✅
+- Already fully implemented — verification only, no code changes
+- API: .orderBy(desc(comments.createdAt)) in GET /api/articles/[id]/comments
+- Frontend: comments.map() preserves API order, no sort/reverse calls
+- After submission: fetchComments() re-fetches full list in correct order
+- New comment appears at top after approval
+- Biome lint: 0 errors
+
+### Files Modified
+- src/components/feedback/comments-section.tsx - Enhanced formatDate() with relative timestamps
+
+### Current Status
+- Features passing: 139 (was 137)
+- Total features: 145
+- Percentage: ~95.9%
+
+### Notes
+- Feature #133 required code changes (relative timestamps)
+- Feature #134 was verification-only (already implemented)
+- Zero mock data patterns in codebase
