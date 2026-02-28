@@ -11,6 +11,7 @@ import { GridBackground } from "@/components/landing/grid-background";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { StatsSection } from "@/components/landing/stats-section";
+import { Timeline } from "@/components/landing/timeline";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -159,6 +160,11 @@ export default function HomePage() {
       {/* How It Works — 3-step visual section */}
       <ScrollReveal>
         <HowItWorks />
+      </ScrollReveal>
+
+      {/* Timeline — interactive constitution versions */}
+      <ScrollReveal>
+        <Timeline />
       </ScrollReveal>
 
       {/* Statistics Section */}
