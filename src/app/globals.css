@@ -323,6 +323,36 @@
   animation: fade-in-out 3s ease-in-out forwards;
 }
 
+/* Mobile TOC bottom sheet slide-up animation */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 250ms ease-out;
+}
+
+/* Generic fade-in for overlays */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -333,6 +363,8 @@
   .animate-grid-fade,
   .animate-particle,
   .animate-slide-down,
+  .animate-slide-up,
+  .animate-fade-in,
   .animate-fade-in-out,
   .scroll-reveal-hidden,
   .scroll-reveal-visible {

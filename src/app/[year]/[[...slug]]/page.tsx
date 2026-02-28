@@ -1,6 +1,7 @@
 import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
+import { MobileToc } from "@/components/reader/mobile-toc";
 import { ReadingProgress } from "@/components/reader/reading-progress";
 import { ShareButton } from "@/components/reader/share-button";
 import { TipTapReader } from "@/components/reader/tiptap-reader";
@@ -387,6 +388,9 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           </section>
         </div>
       </div>
+
+      {/* Mobile TOC — floating button + bottom sheet (visible below lg breakpoint) */}
+      <MobileToc year={yearNum} currentArticleNumber={article.number} />
     </div>
   );
 }
