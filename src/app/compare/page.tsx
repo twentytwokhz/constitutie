@@ -73,6 +73,9 @@ export default function ComparePage() {
   const [error, setError] = useState<string | null>(null);
   const [showUnchanged, setShowUnchanged] = useState(false);
   const [sideBySide, setSideBySide] = useState(true);
+  const [currentChangeIdx, setCurrentChangeIdx] = useState(-1);
+  /** Force-expand a card from parent when jumping to it */
+  const [forceExpandArticle, setForceExpandArticle] = useState<number | null>(null);
 
   // Fetch available versions on mount
   useEffect(() => {
@@ -163,6 +166,51 @@ export default function ComparePage() {
 
   const changedArticles = diffData?.diff.filter((d) => d.status !== "unchanged") ?? [];
   const unchangedArticles = diffData?.diff.filter((d) => d.status === "unchanged") ?? [];
+
+  /** Scroll to a changed article by index and auto-expand it */
+  const jumpToChange = useCallback(
+    (idx: number) => {
+      if (changedArticles.length === 0) return;
+      const clampedIdx = Math.max(0, Math.min(idx, changedArticles.length - 1));
+      setCurrentChangeIdx(clampedIdx);
+      const articleNum = changedArticles[clampedIdx].articleNumber;
+      setForceExpandArticle(articleNum);
+      // Scroll after a tick to let expansion render
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`diff-change-${articleNum}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    },
+    [changedArticles],
+  );
+
+  const jumpToNextChange = useCallback(() => {
+    const next = currentChangeIdx < changedArticles.length - 1 ? currentChangeIdx + 1 : 0;
+    jumpToChange(next);
+  }, [currentChangeIdx, changedArticles.length, jumpToChange]);
+
+  const jumpToPrevChange = useCallback(() => {
+    const prev = currentChangeIdx > 0 ? currentChangeIdx - 1 : changedArticles.length - 1;
+    jumpToChange(prev);
+  }, [currentChangeIdx, changedArticles.length, jumpToChange]);
+
+  /** Keyboard shortcuts: Alt+↓ next change, Alt+↑ previous change */
+  useEffect(() => {
+    if (changedArticles.length === 0) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.altKey && e.key === "ArrowDown") {
+        e.preventDefault();
+        jumpToNextChange();
+      } else if (e.altKey && e.key === "ArrowUp") {
+        e.preventDefault();
+        jumpToPrevChange();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [changedArticles.length, jumpToNextChange, jumpToPrevChange]);
 
   return (
     <div className="container mx-auto max-w-full overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8">
@@ -259,6 +307,38 @@ export default function ComparePage() {
             </Badge>
             <Badge variant="secondary">{diffData.summary.unchanged} neschimbate</Badge>
           </div>
+          {/* Jump to change navigation */}
+          {changedArticles.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={jumpToPrevChange}
+                className="h-7 gap-1 px-2.5 text-xs"
+                title="Modificarea anterioară (Alt+↑)"
+                aria-label="Modificarea anterioară"
+              >
+                <ChevronUp className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Anterioară</span>
+              </Button>
+              <span className="min-w-[3.5rem] text-center text-xs tabular-nums text-muted-foreground">
+                {currentChangeIdx >= 0
+                  ? `${currentChangeIdx + 1} / ${changedArticles.length}`
+                  : `${changedArticles.length} mod.`}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={jumpToNextChange}
+                className="h-7 gap-1 px-2.5 text-xs"
+                title="Modificarea următoare (Alt+↓)"
+                aria-label="Modificarea următoare"
+              >
+                <span className="hidden sm:inline">Următoare</span>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          )}
           <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
             <Button
               variant={sideBySide ? "secondary" : "ghost"}
@@ -306,7 +386,7 @@ export default function ComparePage() {
               <h2 className="text-lg font-semibold">
                 Articole modificate ({changedArticles.length})
               </h2>
-              {changedArticles.map((article) => (
+              {changedArticles.map((article, idx) => (
                 <DiffArticleCard
                   key={article.articleNumber}
                   article={article}
@@ -315,6 +395,9 @@ export default function ComparePage() {
                   yearA={versionA}
                   yearB={versionB}
                   sideBySide={sideBySide}
+                  forceExpand={forceExpandArticle === article.articleNumber}
+                  onForceExpandHandled={() => setForceExpandArticle(null)}
+                  isActive={currentChangeIdx === idx}
                 />
               ))}
             </div>
@@ -380,6 +463,9 @@ function DiffArticleCard({
   yearA,
   yearB,
   sideBySide,
+  forceExpand,
+  onForceExpandHandled,
+  isActive,
 }: {
   article: DiffArticle;
   statusColor: (status: DiffArticle["status"]) => string;
@@ -387,8 +473,19 @@ function DiffArticleCard({
   yearA: string;
   yearB: string;
   sideBySide: boolean;
+  forceExpand?: boolean;
+  onForceExpandHandled?: () => void;
+  isActive?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+
+  /** Auto-expand when parent triggers a jump-to-change */
+  useEffect(() => {
+    if (forceExpand) {
+      setExpanded(true);
+      onForceExpandHandled?.();
+    }
+  }, [forceExpand, onForceExpandHandled]);
 
   const originalText = article.a?.content || "";
   const modifiedText = article.b?.content || "";
@@ -407,7 +504,10 @@ function DiffArticleCard({
   };
 
   return (
-    <div className={`rounded-lg border ${statusColor(article.status)} overflow-hidden`}>
+    <div
+      id={`diff-change-${article.articleNumber}`}
+      className={`rounded-lg border ${statusColor(article.status)} overflow-hidden transition-shadow ${isActive ? "ring-2 ring-primary/50 shadow-lg" : ""}`}
+    >
       {/* Header - always visible */}
       <button
         type="button"
