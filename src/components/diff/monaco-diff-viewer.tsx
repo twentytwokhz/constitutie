@@ -2,7 +2,7 @@
 
 import { DiffEditor, type DiffOnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface MonacoDiffViewerProps {
   /** Original (left) text content */
@@ -35,6 +35,21 @@ export function MonacoDiffViewer({
   // Avoid SSR mismatch - only render after mount
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Dispose the diff editor BEFORE @monaco-editor/react's passive (useEffect) cleanup.
+  // useLayoutEffect cleanup runs synchronously during commitDeletionEffects,
+  // which happens before useEffect cleanups in commitPassiveUnmountEffects.
+  // This ensures DiffEditorWidget releases its model references before
+  // the TextModels are disposed — preventing the
+  // "TextModel got disposed before DiffEditorWidget model got reset" error.
+  useLayoutEffect(() => {
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.dispose();
+        editorRef.current = null;
+      }
+    };
   }, []);
 
   // Calculate a reasonable height based on content line count
