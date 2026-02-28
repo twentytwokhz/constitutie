@@ -1161,3 +1161,43 @@
 - ScrollReveal is reusable for any future sections (FAQ, timeline, CTA, footer)
 - The component supports configurable delay and threshold props
 - IntersectionObserver is disconnected after first reveal (no ongoing CPU cost)
+
+## Session: 2026-02-28 (Agent handling features #50, #51, #52)
+
+### Completed Features
+
+#### Feature #50: Jump to next/previous change in diff works
+- Added Previous/Next navigation buttons in diff toolbar
+- Counter shows current position: X / Y
+- Keyboard shortcuts: Alt+Down for next change, Alt+Up for previous change
+- Auto-expands target card when jumping to it (forceExpand pattern)
+- Active card highlighted with ring-2 ring-primary/50 shadow-lg
+- Wraps around at boundaries (last to first, first to last)
+- Uses scrollIntoView with smooth behavior and center block alignment
+- requestAnimationFrame ensures card is expanded before scrolling
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #51: Synchronized scroll between diff panes
+- Monaco DiffEditor has built-in scroll synchronization in side-by-side mode
+- No code changes needed - this is core VS Code diff engine behavior
+- renderSideBySide already configured in MonacoDiffViewer
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #52: Summary bar shows diff modification statistics
+- Summary bar already existed with color-coded badges (added, removed, modified, unchanged)
+- API confirms real data: 1991 vs 2003 has added:4, removed:0, modified:133, unchanged:19
+- All values from real /api/diff endpoint (Drizzle ORM queries)
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Components Modified
+- src/app/compare/page.tsx - Added jump navigation (buttons, keyboard shortcuts, forceExpand pattern)
+
+### Current Status
+- Features passing: ~83 (was ~80)
+- Total features: 144
+- Percentage: ~57.6%
+
+### Notes
+- Monaco DiffEditor provides scroll sync for free (built-in behavior)
+- Biome auto-formatter converted file from spaces to tabs (consistent with project config)
+- The forceExpand pattern allows parent-to-child communication without lifting all state up
