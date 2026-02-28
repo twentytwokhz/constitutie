@@ -1,5 +1,52 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #18, #117, #19)
+
+### Completed Features
+
+#### Feature #18: Version selector dropdown in header works ✅
+- Created VersionSelector component using shadcn Select (Radix UI)
+- Detects current version from URL pathname (/2003 → "Constituția 2003")
+- Navigates to /{year} on version change via useRouter()
+- Shown in desktop header (hidden sm:block) and mobile hamburger menu
+- Lists all 4 versions: 2003, 1991, 1986, 1952
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #117: Version selector defaults to latest version (2003) ✅
+- Already handled by Feature #18 implementation
+- "Explorare" nav link defaults to /2003 (latest version)
+- VersionSelector reads currentYear from pathname
+- When at /2003, shows "Constituția 2003" as selected
+
+#### Feature #19: Command palette trigger opens search modal ✅
+- Created shadcn Dialog component (Radix UI)
+- Created shadcn Command component (cmdk library)
+- Created CommandPalette component with full search functionality
+- Opens via search icon click (custom event dispatch) or Ctrl+K/⌘K shortcut
+- Debounced search (300ms) against /api/articles/search endpoint
+- Results grouped by constitution version (newest first)
+- Each result shows Art. number, title, and content snippet
+- Click result navigates to article page
+- Escape closes the modal
+- Added to root layout for global availability
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Created
+- src/components/layout/version-selector.tsx - Version dropdown for header
+- src/components/ui/dialog.tsx - shadcn Dialog (Radix UI)
+- src/components/ui/command.tsx - shadcn Command (cmdk)
+- src/components/search/command-palette.tsx - Full command palette with search
+
+### Current Status
+- Features passing: ~52 (was ~49)
+- Total features: 141
+- Percentage: ~36.9%
+
+### Notes
+- Custom event pattern ("open-command-palette") used to decouple header from command palette
+- Search API returns { query, results: [...] } - CommandPalette handles both array and object response shapes
+- cmdk and @radix-ui/react-dialog were already installed as dependencies
+
 ## Session: 2026-02-28 (Agent handling features #23, #109, #21)
 
 ### Completed Features
