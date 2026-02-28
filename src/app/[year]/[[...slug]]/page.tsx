@@ -7,6 +7,7 @@ import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema
 import { and, asc, eq } from "drizzle-orm";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 /**
  * Constitution Reader Page
@@ -28,12 +29,9 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
   const { year, slug } = await params;
   const yearNum = Number.parseInt(year, 10);
 
-  if (Number.isNaN(yearNum)) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-destructive">An invalid: {year}</h1>
-      </div>
-    );
+  // Only allow valid constitution years (digits only)
+  if (Number.isNaN(yearNum) || !/^\d+$/.test(year)) {
+    notFound();
   }
 
   // Get the version
@@ -44,16 +42,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     .limit(1);
 
   if (!version) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-destructive">
-          Versiunea din {year} nu a fost găsită
-        </h1>
-        <Link href="/" className="mt-4 inline-block text-primary hover:underline">
-          &larr; Înapoi la pagina principală
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
   // Extract article number from slug
@@ -117,17 +106,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     : [];
 
   if (!article) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold">Constituția din {year}</h1>
-        <p className="mt-4 text-muted-foreground">
-          {slug ? `Pagina „${slug.join("/")}‟ nu a fost găsită.` : "Niciun articol disponibil."}
-        </p>
-        <Link href={`/${year}`} className="mt-4 inline-block text-primary hover:underline">
-          &larr; Vezi toate articolele
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
   // Fetch the structural unit for breadcrumb
