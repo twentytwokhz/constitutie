@@ -1,5 +1,53 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #201, #202)
+
+### Completed Features
+
+#### Feature #201: Compare page defaults to last-viewed version ✅
+- **Problem**: Compare page always defaulted to 1952 vs 2003 regardless of which
+  constitution the user was browsing in the header VersionSelector
+- **Fix**: Added localStorage persistence of `lastViewedYear` in the VersionSelector
+  component. The compare page now reads this on mount and uses it as the default
+  Version B selection.
+- VersionSelector: Added `useEffect` that stores `currentYear` to localStorage
+  when the user is on a year-specific page
+- compare-client.tsx: Modified version initialization logic to:
+  1. Sort available years chronologically
+  2. Set Version A = oldest (1952)
+  3. Read `lastViewedYear` from localStorage for Version B
+  4. Validate it exists in the version list and differs from A
+  5. Fall back to newest (2003) if no stored preference
+- Also fixed pre-existing lint issues: missing `locale` dep in `fetchSingleArticleDiff`,
+  operator precedence in statistics page
+- Biome lint: 0 errors, TypeScript: 0 errors (in modified files)
+
+#### Feature #202: Improve flag animation and title contrast ✅
+- **Flag animation rewrite**:
+  - Replaced static wave clip-path with animated SVG SMIL `<animate>` on the clip-path
+  - 5 keyframes over 7s cycle with spline easing for natural wind simulation
+  - Left edge (pole) has minimal movement, right edge (free) has larger amplitude
+  - Added animated fabric fold shading (gradient stop positions + opacities animate)
+  - Pole shadow retained for depth
+  - Uses `flag-shadow-static` CSS class for drop shadow (light/dark variants)
+- **Title contrast fix**:
+  - "ROMANIA": `text-muted-foreground` → `text-foreground font-bold`, size `xs/sm` → `sm/base/lg`
+  - "LEGEA FUNDAMENTALĂ": `text-muted-foreground/60` → `text-foreground/70 dark:text-foreground/60 font-medium`, size `[10px]/xs` → `[10px]/xs/sm`
+- **Accessibility**: Updated prefers-reduced-motion rule to use `display: none` on
+  SVG `<animate>` elements (properly removes them from SMIL timeline)
+- Biome lint: 0 errors, TypeScript: 0 errors
+
+### Files Modified
+- src/components/layout/version-selector.tsx — Added localStorage persistence + useEffect
+- src/app/[locale]/compare/compare-client.tsx — Smart version B defaulting + lint fixes
+- src/app/[locale]/statistics/page.tsx — Fixed operator precedence TS error
+- src/components/national-symbols/romanian-flag.tsx — Complete rewrite with wind animation
+- src/app/[locale]/page.tsx — Title contrast boost (text-foreground, larger fonts)
+- src/app/globals.css — SVG animate reduced-motion handling
+
+### Current Status
+- Features #201 and #202 marked as passing
+
 ## Session: 2026-02-28 (Agent handling feature #193)
 
 ### Completed Features
