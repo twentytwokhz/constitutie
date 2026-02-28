@@ -27,6 +27,13 @@ export const metadata: Metadata = {
     "2003",
   ],
   authors: [{ name: "Constituția României Project" }],
+  icons: {
+    icon: [
+      { url: "/images/logo2003.webp", type: "image/webp" },
+      { url: "/images/logo2003.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: { url: "/images/logo2003.png", sizes: "180x180" },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

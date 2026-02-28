@@ -3,11 +3,11 @@
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { VersionSelector } from "@/components/layout/version-selector";
-import { TricolorStripe } from "@/components/national-symbols";
+import { CoatOfArms, TricolorStripe } from "@/components/national-symbols";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, Scale, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -58,7 +58,7 @@ export function Header() {
           href="/"
           className="flex items-center gap-2 font-bold text-lg tracking-tight rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          <Scale className="h-5 w-5 text-primary" />
+          <CoatOfArms year={2003} size={22} className="shrink-0" />
           <span>
             {t("common.appName").replace(t("common.appNameHighlight"), "")}{" "}
             <span className="text-primary">{t("common.appNameHighlight")}</span>

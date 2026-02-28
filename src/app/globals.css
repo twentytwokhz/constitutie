@@ -367,6 +367,41 @@
   animation: fade-in 200ms ease-out;
 }
 
+/* Flag shadow breathing animation — subtle shadow pulse on the Romanian flag */
+@keyframes flag-shadow {
+  0%,
+  100% {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15))
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  50% {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2))
+      drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+  }
+}
+
+:root .animate-flag-shadow {
+  animation: flag-shadow 4s ease-in-out infinite;
+  will-change: filter;
+}
+
+.dark .animate-flag-shadow {
+  animation: flag-shadow-dark 4s ease-in-out infinite;
+  will-change: filter;
+}
+
+@keyframes flag-shadow-dark {
+  0%,
+  100% {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))
+      drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  }
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -380,11 +415,17 @@
   .animate-slide-up,
   .animate-fade-in,
   .animate-fade-in-out,
+  .animate-flag-shadow,
   .scroll-reveal-hidden,
   .scroll-reveal-visible {
     animation: none !important;
     opacity: 1 !important;
     filter: none !important;
     transform: none !important;
+  }
+
+  /* Disable SVG <animate> elements when user prefers reduced motion */
+  svg animate {
+    animation: none !important;
   }
 }
