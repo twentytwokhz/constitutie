@@ -1278,3 +1278,44 @@
 - Monaco DiffEditor provides scroll sync for free (built-in behavior)
 - Biome auto-formatter converted file from spaces to tabs (consistent with project config)
 - The forceExpand pattern allows parent-to-child communication without lifting all state up
+
+## Session: 2026-02-28 (Agent handling features #57, #60, #75)
+
+### Completed Features
+
+#### Feature #57: Graph article nodes displayed small in stone/grey ✅
+- NODE_CONFIG.articol has size 4 (smallest: titlu=14, capitol=10, sectiune=7)
+- Color #78716c (stone-500 light) / #a8a29e (stone-400 dark)
+- Labels visible when zoomed in (globalScale > 1.2)
+- Click handler opens preview panel with "Deschide articolul →" link
+- Legend shows bg-stone-500 with h-2 w-2 (smallest dot)
+- No code changes needed — existing implementation meets all criteria
+- Biome lint: 0 errors
+
+#### Feature #60: Graph legend displays node and edge types ✅
+- Legend rendered as bottom-left overlay on graph page
+- 4 node types: Titlu (bg-indigo-500), Capitol (bg-violet-500), Secțiune (bg-purple-500), Articol (bg-stone-500)
+- 2 edge types: Ierarhie (solid border-stone-400), Referință (dashed border-indigo-400)
+- Legend colors match actual NODE_CONFIG hex values (indigo-500=#6366f1, etc.)
+- Dismissible legend with show/hide toggle
+- No code changes needed — existing implementation meets all criteria
+- Biome lint: 0 errors
+
+#### Feature #75: Feature highlight cards section displays ✅
+- 5 feature cards on landing page: Explorare, Comparare, Graph, Căutare, Feedback
+- Each card has: SVG illustration, Lucide icon, title, description
+- Cards cover all 5 core features specified in app_spec
+- Hover effect: transition-shadow hover:shadow-md
+- ScrollReveal animations with staggered delays
+- No code changes needed — existing implementation meets all criteria
+- Biome lint: 0 errors
+
+### Current Status
+- Features passing: 91 (was 88)
+- Total features: 144
+- Percentage: ~63.2%
+
+### Notes
+- All 3 features were style/verification features requiring no code changes
+- Graph view fully implemented with correct node sizing, coloring, legend, and click interactions
+- Landing page feature cards section is complete with 5 cards + illustrations
