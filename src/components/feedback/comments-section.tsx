@@ -356,7 +356,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
           <div
             className={`mt-3 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm ${
               submitResult.type === "success"
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400"
                 : submitResult.type === "rejected"
                   ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
                   : "border-destructive/30 bg-destructive/10 text-destructive"

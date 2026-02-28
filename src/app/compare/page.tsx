@@ -216,7 +216,7 @@ export default function ComparePage() {
   const statusColor = (status: DiffArticle["status"]) => {
     switch (status) {
       case "added":
-        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400";
+        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-400";
       case "removed":
         return "bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400";
       case "modified":
@@ -409,7 +409,7 @@ export default function ComparePage() {
         <div className="mb-6 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
-              <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400">
+              <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-500/30 dark:text-emerald-400">
                 <Plus className="mr-1 h-3 w-3" />
                 {diffData.summary.added} adăugate
               </Badge>

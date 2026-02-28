@@ -114,10 +114,10 @@ export function VoteButtons({
         disabled={userVote !== null || isVoting}
         className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
           userVote === "agree"
-            ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-700 scale-105"
+            ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-700 scale-105"
             : userVote !== null
               ? "border-border text-muted-foreground cursor-not-allowed opacity-50"
-              : "border-border hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950 dark:hover:text-emerald-400"
+              : "border-border hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-950 dark:hover:text-emerald-400"
         }`}
         aria-label="De acord"
       >
