@@ -62,6 +62,7 @@ interface DiffResponse {
  * - Summary bar with change statistics
  * - Article-level diff display with color-coded changes
  * - Collapsible unchanged sections
+ * - Side-by-side / unified diff toggle
  */
 export default function ComparePage() {
   const [versions, setVersions] = useState<Version[]>([]);
@@ -403,7 +404,7 @@ export default function ComparePage() {
             </div>
           )}
 
-          {/* Unchanged articles toggle */}
+          {/* Unchanged articles - collapsed by default */}
           {unchangedArticles.length > 0 && (
             <div className="mt-6">
               <Button
@@ -422,13 +423,7 @@ export default function ComparePage() {
               {showUnchanged && (
                 <div className="mt-3 space-y-2">
                   {unchangedArticles.map((article) => (
-                    <div
-                      key={article.articleNumber}
-                      className="rounded-md border border-border bg-muted/30 px-4 py-2 text-sm text-muted-foreground"
-                    >
-                      Articolul {article.articleNumber}
-                      {article.a?.title && ` — ${article.a.title}`}
-                    </div>
+                    <UnchangedArticleCard key={article.articleNumber} article={article} />
                   ))}
                 </div>
               )}
@@ -567,6 +562,39 @@ function DiffArticleCard({
               />
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Expandable card for an unchanged article - shows full content when expanded */
+function UnchangedArticleCard({ article }: { article: DiffArticle }) {
+  const [expanded, setExpanded] = useState(false);
+  const content = article.a?.content || article.b?.content || "";
+
+  return (
+    <div className="rounded-md border border-border bg-muted/30 overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-muted-foreground hover:bg-accent/20 transition-colors"
+      >
+        <span>
+          <span className="font-medium">Articolul {article.articleNumber}</span>
+          {article.a?.title && <span className="ml-1 opacity-70">— {article.a.title}</span>}
+        </span>
+        {expanded ? (
+          <ChevronUp className="h-3.5 w-3.5 shrink-0 opacity-50" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
+        )}
+      </button>
+      {expanded && content && (
+        <div className="border-t border-border px-4 py-3">
+          <div className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+            {content}
+          </div>
         </div>
       )}
     </div>
