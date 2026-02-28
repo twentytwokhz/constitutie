@@ -1,4 +1,5 @@
 import { CommentsSection } from "@/components/feedback/comments-section";
+import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
 import { TipTapReader } from "@/components/reader/tiptap-reader";
 import { TocSidebar } from "@/components/reader/toc-sidebar";
@@ -278,26 +279,28 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           </p>
         </header>
 
-        {/* Article Content via TipTap */}
-        <article className="max-w-none">
-          {tiptapContent ? (
-            <TipTapReader content={tiptapContent} />
-          ) : (
-            <div className="space-y-3">
-              {article.content
-                .split("\n")
-                .filter((p) => p.trim().length > 0)
-                .map((paragraph, idx) => (
-                  <p
-                    key={`p-${idx}-${paragraph.substring(0, 20)}`}
-                    className="text-base leading-relaxed"
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-            </div>
-          )}
-        </article>
+        {/* Article Content via TipTap — wrapped with inline feedback on text selection */}
+        <TextSelectionFeedback articleId={article.id}>
+          <article className="max-w-none">
+            {tiptapContent ? (
+              <TipTapReader content={tiptapContent} />
+            ) : (
+              <div className="space-y-3">
+                {article.content
+                  .split("\n")
+                  .filter((p) => p.trim().length > 0)
+                  .map((paragraph, idx) => (
+                    <p
+                      key={`p-${idx}-${paragraph.substring(0, 20)}`}
+                      className="text-base leading-relaxed"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+              </div>
+            )}
+          </article>
+        </TextSelectionFeedback>
 
         {/* Vote Buttons */}
         <div className="mt-8 border-t border-border pt-6">
