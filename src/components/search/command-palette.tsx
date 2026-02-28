@@ -2,18 +2,29 @@
 
 import {
   CommandDialog,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Clock, FileText, X } from "lucide-react";
+import { Clock, FileText, Lightbulb, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 
 const RECENT_SEARCHES_KEY = "constitution-recent-searches";
 const MAX_RECENT_SEARCHES = 5;
+
+/** Curated search suggestions relevant to the Romanian Constitution */
+const SUGGESTED_SEARCHES = [
+  { term: "drepturi fundamentale", label: "Drepturi fundamentale" },
+  { term: "proprietate", label: "Proprietate" },
+  { term: "Art. 1", label: "Articolul 1" },
+  { term: "cetățeni", label: "Cetățeni" },
+  { term: "libertate", label: "Libertate" },
+  { term: "president", label: "Președinte" },
+  { term: "parlament", label: "Parlament" },
+  { term: "justiție", label: "Justiție" },
+];
 
 interface SearchResult {
   id: number;
@@ -152,8 +163,8 @@ export function CommandPalette() {
     [router, query],
   );
 
-  /** When user clicks a recent search term, fill the query to re-execute */
-  const handleRecentClick = useCallback((term: string) => {
+  /** When user clicks a recent or suggested search term, fill the query to re-execute */
+  const handleTermClick = useCallback((term: string) => {
     setQuery(term);
   }, []);
 
@@ -211,36 +222,85 @@ export function CommandPalette() {
           <div className="py-6 text-center text-sm text-muted-foreground">Se caută...</div>
         )}
         {!loading && query.length >= 2 && results.length === 0 && (
-          <CommandEmpty>
-            Niciun rezultat pentru „{query}". Încearcă alt termen de căutare.
-          </CommandEmpty>
+          <div className="py-4 px-3">
+            <div className="text-center text-sm text-muted-foreground mb-4">
+              <Search className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
+              Niciun rezultat pentru „{query}".
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground px-2 mb-2 flex items-center gap-1.5">
+                <Lightbulb className="h-3.5 w-3.5" />
+                Încearcă una din sugestiile de mai jos:
+              </p>
+              <div className="flex flex-wrap gap-1.5 px-2">
+                {SUGGESTED_SEARCHES.slice(0, 6).map((s) => (
+                  <button
+                    key={s.term}
+                    type="button"
+                    onClick={() => handleTermClick(s.term)}
+                    className="inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
         {!loading && query.length < 2 && recentSearches.length === 0 && (
-          <div className="py-6 text-center text-sm text-muted-foreground">
-            Scrie cel puțin 2 caractere pentru a căuta
+          <div className="py-4">
+            <div className="text-center text-sm text-muted-foreground mb-3">
+              Scrie cel puțin 2 caractere pentru a căuta
+            </div>
+            <CommandGroup heading="Sugestii populare">
+              {SUGGESTED_SEARCHES.map((s) => (
+                <CommandItem
+                  key={`suggestion-${s.term}`}
+                  value={`suggestion-${s.term}`}
+                  onSelect={() => handleTermClick(s.term)}
+                >
+                  <Lightbulb className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">{s.label}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
           </div>
         )}
         {!loading && query.length < 2 && recentSearches.length > 0 && (
-          <CommandGroup heading="Căutări recente">
-            {recentSearches.map((term) => (
-              <CommandItem
-                key={`recent-${term}`}
-                value={`recent-${term}`}
-                onSelect={() => handleRecentClick(term)}
-              >
-                <Clock className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="flex-1 text-sm">{term}</span>
-                <button
-                  type="button"
-                  className="ml-auto p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={(e) => handleRemoveRecent(term, e)}
-                  aria-label={`Șterge „${term}" din căutări recente`}
+          <>
+            <CommandGroup heading="Căutări recente">
+              {recentSearches.map((term) => (
+                <CommandItem
+                  key={`recent-${term}`}
+                  value={`recent-${term}`}
+                  onSelect={() => handleTermClick(term)}
                 >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+                  <Clock className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1 text-sm">{term}</span>
+                  <button
+                    type="button"
+                    className="ml-auto p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={(e) => handleRemoveRecent(term, e)}
+                    aria-label={`Șterge „${term}" din căutări recente`}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandGroup heading="Sugestii populare">
+              {SUGGESTED_SEARCHES.slice(0, 5).map((s) => (
+                <CommandItem
+                  key={`suggestion-${s.term}`}
+                  value={`suggestion-${s.term}`}
+                  onSelect={() => handleTermClick(s.term)}
+                >
+                  <Lightbulb className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">{s.label}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </>
         )}
         {Object.entries(grouped)
           .sort(([a], [b]) => Number(b) - Number(a))
