@@ -130,7 +130,13 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     }
   }
 
-  // If no specific article requested, show the first article
+  // If slug was provided but couldn't resolve to an article or structural unit, show 404
+  // (e.g. /2003/titlul-999 where titlul-999 doesn't exist)
+  if (articleNumber === null && slug && slug.length > 0) {
+    notFound();
+  }
+
+  // If no specific article requested (bare version URL like /2003), show the first article
   if (articleNumber === null && allArticles.length > 0) {
     articleNumber = allArticles[0].number;
   }
