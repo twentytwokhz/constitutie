@@ -1716,3 +1716,46 @@
 - Comment sanitization strips ALL HTML tags before storage (XSS prevention)
 - AI moderation runs on sanitized content (second layer after input validation)
 - Dev server running on port 3000 with turbopack
+
+## Session: 2026-02-28 (Agent handling features #111, #112, #113)
+
+### Completed Features
+
+#### Feature #111: Double-click on vote button does not create duplicate votes - PASSED
+- Added useRef-based isVotingRef for immediate synchronous double-click blocking
+- React state updates (setIsVoting) are async and batched - two rapid clicks can race past the check
+- Ref updates are synchronous, so the second click is blocked before any state mutation
+- Multi-layered protection: frontend ref guard, state disable, backend pre-check, DB UNIQUE constraint
+- Removed isVoting from useCallback dependency array (ref is the primary guard)
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #112: Rapid submit on comment does not create duplicate comments - PASSED
+- Added useRef-based isSubmittingRef for immediate synchronous double-submit blocking
+- Same race condition pattern as vote buttons - state check is async
+- handleSubmit now checks isSubmittingRef.current synchronously before proceeding
+- Ref cleared in finally block alongside state reset
+- Submit button and textarea already disabled via submitting state during processing
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #113: Submit button disabled during comment processing - PASSED
+- Already fully implemented in CommentsSection component
+- Submit button disabled via submitting state and empty text check
+- Button text changes from Trimite (Send icon) to Se verifica (Loader2 spinner)
+- Textarea also disabled during submission
+- Re-enables after API response via setSubmitting(false) in finally block
+- No code changes needed - existing implementation met all criteria
+- Biome lint: 0 errors
+
+### Components Modified
+- src/components/feedback/vote-buttons.tsx - Added useRef double-click guard
+- src/components/feedback/comments-section.tsx - Added useRef double-submit guard
+
+### Current Status
+- Features passing: ~122 (was ~119)
+- Total features: 144
+- Percentage: ~84.7%
+
+### Notes
+- All 3 features in Double-Action and Idempotency category
+- Key pattern: useRef for synchronous checks, useState for UI rendering
+- Both vote and comment forms now have identical multi-layer protection
