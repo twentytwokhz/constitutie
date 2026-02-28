@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type ForceGraph2DType from "react-force-graph-2d";
 
 // Types for graph data from the API
@@ -40,7 +48,16 @@ interface ForceGraphProps {
   onNodeClick?: (node: GraphNode) => void;
 }
 
-export default function ForceGraphCanvas({ data, loading, onNodeClick }: ForceGraphProps) {
+export interface ForceGraphHandle {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  fitToScreen: () => void;
+}
+
+const ForceGraphCanvas = forwardRef<ForceGraphHandle, ForceGraphProps>(function ForceGraphCanvas(
+  { data, loading, onNodeClick },
+  ref,
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   // biome-ignore lint/suspicious/noExplicitAny: react-force-graph-2d doesn't export proper ref type
   const graphRef = useRef<any>(null);
@@ -48,6 +65,32 @@ export default function ForceGraphCanvas({ data, loading, onNodeClick }: ForceGr
   const [isDark, setIsDark] = useState(false);
   const [ForceGraph2D, setForceGraph2D] = useState<typeof ForceGraph2DType | null>(null);
   const engineStoppedRef = useRef(false);
+
+  // Expose zoom methods to parent via ref
+  useImperativeHandle(ref, () => ({
+    zoomIn: () => {
+      if (graphRef.current) {
+        // biome-ignore lint/suspicious/noExplicitAny: react-force-graph typing
+        const fg = graphRef.current as any;
+        const currentZoom = fg.zoom?.() ?? 1;
+        fg.zoom?.(currentZoom * 1.5, 300);
+      }
+    },
+    zoomOut: () => {
+      if (graphRef.current) {
+        // biome-ignore lint/suspicious/noExplicitAny: react-force-graph typing
+        const fg = graphRef.current as any;
+        const currentZoom = fg.zoom?.() ?? 1;
+        fg.zoom?.(currentZoom / 1.5, 300);
+      }
+    },
+    fitToScreen: () => {
+      if (graphRef.current) {
+        // biome-ignore lint/suspicious/noExplicitAny: react-force-graph typing
+        (graphRef.current as any).zoomToFit?.(400, 60);
+      }
+    },
+  }));
 
   // Dynamically import react-force-graph-2d (it requires window)
   useEffect(() => {
@@ -262,4 +305,6 @@ export default function ForceGraphCanvas({ data, loading, onNodeClick }: ForceGr
       )}
     </div>
   );
-}
+});
+
+export default ForceGraphCanvas;

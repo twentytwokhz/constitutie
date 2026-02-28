@@ -1,6 +1,6 @@
 "use client";
 
-import ForceGraphCanvas from "@/components/graph/force-graph";
+import ForceGraphCanvas, { type ForceGraphHandle } from "@/components/graph/force-graph";
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Network, X } from "lucide-react";
+import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -59,6 +59,7 @@ export default function GraphPage() {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [showLegend, setShowLegend] = useState(true);
   const graphContainerRef = useRef<HTMLDivElement>(null);
+  const graphRef = useRef<ForceGraphHandle>(null);
 
   // Fetch available versions
   useEffect(() => {
@@ -139,13 +140,51 @@ export default function GraphPage() {
 
       {/* Graph Canvas */}
       <div ref={graphContainerRef} className="relative flex-1 overflow-hidden bg-muted/30">
-        <ForceGraphCanvas data={graphData} loading={loading} onNodeClick={handleNodeClick} />
+        <ForceGraphCanvas
+          ref={graphRef}
+          data={graphData}
+          loading={loading}
+          onNodeClick={handleNodeClick}
+        />
 
         {/* Stats overlay */}
         {graphData && !loading && (
           <div className="absolute left-4 top-4 rounded-lg border bg-background/90 px-3 py-2 text-xs text-muted-foreground backdrop-blur-sm">
             <span className="font-medium text-foreground">{graphData.nodes.length}</span> noduri ·{" "}
             <span className="font-medium text-foreground">{graphData.edges.length}</span> conexiuni
+          </div>
+        )}
+
+        {/* Zoom Controls */}
+        {graphData && !loading && (
+          <div className="absolute right-4 bottom-4 flex flex-col gap-1">
+            <button
+              type="button"
+              onClick={() => graphRef.current?.zoomIn()}
+              className="rounded-lg border bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground"
+              title="Zoom in"
+              aria-label="Zoom in"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => graphRef.current?.zoomOut()}
+              className="rounded-lg border bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground"
+              title="Zoom out"
+              aria-label="Zoom out"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => graphRef.current?.fitToScreen()}
+              className="rounded-lg border bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground"
+              title="Încadrare în ecran"
+              aria-label="Fit to screen"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
           </div>
         )}
 
