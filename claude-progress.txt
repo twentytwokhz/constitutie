@@ -2814,3 +2814,48 @@
 
 ### Current Status
 - Feature #194 marked as passing
+
+## Session: 2026-02-28 (Agent handling feature #195)
+
+### Completed Features
+
+#### Feature #195: Flag animation and illustration improvements ✅
+- **Flag animation (calm wind, not throbbing)**:
+  - Replaced symmetric pulsating wave with asymmetric wind propagation
+  - Left side (pole): barely moves (M0,2 stays near 2px)
+  - Right side (free edge): larger amplitude undulation (8-16px variance)
+  - Increased cycle duration from 4s to 7s for calmer, natural rhythm
+  - 5 keyframes with spline easing for smooth wind simulation
+  - Replaced "sheen overlay" with fabric fold shading (animated gradient stops
+    shift position to simulate light catching different folds)
+  - Removed breathing drop-shadow animation (flag-shadow → flag-shadow-static)
+  - Constant shadow: light mode 4px/10px, dark mode 4px/12px
+  - Removed redundant drop-shadow-md from landing page RomanianFlag usage
+- **White/black rectangle fix**:
+  - Root cause: "Flying decorative papers" in IllustrationConstitution used
+    fill-card (white in light, dark in dark mode) creating opaque rectangles
+  - Fix: Replaced fill-card with semi-transparent primary tints (fill-primary/8)
+  - Added small text lines on paper fragments for visual context
+  - Wrapped in opacity groups (60%/50%) for subtlety
+- **Design contrast and animations**:
+  - Added animate-gentle-float (6s ease-in-out vertical drift) to hero illustration
+  - Added illustration-hover-target CSS (scale 1.06 on card hover with bounce easing)
+  - Applied hover target class to all 5 feature card illustrations
+  - Boosted illustration content line contrast: muted-foreground/25→/30 (light), /45→/50 (dark)
+  - Boosted document shadow: muted-foreground/12→/15 (light), /25→/30 (dark)
+  - All new animations respect prefers-reduced-motion
+- Biome lint: 0 errors on modified files
+- TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+- Landing page returns HTTP 200
+
+### Files Modified
+- src/components/national-symbols/romanian-flag.tsx — Complete wind animation rewrite
+- src/components/illustrations/illustration-constitution.tsx — Paper fragments + contrast
+- src/app/globals.css — New animations, static flag shadow, reduced-motion updates
+- src/app/[locale]/page.tsx — Float animation, hover targets, removed redundant shadow
+
+### Current Status
+- Features passing: 194/195
+- Total features: 195
+- Percentage: ~99.5%
