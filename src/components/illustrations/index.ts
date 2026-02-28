@@ -9,11 +9,12 @@
  *
  * Each illustration is a React component accepting className for sizing.
  */
-export { IllustrationExplore } from "./illustration-explore";
+
 export { IllustrationCompare } from "./illustration-compare";
-export { IllustrationGraph } from "./illustration-graph";
-export { IllustrationSearch } from "./illustration-search";
-export { IllustrationFeedback } from "./illustration-feedback";
-export { IllustrationNotFound } from "./illustration-not-found";
 export { IllustrationConstitution } from "./illustration-constitution";
+export { IllustrationExplore } from "./illustration-explore";
+export { IllustrationFeedback } from "./illustration-feedback";
+export { IllustrationGraph } from "./illustration-graph";
+export { IllustrationNotFound } from "./illustration-not-found";
+export { IllustrationSearch } from "./illustration-search";
 export { IllustrationStatistics } from "./illustration-statistics";

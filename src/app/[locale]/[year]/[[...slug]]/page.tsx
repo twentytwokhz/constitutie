@@ -1,3 +1,8 @@
+import { and, asc, eq } from "drizzle-orm";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
@@ -7,14 +12,9 @@ import { ReadingProgress } from "@/components/reader/reading-progress";
 import { ShareButton } from "@/components/reader/share-button";
 import { TipTapReader } from "@/components/reader/tiptap-reader";
 import { TocSidebar } from "@/components/reader/toc-sidebar";
+import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
-import { and, asc, eq } from "drizzle-orm";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Metadata } from "next";
-import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
 
 /**
  * Generate per-article Open Graph and Twitter metadata for SEO and social sharing.
@@ -64,9 +64,11 @@ export async function generateMetadata({
     }
   }
 
+  const tCommon = await getTranslations("common");
+
   if (articleNumber === null) {
     return {
-      title: `Constituția României (${year})`,
+      title: `${tCommon("appName")} (${year})`,
     };
   }
 
@@ -84,11 +86,11 @@ export async function generateMetadata({
     return {};
   }
 
-  const titleParts = [`Art. ${article.number}`];
+  const titleParts = [`${tCommon("art")} ${article.number}`];
   if (article.title) {
     titleParts.push(`\u2014 ${article.title}`);
   }
-  const ogTitle = `${titleParts.join(" ")} | Constituția României (${year})`;
+  const ogTitle = `${titleParts.join(" ")} | ${tCommon("appName")} (${year})`;
   const ogDescription = article.content.substring(0, 200).trim();
 
   return {
@@ -98,7 +100,6 @@ export async function generateMetadata({
       title: ogTitle,
       description: ogDescription,
       type: "article",
-      locale: "ro_RO",
     },
     twitter: {
       card: "summary",
@@ -335,7 +336,10 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                 {allArticles.length} {tCommon("articles")}
               </p>
             </div>
-            <TricolorStripe height="3px" className="ml-auto w-16 rounded-full overflow-hidden hidden sm:flex" />
+            <TricolorStripe
+              height="3px"
+              className="ml-auto w-16 rounded-full overflow-hidden hidden sm:flex"
+            />
           </div>
 
           {/* Breadcrumb */}
@@ -363,7 +367,9 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
               );
             })}
             <span className="text-muted-foreground/70">/</span>
-            <span className="text-foreground font-medium">{t("article")} {article.number}</span>
+            <span className="text-foreground font-medium">
+              {t("article")} {article.number}
+            </span>
           </nav>
 
           {/* Structural Unit Heading (Titlu/Capitol/Secțiune) */}
@@ -405,12 +411,20 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
               <p className="text-sm text-muted-foreground">
                 {t("constitutionFrom")} {year} &middot; {allArticles.length} {tCommon("articles")}
               </p>
-              <ShareButton articleNumber={article.number} articleTitle={article.title ?? undefined} year={yearNum} />
+              <ShareButton
+                articleNumber={article.number}
+                articleTitle={article.title ?? undefined}
+                year={yearNum}
+              />
             </div>
           </header>
 
           {/* Article Content via TipTap — wrapped with inline feedback on text selection */}
-          <TextSelectionFeedback articleId={article.id} articleNumber={article.number} year={yearNum}>
+          <TextSelectionFeedback
+            articleId={article.id}
+            articleNumber={article.number}
+            year={yearNum}
+          >
             <article className="max-w-none">
               {tiptapContent ? (
                 <TipTapReader content={tiptapContent} />

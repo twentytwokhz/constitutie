@@ -1,6 +1,6 @@
 import { BookOpen, GitCompareArrows, Network, Search } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
 export async function Footer() {
   const t = await getTranslations();
@@ -45,9 +45,7 @@ export async function Footer() {
             <Link href="/" className="text-lg font-bold tracking-tight">
               {t("common.appName")}
             </Link>
-            <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-              {t("footer.description")}
-            </p>
+            <p className="mt-2 max-w-xs text-sm text-muted-foreground">{t("footer.description")}</p>
           </div>
 
           {/* Navigation */}
@@ -88,9 +86,7 @@ export async function Footer() {
           {/* About */}
           <div>
             <h3 className="text-sm font-semibold">{t("footer.about")}</h3>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {t("footer.aboutText")}
-            </p>
+            <p className="mt-3 text-sm text-muted-foreground">{t("footer.aboutText")}</p>
           </div>
         </div>
 
@@ -99,9 +95,7 @@ export async function Footer() {
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} {t("footer.copyright")}
           </p>
-          <p className="text-xs text-muted-foreground">
-            {t("footer.builtWith")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("footer.builtWith")}</p>
         </div>
       </div>
     </footer>

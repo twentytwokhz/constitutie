@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VoteButtonsProps {
@@ -38,6 +39,7 @@ export function VoteButtons({
   initialAgreeCount,
   initialDisagreeCount,
 }: VoteButtonsProps) {
+  const t = useTranslations();
   const [agreeCount, setAgreeCount] = useState(initialAgreeCount);
   const [disagreeCount, setDisagreeCount] = useState(initialDisagreeCount);
   const [userVote, setUserVote] = useState<"agree" | "disagree" | null>(null);
@@ -82,11 +84,7 @@ export function VoteButtons({
             setDisagreeCount((prev) => prev + 1);
           }
           // Show temporary success feedback that auto-dismisses
-          setSuccessMsg(
-            voteType === "agree"
-              ? "Mulțumim pentru votul tău! 👍"
-              : "Mulțumim pentru votul tău! 👎",
-          );
+          setSuccessMsg(t("feedback.thankYou"));
           setTimeout(() => setSuccessMsg(null), 3000);
         } else if (response.status === 409) {
           // Already voted from this fingerprint
@@ -94,16 +92,16 @@ export function VoteButtons({
           localStorage.setItem(`vote_${articleId}`, voteType);
         } else {
           const data = await response.json();
-          setError(data.error || "Eroare la votare");
+          setError(data.error || t("feedback.voteError"));
         }
       } catch {
-        setError("Eroare de rețea");
+        setError(t("feedback.networkError"));
       } finally {
         isVotingRef.current = false;
         setIsVoting(false);
       }
     },
-    [articleId, userVote],
+    [articleId, userVote, t],
   );
 
   return (
@@ -119,10 +117,10 @@ export function VoteButtons({
               ? "border-border text-muted-foreground cursor-not-allowed opacity-60"
               : "border-border hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-950 dark:hover:text-emerald-400"
         }`}
-        aria-label="De acord"
+        aria-label={t("feedback.agree")}
       >
         <ThumbsUp className="h-4 w-4" />
-        <span>De acord</span>
+        <span>{t("feedback.agree")}</span>
         <span className="ml-1 rounded-full bg-muted px-2 py-0.5 text-xs font-semibold tabular-nums">
           {agreeCount}
         </span>
@@ -139,17 +137,17 @@ export function VoteButtons({
               ? "border-border text-muted-foreground cursor-not-allowed opacity-60"
               : "border-border hover:border-rose-500 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950 dark:hover:text-rose-400"
         }`}
-        aria-label="Dezacord"
+        aria-label={t("feedback.disagree")}
       >
         <ThumbsDown className="h-4 w-4" />
-        <span>Dezacord</span>
+        <span>{t("feedback.disagree")}</span>
         <span className="ml-1 rounded-full bg-muted px-2 py-0.5 text-xs font-semibold tabular-nums">
           {disagreeCount}
         </span>
       </button>
 
       {isVoting && (
-        <span className="text-xs text-muted-foreground animate-pulse">Se votează...</span>
+        <span className="text-xs text-muted-foreground animate-pulse">{t("feedback.voting")}</span>
       )}
       {successMsg && (
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 animate-fade-in-out">

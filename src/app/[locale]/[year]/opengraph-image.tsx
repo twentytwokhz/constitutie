@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { db } from "@/lib/db";
-import { articles, constitutionVersions } from "@/lib/db/schema";
 import { asc, eq } from "drizzle-orm";
 import { ImageResponse } from "next/og";
+import { db } from "@/lib/db";
+import { articles, constitutionVersions } from "@/lib/db/schema";
 
 export const alt = "Constituția României";
 export const size = { width: 1200, height: 630 };
@@ -16,11 +16,7 @@ export const contentType = "image/png";
  * Placed at [year] level (not inside [[...slug]]) because Turbopack does not
  * allow static convention files inside optional catch-all segments.
  */
-export default async function OgImage({
-  params,
-}: {
-  params: Promise<{ year: string }>;
-}) {
+export default async function OgImage({ params }: { params: Promise<{ year: string }> }) {
   const { year } = await params;
   const yearNum = Number.parseInt(year, 10);
 

@@ -1,8 +1,9 @@
 "use client";
 
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "@/i18n/navigation";
 
 interface TocArticle {
   id: number;
@@ -28,14 +29,14 @@ interface TocSidebarProps {
   currentArticleNumber: number | null;
 }
 
-function getTypeLabel(type: string): string {
+function getTypeLabel(type: string, t: (key: string) => string): string {
   switch (type) {
     case "titlu":
-      return "Titlul";
+      return t("title");
     case "capitol":
-      return "Capitolul";
+      return t("chapter");
     case "sectiune":
-      return "Secțiunea";
+      return t("section");
     default:
       return type;
   }
@@ -46,11 +47,13 @@ function TocNodeItem({
   year,
   currentArticleNumber,
   depth,
+  t,
 }: {
   node: TocNode;
   year: number;
   currentArticleNumber: number | null;
   depth: number;
+  t: (key: string) => string;
 }) {
   // Auto-expand if this branch contains the current article
   const containsCurrentArticle = checkContainsCurrent(node, currentArticleNumber);
@@ -88,7 +91,7 @@ function TocNodeItem({
           <span className="w-3.5 shrink-0" />
         )}
         <span className="truncate">
-          {getTypeLabel(node.type)} {node.number}. {node.name}
+          {getTypeLabel(node.type, t)} {node.number}. {node.name}
         </span>
       </button>
 
@@ -102,6 +105,7 @@ function TocNodeItem({
               year={year}
               currentArticleNumber={currentArticleNumber}
               depth={depth + 1}
+              t={t}
             />
           ))}
 
@@ -142,6 +146,7 @@ function checkContainsCurrent(node: TocNode, articleNumber: number | null): bool
 }
 
 export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
+  const t = useTranslations("reader");
   const [tree, setTree] = useState<TocNode[]>([]);
   const [loading, setLoading] = useState(true);
   const navRef = useRef<HTMLElement>(null);
@@ -196,7 +201,7 @@ export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
 
   if (tree.length === 0) {
     return (
-      <nav className="w-full p-3 text-sm text-muted-foreground">Structura nu este disponibilă.</nav>
+      <nav className="w-full p-3 text-sm text-muted-foreground">{t("structureUnavailable")}</nav>
     );
   }
 
@@ -204,7 +209,7 @@ export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
     <nav ref={navRef} className="w-full overflow-y-auto overflow-x-hidden">
       <div className="px-3 py-2">
         <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-          Cuprins
+          {t("tableOfContents")}
         </h2>
       </div>
       <ul className="px-1 pb-4 space-y-0.5">
@@ -215,6 +220,7 @@ export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
             year={year}
             currentArticleNumber={currentArticleNumber}
             depth={0}
+            t={t}
           />
         ))}
       </ul>

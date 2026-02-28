@@ -1,7 +1,7 @@
-import { db } from "@/lib/db";
-import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 import { asc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 
 interface StructureNode {
   id: number;

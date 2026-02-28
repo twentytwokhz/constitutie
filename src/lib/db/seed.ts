@@ -22,7 +22,7 @@ import { resolve } from "node:path";
 import { neon } from "@neondatabase/serverless";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
-import { type ParsedVersion, contentToTipTap, parseConstitution } from "../parser/index.js";
+import { contentToTipTap, type ParsedVersion, parseConstitution } from "../parser/index.js";
 import * as schema from "./schema.js";
 
 // Load environment
@@ -278,10 +278,10 @@ async function main() {
 
   // Verify parsed data
   console.log("\nVerification of parsed data:");
-  let allValid = true;
+  let _allValid = true;
   for (const parsed of parsedVersions) {
     const valid = verifyParsedData(parsed, expectedCounts[parsed.year]);
-    if (!valid) allValid = false;
+    if (!valid) _allValid = false;
   }
 
   const totalArticles = parsedVersions.reduce((sum, p) => sum + p.articles.length, 0);

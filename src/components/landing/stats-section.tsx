@@ -1,8 +1,8 @@
-import { db } from "@/lib/db";
-import { articleReferences, articles, comments, constitutionVersions } from "@/lib/db/schema";
 import { count, eq } from "drizzle-orm";
 import { BookOpen, GitCompareArrows, Link2, MessageSquare } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { db } from "@/lib/db";
+import { articleReferences, articles, comments, constitutionVersions } from "@/lib/db/schema";
 
 interface StatCardProps {
   icon: React.ReactNode;

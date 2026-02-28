@@ -1,14 +1,14 @@
 "use client";
 
+import { Menu, Scale, Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { VersionSelector } from "@/components/layout/version-selector";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, Scale, Search, X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 
 /**
  * Global Header
@@ -122,7 +122,11 @@ export function Header() {
       {mobileMenuOpen && (
         <>
           {/* Backdrop overlay: click outside to close */}
+          {/* biome-ignore lint/a11y/useSemanticElements: backdrop overlay needs div for full-screen positioning */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Close menu"
             className="fixed inset-0 top-16 z-40 bg-background/80 backdrop-blur-sm md:hidden"
             onClick={() => setMobileMenuOpen(false)}
             onKeyDown={(e) => {

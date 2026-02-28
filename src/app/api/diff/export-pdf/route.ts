@@ -1,6 +1,6 @@
-import { DiffPdfDocument, type PdfDiffArticle } from "@/components/diff/diff-pdf-document";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { type NextRequest, NextResponse } from "next/server";
+import { DiffPdfDocument, type PdfDiffArticle } from "@/components/diff/diff-pdf-document";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    const { yearA, yearB, summary, articles } = body;
+    const { yearA, yearB, summary, articles, locale } = body;
 
     if (!yearA || !yearB || !summary || !Array.isArray(articles)) {
       return NextResponse.json(
@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
         yearB,
         summary,
         articles: validatedArticles,
+        locale: typeof locale === "string" ? locale : "ro",
       }),
     );
 

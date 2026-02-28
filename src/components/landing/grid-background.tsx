@@ -159,12 +159,7 @@ export function GridBackground({ className = "" }: { className?: string }) {
         </defs>
 
         {/* Layer 1: Diamond pattern (primary motif) */}
-        <rect
-          width="100%"
-          height="100%"
-          fill="url(#folk-diamond)"
-          mask="url(#folk-pattern-fade)"
-        />
+        <rect width="100%" height="100%" fill="url(#folk-diamond)" mask="url(#folk-pattern-fade)" />
 
         {/* Layer 2: Chevron pattern (secondary, offset) */}
         <rect

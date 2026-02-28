@@ -1,10 +1,10 @@
 "use client";
 
-import { CoatOfArms } from "@/components/national-symbols";
 import { ChevronRight } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { CoatOfArms } from "@/components/national-symbols";
+import { Link } from "@/i18n/navigation";
 
 export function Timeline() {
   const t = useTranslations();
@@ -56,10 +56,7 @@ export function Timeline() {
           {/* Year markers row */}
           <div className="relative flex items-end justify-between">
             {/* Connector line — positioned at center of the year circles (bottom row) */}
-            <div
-              className="absolute bottom-8 right-0 left-0 h-0.5 bg-border"
-              aria-hidden="true"
-            />
+            <div className="absolute bottom-8 right-0 left-0 h-0.5 bg-border" aria-hidden="true" />
 
             {timelineItems.map((item, index) => (
               <div key={item.year} className="flex flex-col items-center gap-2">

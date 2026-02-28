@@ -29,16 +29,10 @@ export const metadata: Metadata = {
   authors: [{ name: "Constituția României Project" }],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
-      </body>
+    <html lang="ro" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
     </html>
   );
 }

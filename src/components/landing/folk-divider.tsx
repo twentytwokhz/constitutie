@@ -23,7 +23,10 @@ interface FolkDividerProps {
   flip?: boolean;
 }
 
-const intensityMap: Record<FolkDividerIntensity, { stroke: string; darkStroke: string; height: number }> = {
+const intensityMap: Record<
+  FolkDividerIntensity,
+  { stroke: string; darkStroke: string; height: number }
+> = {
   strong: {
     stroke: "text-primary/[0.18]",
     darkStroke: "dark:text-primary/[0.22]",
@@ -41,7 +44,11 @@ const intensityMap: Record<FolkDividerIntensity, { stroke: string; darkStroke: s
   },
 };
 
-export function FolkDivider({ intensity = "medium", className = "", flip = false }: FolkDividerProps) {
+export function FolkDivider({
+  intensity = "medium",
+  className = "",
+  flip = false,
+}: FolkDividerProps) {
   const config = intensityMap[intensity];
 
   return (
@@ -125,13 +132,7 @@ export function FolkDivider({ intensity = "medium", className = "", flip = false
         </defs>
 
         {/* Top chevron border line */}
-        <rect
-          x="0"
-          y="0"
-          width="1200"
-          height="8"
-          fill={`url(#divider-chevron-${intensity})`}
-        />
+        <rect x="0" y="0" width="1200" height="8" fill={`url(#divider-chevron-${intensity})`} />
 
         {/* Central diamond chain band */}
         <rect

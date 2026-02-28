@@ -1,13 +1,13 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { TricolorStripe } from "@/components/national-symbols";
-import { routing } from "@/i18n/routing";
 import { CommandPalette } from "@/components/search/command-palette";
-import type { Metadata } from "next";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { routing } from "@/i18n/routing";
 
 type Props = {
   children: React.ReactNode;
@@ -24,12 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
 
-  const title = locale === "ro"
-    ? "Constituția României - Explorare Interactivă"
-    : "Romanian Constitution - Interactive Explorer";
-  const description = locale === "ro"
-    ? "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003)."
-    : "Interactive platform for exploring the Romanian Constitution through all its historical versions (1952, 1986, 1991, 2003).";
+  const title = t("metaTitle");
+  const description = t("metaDescription");
 
   return {
     title,
@@ -37,8 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `${BASE_URL}/${locale}`,
       languages: {
-        "ro": `${BASE_URL}/ro`,
-        "en": `${BASE_URL}/en`,
+        ro: `${BASE_URL}/ro`,
+        en: `${BASE_URL}/en`,
         "x-default": `${BASE_URL}/ro`,
       },
     },

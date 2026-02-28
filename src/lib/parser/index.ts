@@ -59,7 +59,7 @@ const RE_TITLU = /^##\s+Titlul\s+(\d+)\.\s*(.+)$/;
 const RE_CAPITOL_H3 = /^###\s+Capitolul\s+(\d+)\.\s*(.+)$/;
 
 // 1991/2003: #### Secțiunea N. Name (handles both ț variants: U+021B and U+0163)
-const RE_SECTIUNE = /^####\s+Sec[țţ]iunea\s+(?:a\s+)?(\d+)[\-.]\s*(.*)$/;
+const RE_SECTIUNE = /^####\s+Sec[țţ]iunea\s+(?:a\s+)?(\d+)[-.]\s*(.*)$/;
 
 // 1991/2003: ##### Articolul N. Title
 const RE_ARTICLE_H5 = /^#####\s+Articolul\s+(\d+)\.\s*(.*)$/;
