@@ -2325,3 +2325,41 @@
 - Zero Biome errors, zero TypeScript errors
 - All data from real Neon PostgreSQL database
 - No mock data patterns in codebase
+
+## Session: 2026-02-28 (Agent handling feature #148)
+
+### Completed Features
+
+#### Feature #148: Export PDF display issues (black spots + line-break) ✅
+- **Root cause of black spots**: The `isLatinExt()` function routed ALL chars with
+  code point >= U+0100 to the InterExt font (latin-ext WOFF subset). But characters
+  like „ (U+201E Romanian opening quote) and — (U+2014 em dash) are in the U+2000-206F
+  General Punctuation block, which is in the Google Fonts "latin" subset, NOT "latin-ext".
+  The InterExt WOFF simply doesn't have these glyphs → black rectangles in PDF.
+- **Root cause of line-break issues**: Helvetica and Inter have different metrics
+  (ascenders, advance widths, x-height). Mixing them in inline <Text> elements confused
+  @react-pdf's layout engine, preventing proper word wrapping.
+- **Fix applied**:
+  1. Copied Inter latin subset WOFF files to public/fonts/ (Inter-Latin-Regular.woff,
+     Inter-Latin-Bold.woff)
+  2. Registered "InterLatin" font family from latin subset WOFFs
+  3. Replaced all Helvetica references with InterLatin (matching Inter metrics)
+  4. Renamed `isLatinExt()` to `needsExtFont()` — only routes U+0100-02FF to InterExt
+     (Romanian diacritics ă/ș/ț), everything else goes to InterLatin (including U+2000+
+     punctuation characters)
+  5. Removed wrap={false} on ArticleCard to allow long content to span pages
+- **Verification**:
+  - Wrote diagnostic script confirming „ (U+201E) and — (U+2014) were misrouted
+  - PDF export returns HTTP 200 with valid %PDF-1.3 for both ASCII and full Romanian text
+  - Biome lint: 0 errors, TypeScript: 0 errors on changed file
+  - No mock data patterns in codebase
+
+### Files Modified
+- src/components/diff/diff-pdf-document.tsx - Complete font system rewrite
+
+### Files Added (to public/fonts/)
+- Inter-Latin-Regular.woff - Inter latin subset, regular weight (copied from @fontsource/inter)
+- Inter-Latin-Bold.woff - Inter latin subset, bold weight (copied from @fontsource/inter)
+
+### Current Status
+- Feature #148 marked as passing
