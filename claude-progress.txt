@@ -1007,3 +1007,41 @@
 - All three features were verification/style features, no code changes needed
 - Existing implementations from Feature #139 (illustrations) and graph page already met requirements
 - Dark mode CSS variables: primary stays same (#6366f1) in both modes, other tokens adapt correctly
+
+## Session: 2026-02-28 (Agent handling features #22, #84)
+
+### Completed Features
+
+#### Feature #22: Active page indicator in navigation ✅
+- Header already had isActive() function detecting current route via usePathname()
+- Active links styled with bg-accent text-accent-foreground (distinct from inactive)
+- Inactive links styled with text-muted-foreground
+- Both desktop and mobile nav use same active detection logic
+- Year routes (/1952, /1986, /1991, /2003) all match "Explorare" link via regex
+- /compare, /graph, /statistics each correctly highlight their nav item
+- Biome lint: 0 errors
+
+#### Feature #84: Smooth scroll between landing sections ✅
+- Added scroll-behavior: smooth to html element in globals.css
+- Created ScrollReveal client component (src/components/landing/scroll-reveal.tsx)
+- Uses IntersectionObserver to detect viewport entry with rootMargin offset
+- One-way animation: once revealed, stays visible (no re-hiding on scroll up)
+- Added scroll-reveal CSS keyframes: blur(6px) + translateY(24px) → clear + origin
+- Applied ScrollReveal to feature cards with staggered delays (0ms, 100ms, 200ms)
+- Applied ScrollReveal to statistics section
+- Hero section keeps existing animate-word-reveal (loads immediately)
+- Respects prefers-reduced-motion: auto + disables all animations
+- Biome lint: 0 errors
+
+### Components Created
+- src/components/landing/scroll-reveal.tsx - Scroll-triggered reveal animation wrapper
+
+### Current Status
+- Features passing: 66 (was 64)
+- Total features: 144
+- Percentage: ~45.8%
+
+### Notes
+- ScrollReveal is reusable for any future sections (FAQ, timeline, CTA, footer)
+- The component supports configurable delay and threshold props
+- IntersectionObserver is disconnected after first reveal (no ongoing CPU cost)
