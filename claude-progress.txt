@@ -1940,3 +1940,47 @@
 - Features passing: 134 (was 133)
 - Total features: 144
 - Percentage: ~93.1%
+
+## Session: 2026-02-28 (Agent handling features #120, #121, #123)
+
+### Completed Features
+
+#### Feature #120: Comment requires non-empty text to submit ✅
+- Added validationError state to CommentsSection component
+- handleSubmit shows "Comentariul nu poate fi gol." error on empty text
+- Textarea border turns red (destructive color) on validation error
+- XCircle icon displayed next to error message
+- Error clears automatically when user types non-whitespace text
+- Focus returns to textarea on validation error
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #121: Comment maximum length enforced ✅
+- Set MAX_COMMENT_LENGTH = 5000 (client-side, server allows 10000)
+- Added maxLength HTML attribute to textarea
+- Added onChange guard to reject text beyond limit
+- Live character counter: "X/5.000" with tabular-nums styling
+- Color states: normal (muted), warning at 90% (amber), error at limit (red)
+- Error message when limit reached: "Limita maximă de 5.000 caractere a fost atinsă."
+- Textarea border changes color at warning/error thresholds
+- Server-side fallback validation in handleSubmit
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #123: API validates year parameter format ✅
+- Already fully implemented across all 6 API routes accepting year parameter
+- All routes use Number.parseInt + Number.isNaN for format validation (400)
+- All routes check database for existence after format validation (404)
+- Tested: /api/versions/abcd → 400, /api/versions/9999 → 404, /api/versions/2003 → 200
+- No code changes needed
+
+### Components Modified
+- src/components/feedback/comments-section.tsx - Validation error + character counter
+
+### Current Status
+- Features passing: 131 (was 128)
+- Total features: 144
+- Percentage: ~91.0%
+
+### Notes
+- Feature #120 adds client-side UX feedback for empty comment submission
+- Feature #121 enforces a 5000 char limit with progressive color warnings
+- Feature #123 was already fully implemented (verification only)
