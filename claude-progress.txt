@@ -1,5 +1,42 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #101, #102, #103)
+
+### Completed Features
+
+#### Feature #101: API returns proper error for non-existent version year ✅
+- All 5 [year]-based API routes already have consistent error handling
+- GET /api/versions/2020 → 404 with {"error":"Version 2020 not found"}
+- GET /api/versions/abc → 400 with {"error":"Invalid year parameter"}
+- Pattern consistent across: /api/versions/[year], /articles, /structure, /graph
+- No code changes needed — already fully implemented
+- Biome lint: 0 errors
+
+#### Feature #102: API returns proper error for non-existent article number ✅
+- GET /api/versions/2003/articles/999 → 404 with {"error":"Article 999 not found in version 2003"}
+- GET /api/versions/2003/articles/0 → 404 with same pattern
+- Both year and article number validated as integers (400 for NaN)
+- No code changes needed — already fully implemented
+- Biome lint: 0 errors
+
+#### Feature #103: Diff page handles same version comparison gracefully ✅
+- Amber warning shown when same version selected: "Selectează două versiuni diferite..."
+- fetchDiff short-circuits when a === b (sets diffData to null, no API call)
+- Dropdowns remain interactive so user can change selections
+- No crash or broken UI
+- No code changes needed — already fully implemented
+- Biome lint: 0 errors
+
+### Current Status
+- Features passing: 115 (was 112)
+- Total features: 144
+- Percentage: ~79.9%
+
+### Notes
+- All 3 features were verification features requiring no code changes
+- Error handling across API routes follows consistent pattern: validate params (400), check existence (404), catch errors (500)
+- Compare page uses client-side short-circuit pattern instead of making API call for same-version comparison
+
 ## Session: 2026-02-28 (Agent handling features #76, #77, #79)
 
 ### Completed Features
