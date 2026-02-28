@@ -1,3 +1,4 @@
+import { VersionBarChart } from "@/components/statistics/version-bar-chart";
 import { db } from "@/lib/db";
 import {
   articleReferences,
@@ -51,34 +52,6 @@ function StatCard({ icon, value, label, description, trend }: StatCardProps) {
       <div className="mt-1 flex items-center gap-1">
         {trend && <TrendingUp className="h-3 w-3 text-emerald-500" />}
         <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-interface VersionRowProps {
-  year: number;
-  name: string;
-  articleCount: number;
-  maxCount: number;
-}
-
-function VersionRow({ year, name, articleCount, maxCount }: VersionRowProps) {
-  const percentage = maxCount > 0 ? (articleCount / maxCount) * 100 : 0;
-  return (
-    <div className="flex items-center gap-4">
-      <span className="w-12 shrink-0 text-sm font-semibold tabular-nums">{year}</span>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between">
-          <p className="truncate text-sm">{name}</p>
-          <span className="ml-2 shrink-0 text-sm font-medium tabular-nums">{articleCount}</span>
-        </div>
-        <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
       </div>
     </div>
   );
@@ -168,8 +141,6 @@ async function getStatistics() {
 export default async function StatisticsPage() {
   const stats = await getStatistics();
 
-  const maxArticles = Math.max(...stats.versionStats.map((v) => v.totalArticles ?? 0), 1);
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -232,22 +203,14 @@ export default async function StatisticsPage() {
 
       {/* Per-version breakdown + top referenced */}
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        {/* Articles per version */}
+        {/* Articles per version - Recharts bar chart */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-semibold">Articole per versiune</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Numărul de articole din fiecare versiune a constituției
           </p>
-          <div className="mt-6 space-y-4">
-            {stats.versionStats.map((v) => (
-              <VersionRow
-                key={v.year}
-                year={v.year}
-                name={v.name ?? `Constituția din ${v.year}`}
-                articleCount={v.totalArticles ?? 0}
-                maxCount={maxArticles}
-              />
-            ))}
+          <div className="mt-4">
+            <VersionBarChart data={stats.versionStats} />
           </div>
         </div>
 
