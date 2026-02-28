@@ -15,24 +15,69 @@ export const metadata: Metadata = {
     default: "Constituția României - Explorare Interactivă",
     template: "%s | Constituția României",
   },
+  description:
+    "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003). Navigare articol cu articol, comparare versiuni, vizualizare graf și feedback cetățenesc.",
   keywords: [
     "Constituția României",
     "Romanian Constitution",
     "constituție",
     "lege fundamentală",
     "drept constituțional",
+    "articole constituție",
+    "comparație versiuni constituție",
     "1952",
     "1986",
     "1991",
     "2003",
   ],
   authors: [{ name: "Constituția României Project" }],
+  creator: "Constituția României Project",
+  publisher: "Constituția României Project",
+  openGraph: {
+    type: "website",
+    locale: "ro_RO",
+    alternateLocale: "en_US",
+    siteName: "Constituția României",
+    title: "Constituția României - Explorare Interactivă",
+    description:
+      "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003).",
+    images: [
+      {
+        url: "/images/logo2003.png",
+        width: 512,
+        height: 512,
+        alt: "Stema României - Constituția României",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Constituția României - Explorare Interactivă",
+    description:
+      "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice.",
+    images: ["/images/logo2003.png"],
+  },
   icons: {
     icon: [
       { url: "/images/logo2003.webp", type: "image/webp" },
       { url: "/images/logo2003.png", type: "image/png", sizes: "512x512" },
     ],
     apple: { url: "/images/logo2003.png", sizes: "180x180" },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Add Google Search Console verification when available
+    // google: "verification-token",
   },
 };
 

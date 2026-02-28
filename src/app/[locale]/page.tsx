@@ -16,9 +16,10 @@ import { StatsSection } from "@/components/landing/stats-section";
 import { Timeline } from "@/components/landing/timeline";
 import { Footer } from "@/components/layout/footer";
 import { RomanianFlag, TricolorDivider } from "@/components/national-symbols";
+import { WebSiteJsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 /**
@@ -35,8 +36,10 @@ import { Suspense } from "react";
  */
 export default async function HomePage() {
   const t = await getTranslations();
+  const locale = await getLocale();
   return (
     <main className="flex min-h-screen flex-col">
+      <WebSiteJsonLd locale={locale} />
       {/* Hero Section — full viewport, animated headline, grid background */}
       <section className="relative flex min-h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden py-10 md:py-0">
         <GridBackground />

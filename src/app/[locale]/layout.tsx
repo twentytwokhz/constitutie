@@ -1,3 +1,4 @@
+import { PostHogAnalyticsProvider } from "@/components/analytics/posthog-provider";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { CommandPalette } from "@/components/search/command-palette";
@@ -59,18 +60,20 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange={false}
-      >
-        <Header />
-        <Suspense fallback={null}>
-          <CommandPalette />
-        </Suspense>
-        {children}
-      </ThemeProvider>
+      <PostHogAnalyticsProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <Header />
+          <Suspense fallback={null}>
+            <CommandPalette />
+          </Suspense>
+          {children}
+        </ThemeProvider>
+      </PostHogAnalyticsProvider>
     </NextIntlClientProvider>
   );
 }

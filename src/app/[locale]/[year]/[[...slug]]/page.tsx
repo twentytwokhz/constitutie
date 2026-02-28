@@ -5,6 +5,7 @@ import { CoatOfArms, TricolorStripe } from "@/components/national-symbols";
 import { ReadingProgress } from "@/components/reader/reading-progress";
 import { ShareButton } from "@/components/reader/share-button";
 import { TipTapReader } from "@/components/reader/tiptap-reader";
+import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
@@ -332,8 +333,42 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
       (article.contentTiptap as Record<string, unknown> | null))
     : (article.contentTiptap as Record<string, unknown> | null);
 
+  // Build the current article's canonical path for structured data
+  const currentArticleForPath = allArticles[currentIndex];
+  const articleCanonicalPath = currentArticleForPath
+    ? buildArticlePath(currentArticleForPath)
+    : `/${year}/articolul-${article.number}`;
+
+  // Build breadcrumb JSON-LD items
+  const breadcrumbJsonLdItems = [
+    { name: tCommon("home"), url: `/${locale}` },
+    { name: `${t("constitutionFrom")} ${year}`, url: `/${locale}/${year}` },
+    ...breadcrumbParts.map((part, idx) => ({
+      name: `${getTypeLabel(part.type)} ${part.name}`,
+      url: `/${locale}/${year}/${breadcrumbParts
+        .slice(0, idx + 1)
+        .map((p) => p.slug)
+        .join("/")}`,
+    })),
+    {
+      name: `${t("article")} ${article.number}${articleTitle ? ` — ${articleTitle}` : ""}`,
+      url: `/${locale}${articleCanonicalPath}`,
+    },
+  ];
+
   return (
     <>
+      {/* Structured data for search engines */}
+      <ArticleJsonLd
+        locale={locale}
+        year={yearNum}
+        articleNumber={article.number}
+        articleTitle={articleTitle}
+        articleContent={articleContent}
+        url={`/${locale}${articleCanonicalPath}`}
+      />
+      <BreadcrumbJsonLd items={breadcrumbJsonLdItems} />
+
       {/* Reading progress indicator */}
       <ReadingProgress currentArticle={currentIndex + 1} totalArticles={allArticles.length} />
 
