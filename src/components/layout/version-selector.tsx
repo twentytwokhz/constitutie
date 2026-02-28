@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { CoatOfArms } from "@/components/national-symbols";
 import {
   Select,
@@ -10,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 const VERSION_YEARS = ["2003", "1991", "1986", "1952"] as const;
 
@@ -19,7 +19,8 @@ const VERSION_YEARS = ["2003", "1991", "1986", "1952"] as const;
  * Detects the currently active constitution year from the URL,
  * and navigates to the selected version's reader page on change.
  *
- * Uses the CoatOfArms badge in both the trigger and items.
+ * CoatOfArms badge is shown inside each SelectItem; the trigger renders
+ * the selected item's content via SelectValue (no separate badge needed).
  * Items use a fixed height to prevent layout shift between versions.
  */
 export function VersionSelector() {
@@ -41,7 +42,6 @@ export function VersionSelector() {
         className="h-8 w-auto gap-1.5 border-border/60 bg-transparent px-2.5 text-xs font-medium focus:ring-1"
         aria-label={t("label")}
       >
-        {currentYear && <CoatOfArms year={Number(currentYear)} size={16} className="shrink-0" />}
         <SelectValue placeholder={t("placeholder")} />
       </SelectTrigger>
       <SelectContent>

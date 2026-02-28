@@ -1,8 +1,3 @@
-import { and, asc, eq } from "drizzle-orm";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
@@ -15,6 +10,11 @@ import { TocSidebar } from "@/components/reader/toc-sidebar";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
+import { and, asc, eq } from "drizzle-orm";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
 
 /**
  * Generate per-article Open Graph and Twitter metadata for SEO and social sharing.
@@ -326,13 +326,13 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
         {/* Main content area */}
         <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-8 max-w-4xl mx-auto w-full">
           {/* Version header with coat of arms */}
-          <div className="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3 overflow-hidden">
             <CoatOfArms year={yearNum} size={36} className="shrink-0" />
             <div className="min-w-0 flex-1">
               <h2 className="text-sm font-semibold tracking-tight whitespace-nowrap sm:text-base">
                 {t("constitutionFrom")} {year}
               </h2>
-              <p className="text-xs text-muted-foreground tabular-nums">
+              <p className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
                 {allArticles.length} {tCommon("articles")}
               </p>
             </div>
