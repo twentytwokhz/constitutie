@@ -2739,3 +2739,44 @@
 - Features passing: 189/191
 - Total features: 191
 - Percentage: ~98.9%
+
+## Session: 2026-02-28 (Agent handling feature #192)
+
+### Completed Features
+
+#### Feature #192: PDF export — fix diacritics rendering ✅
+- **Root cause**: Previous agent (commit 2534edc) changed font paths from `.woff` to
+  `.otf` in diff-pdf-document.tsx but NEVER generated or committed the OTF files.
+  The code referenced `Inter-Latin-Regular.otf` etc. that didn't exist in the repo.
+  Additionally, @react-pdf v4's fontkit has bugs parsing WOFF zlib-compressed tables
+  that corrupt glyph mappings for Extended Latin characters (U+0100-02FF range),
+  causing ț → °, ș → diamond symbols, ă → broken glyphs in the PDF output.
+- **Fix**: Created `scripts/woff-to-ttf.mjs` that decompresses WOFF files into raw
+  OTF/OpenType format by reading the WOFF header, decompressing each zlib table,
+  and writing a standard OTF file. Generated 4 OTF files from the @fontsource/inter
+  WOFF subsets:
+  - Inter-Latin-Regular.otf (67952 bytes, from inter-latin-400-normal.woff)
+  - Inter-Latin-Bold.otf (67988 bytes, from inter-latin-700-normal.woff)
+  - Inter-LatinExt-Regular.otf (93992 bytes, from inter-latin-ext-400-normal.woff)
+  - Inter-LatinExt-Bold.otf (94256 bytes, from inter-latin-ext-700-normal.woff)
+- **Verification**:
+  - Generated test PDFs via API endpoint, analyzed ToUnicode CMap
+  - All Romanian diacritics correctly mapped: ț(021B), ș(0219), ă(0103), â(00E2),
+    î(00EE), Ă(0102), Ț(021A), Ș(0218), Î(00CE), —(2014), –(2013), "(201D)
+  - Full diff PDF (1952 vs 2003, 156 articles, 396KB) generates successfully
+  - No Helvetica fallback for diacritics text
+  - Biome lint: 0 errors (93 files checked)
+  - Pre-existing TS error (@react-pdf/types) unrelated to this change
+  - Zero mock data patterns in codebase
+
+### Files Added
+- public/fonts/Inter-Latin-Regular.otf — Latin subset OTF (decompressed WOFF)
+- public/fonts/Inter-Latin-Bold.otf — Latin subset bold OTF
+- public/fonts/Inter-LatinExt-Regular.otf — Latin-ext subset OTF (Romanian diacritics)
+- public/fonts/Inter-LatinExt-Bold.otf — Latin-ext subset bold OTF
+- scripts/woff-to-ttf.mjs — WOFF→OTF conversion script for reproducibility
+
+### Current Status
+- Features passing: 192/192
+- Total features: 192
+- Percentage: 100.0%
