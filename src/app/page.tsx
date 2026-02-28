@@ -7,11 +7,13 @@ import {
   IllustrationSearch,
 } from "@/components/illustrations";
 import { AnimatedText } from "@/components/landing/animated-text";
+import { FaqSection } from "@/components/landing/faq-section";
 import { GridBackground } from "@/components/landing/grid-background";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { StatsSection } from "@/components/landing/stats-section";
 import { Timeline } from "@/components/landing/timeline";
+import { Footer } from "@/components/layout/footer";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -191,6 +193,11 @@ export default function HomePage() {
         </Suspense>
       </ScrollReveal>
 
+      {/* FAQ Section */}
+      <ScrollReveal>
+        <FaqSection />
+      </ScrollReveal>
+
       {/* Final CTA Section */}
       <ScrollReveal>
         <section className="border-t bg-primary/5 py-16 sm:py-24">
@@ -221,6 +228,9 @@ export default function HomePage() {
           </div>
         </section>
       </ScrollReveal>
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }
