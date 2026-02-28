@@ -1,5 +1,27 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #144)
+
+### Completed Features
+
+#### Feature #144: Dropdown issue - transparent dropdown fix
+- Root Cause: Radix UI Select portal wrapper (data-radix-popper-content-wrapper) renders as a direct child of body with NO z-index. The sticky header has z-50 + backdrop-blur + bg-background/60 (60% opacity), creating a stacking context above the portal. The dropdown rendered BEHIND the semi-transparent header, appearing transparent.
+- Fix: Added global CSS rule for data-radix-popper-content-wrapper with z-index 50 important in globals.css
+- This fix applies to ALL Radix Popper-based components (Select, Popover, Tooltip, DropdownMenu)
+- Does NOT affect Dialog or Command components (they use different portal mechanisms)
+- Biome lint: 0 errors, TypeScript: 0 errors
+- Dev server: 200 OK on /2003
+
+### Current Status
+- Features passing: 57 (was 56)
+- Total features: 144
+- Percentage: ~39.6%
+
+### Notes
+- The bg-popover class was generating correct CSS (background-color: hsl(var(--popover)) = white)
+- The issue was purely a z-index stacking context problem, not a missing background
+- tailwindcss-animate is NOT installed, so animate-in/fade-in-0/zoom-in-95 classes on SelectContent are no-ops
+
 ## Session: 2026-02-28 (Agent handling feature #142)
 
 ### Completed Features
