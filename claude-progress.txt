@@ -1,5 +1,29 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #59, #87)
+
+### Completed Features
+
+#### Feature #59: Graph zoom controls work (zoom in, out, fit) ✅
+- Modified ForceGraphCanvas to use forwardRef + useImperativeHandle
+- Exposed three methods: zoomIn() (1.5x multiplier), zoomOut() (1/1.5x), fitToScreen()
+- Added Plus/Minus/Maximize2 button overlay in bottom-right corner of graph page
+- Buttons styled consistently with existing overlays (glass effect, backdrop blur)
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #87: Bar chart articles per version renders correctly ✅
+- Created shadcn-style chart wrapper: src/components/ui/chart.tsx
+- Created VersionBarChart client component with Recharts BarChart
+- 4 bars showing real article counts: 1952(105), 1986(121), 1991(152), 2003(157)
+- Replaced old VersionRow progress bars with proper Recharts bar chart
+- All data from real Neon PostgreSQL database
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: 90 (was 88)
+- Total features: 144
+- Percentage: ~62.5%
+
 ## Session: 2026-02-28 (Agent handling features #53, #55, #58)
 
 ### Completed Features
