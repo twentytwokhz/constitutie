@@ -7,7 +7,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Clock, FileText, Lightbulb, Search, X } from "lucide-react";
+import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
@@ -284,7 +284,10 @@ export function CommandPalette() {
       />
       <CommandList>
         {loading && (
-          <div className="py-6 text-center text-sm text-muted-foreground">Se caută...</div>
+          <div className="py-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span>Se caută...</span>
+          </div>
         )}
         {!loading && query.length >= 2 && results.length === 0 && (
           <div className="py-4 px-3">
