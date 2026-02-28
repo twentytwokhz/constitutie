@@ -5,7 +5,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { TricolorStripe } from "@/components/national-symbols";
 import { CommandPalette } from "@/components/search/command-palette";
 import { routing } from "@/i18n/routing";
 
@@ -66,7 +65,6 @@ export default async function LocaleLayout({ children, params }: Props) {
         enableSystem
         disableTransitionOnChange={false}
       >
-        <TricolorStripe height="4px" />
         <Header />
         <Suspense fallback={null}>
           <CommandPalette />

@@ -313,32 +313,32 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
   const tiptapContent = article.contentTiptap as Record<string, unknown> | null;
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+    <div className="flex flex-col min-h-[calc(100vh-67px)]">
       {/* Reading progress indicator */}
       <ReadingProgress currentArticle={currentIndex + 1} totalArticles={allArticles.length} />
 
       <div className="flex flex-1">
         {/* TOC Sidebar — desktop only */}
-        <aside className="hidden lg:block w-[280px] shrink-0 border-r border-border sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+        <aside className="hidden lg:block w-[280px] shrink-0 border-r border-border sticky top-[67px] h-[calc(100vh-67px)] overflow-y-auto">
           <TocSidebar year={yearNum} currentArticleNumber={article.number} />
         </aside>
 
         {/* Main content area */}
         <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-8 max-w-4xl mx-auto w-full">
-          {/* Version header with coat of arms (Feature 160) */}
+          {/* Version header with coat of arms */}
           <div className="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3">
-            <CoatOfArms year={yearNum} size={40} className="shrink-0" />
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold tracking-tight sm:text-base">
+            <CoatOfArms year={yearNum} size={36} className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-semibold tracking-tight whitespace-nowrap sm:text-base">
                 {t("constitutionFrom")} {year}
               </h2>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground tabular-nums">
                 {allArticles.length} {tCommon("articles")}
               </p>
             </div>
             <TricolorStripe
               height="3px"
-              className="ml-auto w-16 rounded-full overflow-hidden hidden sm:flex"
+              className="w-16 rounded-full overflow-hidden hidden sm:flex shrink-0"
             />
           </div>
 

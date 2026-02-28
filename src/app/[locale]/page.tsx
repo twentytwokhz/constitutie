@@ -41,15 +41,7 @@ export default async function HomePage() {
       <section className="relative flex min-h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden py-10 md:py-0">
         <GridBackground />
 
-        {/* Tricolor top bar accent — prominent horizontal tricolor at hero top */}
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-1 opacity-80 dark:opacity-60"
-          aria-hidden="true"
-          style={{
-            background:
-              "linear-gradient(to right, #002B7F 0%, #002B7F 33.33%, #FCD116 33.33%, #FCD116 66.66%, #CE1126 66.66%, #CE1126 100%)",
-          }}
-        />
+        {/* Tricolor top bar removed — now integrated into the sticky header */}
 
         {/* Tricolor gradient accent — subtle background glow behind hero content */}
         <div
@@ -57,14 +49,14 @@ export default async function HomePage() {
           aria-hidden="true"
         >
           <div
-            className="absolute -left-32 top-1/2 -translate-y-1/2 h-[500px] w-[200px] rotate-12 opacity-[0.07] dark:opacity-[0.10] blur-3xl rounded-full"
+            className="absolute -left-32 top-1/2 -translate-y-1/2 h-[500px] w-[200px] rotate-12 opacity-[0.12] dark:opacity-[0.18] blur-3xl rounded-full"
             style={{
               background:
                 "linear-gradient(180deg, #002B7F 0%, #002B7F 33%, #FCD116 33%, #FCD116 66%, #CE1126 66%, #CE1126 100%)",
             }}
           />
           <div
-            className="absolute -right-32 top-1/2 -translate-y-1/2 h-[400px] w-[160px] -rotate-12 opacity-[0.05] dark:opacity-[0.08] blur-3xl rounded-full"
+            className="absolute -right-32 top-1/2 -translate-y-1/2 h-[400px] w-[160px] -rotate-12 opacity-[0.10] dark:opacity-[0.14] blur-3xl rounded-full"
             style={{
               background:
                 "linear-gradient(180deg, #002B7F 0%, #002B7F 33%, #FCD116 33%, #FCD116 66%, #CE1126 66%, #CE1126 100%)",

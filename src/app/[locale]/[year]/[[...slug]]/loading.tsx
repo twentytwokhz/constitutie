@@ -6,13 +6,13 @@
  */
 export default function ReaderLoading() {
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+    <div className="flex flex-col min-h-[calc(100vh-67px)]">
       {/* Reading progress placeholder */}
       <div className="h-6 border-b border-border bg-muted/30" />
 
       <div className="flex flex-1">
         {/* TOC Sidebar skeleton — desktop only */}
-        <aside className="hidden lg:block w-[280px] shrink-0 border-r border-border sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto p-4">
+        <aside className="hidden lg:block w-[280px] shrink-0 border-r border-border sticky top-[67px] h-[calc(100vh-67px)] overflow-y-auto p-4">
           <div className="space-y-2">
             <div className="h-5 w-32 animate-pulse rounded bg-muted" />
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (

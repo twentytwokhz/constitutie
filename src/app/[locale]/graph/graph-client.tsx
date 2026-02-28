@@ -152,7 +152,7 @@ export function GraphPageClient() {
   };
 
   return (
-    <div className="relative flex h-[calc(100vh-4rem)] flex-col">
+    <div className="relative flex h-[calc(100vh-67px)] flex-col">
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur-sm">
         <div className="flex items-center gap-3">

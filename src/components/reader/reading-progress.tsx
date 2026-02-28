@@ -39,7 +39,7 @@ export function ReadingProgress({
   const articlePercent = totalArticles > 0 ? Math.round((currentArticle / totalArticles) * 100) : 0;
 
   return (
-    <div className="sticky top-16 z-30 w-full">
+    <div className="sticky top-[67px] z-30 w-full">
       {/* Scroll progress bar */}
       <div className="h-1 w-full bg-muted/50">
         <div

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { VersionSelector } from "@/components/layout/version-selector";
+import { TricolorStripe } from "@/components/national-symbols";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -48,7 +49,9 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur shadow-sm supports-[backdrop-filter]:bg-background/60">
+      {/* Tricolor band — sticks with header, subtle national accent */}
+      <TricolorStripe height="3px" />
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link
@@ -127,7 +130,7 @@ export function Header() {
             role="button"
             tabIndex={0}
             aria-label="Close menu"
-            className="fixed inset-0 top-16 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 top-[67px] z-40 bg-background/80 backdrop-blur-sm md:hidden"
             onClick={() => setMobileMenuOpen(false)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setMobileMenuOpen(false);

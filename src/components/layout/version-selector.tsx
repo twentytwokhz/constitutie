@@ -1,6 +1,5 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CoatOfArms } from "@/components/national-symbols";
 import {
@@ -19,6 +18,9 @@ const VERSION_YEARS = ["2003", "1991", "1986", "1952"] as const;
  *
  * Detects the currently active constitution year from the URL,
  * and navigates to the selected version's reader page on change.
+ *
+ * Uses the CoatOfArms badge in both the trigger and items.
+ * Items use a fixed height to prevent layout shift between versions.
  */
 export function VersionSelector() {
   const pathname = usePathname();
@@ -39,15 +41,15 @@ export function VersionSelector() {
         className="h-8 w-auto gap-1.5 border-border/60 bg-transparent px-2.5 text-xs font-medium focus:ring-1"
         aria-label={t("label")}
       >
-        <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
+        {currentYear && <CoatOfArms year={Number(currentYear)} size={16} className="shrink-0" />}
         <SelectValue placeholder={t("placeholder")} />
       </SelectTrigger>
       <SelectContent>
         {VERSION_YEARS.map((year) => (
-          <SelectItem key={year} value={year}>
+          <SelectItem key={year} value={year} className="h-9">
             <span className="inline-flex items-center gap-2">
-              <CoatOfArms year={Number(year)} size={20} className="shrink-0" />
-              {t(`constitution${year}`)}
+              <CoatOfArms year={Number(year)} size={18} className="shrink-0" />
+              <span className="whitespace-nowrap">{t(`constitution${year}`)}</span>
             </span>
           </SelectItem>
         ))}
