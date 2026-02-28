@@ -2432,3 +2432,43 @@
 
 ### Current Status
 - Feature #148 marked as passing
+
+## Session: 2026-02-28 (Agent handling feature #182)
+
+### Completed Features
+
+#### Feature #182: UI Improvements and issues ✅
+- **Version dropdown fix**: Removed redundant BookOpen icon from trigger (items already
+  show CoatOfArms). Added 16px CoatOfArms to trigger for visual continuity. Fixed item
+  height inconsistency with fixed `h-9` and `whitespace-nowrap` on labels.
+- **Tricolor band fix**: Moved TricolorStripe from standalone element in layout into
+  the sticky header component. Added `shadow-sm` for subtle depth. Removed duplicate
+  hero top bar (header stripe now serves as the national accent). Updated all sticky
+  offsets (top-16 → top-[67px], calc(100vh-4rem) → calc(100vh-67px)) across reader,
+  graph, loading skeleton, and reading progress components.
+- **Version info card text**: Added `whitespace-nowrap` to prevent "Constituția din 2003"
+  from wrapping into three lines. Added `flex-1` to text container and `shrink-0` to
+  flanking elements. Reduced CoatOfArms from 40px to 36px for better proportion.
+- **Geometric patterns visibility**: Boosted SVG folk motif pattern opacities from
+  0.04-0.14 to 0.10-0.35 (roughly 2.5x increase). Widened radial mask (r 60%→65%
+  with #999 midstop at 70%). Increased particle sizes/opacities, added 2 more particles.
+  Boosted tricolor gradient glow blobs in hero.
+- Biome lint: 0 errors, TypeScript tsc: 0 errors
+- All pages return HTTP 200
+- No mock data patterns in codebase
+
+### Files Modified
+- src/components/layout/version-selector.tsx — Removed BookOpen, added CoatOfArms trigger
+- src/components/layout/header.tsx — Integrated TricolorStripe, added shadow-sm
+- src/app/[locale]/layout.tsx — Removed standalone TricolorStripe import/usage
+- src/app/[locale]/page.tsx — Removed duplicate hero top bar, boosted glow opacities
+- src/components/landing/grid-background.tsx — Major opacity boost on all patterns
+- src/app/[locale]/[year]/[[...slug]]/page.tsx — Fixed text layout, updated sticky offset
+- src/app/[locale]/[year]/[[...slug]]/loading.tsx — Updated sticky offset
+- src/components/reader/reading-progress.tsx — Updated sticky offset
+- src/app/[locale]/graph/graph-client.tsx — Updated viewport calc
+
+### Current Status
+- Features passing: 182/182
+- Total features: 182
+- Percentage: 100.0%
