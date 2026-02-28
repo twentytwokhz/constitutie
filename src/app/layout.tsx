@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | Constituția României",
   },
   description:
-    "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003). Navigare articol cu articol, comparare versiuni, vizualizare graf și feedback cetățenesc.",
+    "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1866–2003). Navigare articol cu articol, comparare versiuni, vizualizare graf și feedback cetățenesc.",
   keywords: [
     "Constituția României",
     "Romanian Constitution",
@@ -25,7 +25,12 @@ export const metadata: Metadata = {
     "drept constituțional",
     "articole constituție",
     "comparație versiuni constituție",
+    "1866",
+    "1923",
+    "1938",
+    "1948",
     "1952",
+    "1965",
     "1986",
     "1991",
     "2003",
@@ -40,7 +45,7 @@ export const metadata: Metadata = {
     siteName: "Constituția României",
     title: "Constituția României - Explorare Interactivă",
     description:
-      "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003).",
+      "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1866–2003).",
     images: [
       {
         url: "/images/logo2003.png",

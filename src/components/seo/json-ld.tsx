@@ -36,8 +36,8 @@ export function WebSiteJsonLd({ locale }: WebSiteJsonLdProps) {
     url: `${BASE_URL}/${locale}`,
     description:
       locale === "en"
-        ? "Interactive platform for exploring the Romanian Constitution through all its historical versions (1952, 1986, 1991, 2003)."
-        : "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003).",
+        ? "Interactive platform for exploring the Romanian Constitution through all its historical versions (1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003)."
+        : "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003).",
     inLanguage: locale === "en" ? "en-US" : "ro-RO",
     publisher: {
       "@type": "Organization",

@@ -172,7 +172,7 @@ export function GraphPageClient() {
                       {v.name}
                     </SelectItem>
                   ))
-                : [1952, 1986, 1991, 2003].map((y) => (
+                : [1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003].map((y) => (
                     <SelectItem key={y} value={String(y)}>
                       {t("common.constitutionOf")} {y}
                     </SelectItem>

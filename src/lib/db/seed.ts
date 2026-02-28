@@ -2,7 +2,7 @@
  * Database Seed Script
  *
  * Parses the constitution markdown files from public/ directory
- * and populates the database with all 4 versions (1952, 1986, 1991, 2003).
+ * and populates the database with all 9 versions (1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003).
  *
  * Usage: npm run db:seed
  *
@@ -22,7 +22,12 @@ import { resolve } from "node:path";
 import { neon } from "@neondatabase/serverless";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
-import { type ParsedVersion, contentToTipTap, parseConstitution } from "../parser/index.js";
+import {
+  ALL_CONSTITUTION_YEARS,
+  type ParsedVersion,
+  contentToTipTap,
+  parseConstitution,
+} from "../parser/index.js";
 import * as schema from "./schema.js";
 
 // Load environment
@@ -258,9 +263,14 @@ async function main() {
   console.log("=== Constitution Database Seed Script ===\n");
 
   // Read all markdown files
-  const years = [1952, 1986, 1991, 2003] as const;
+  const years = ALL_CONSTITUTION_YEARS;
   const expectedCounts: Record<number, number> = {
+    1866: 133,
+    1923: 138,
+    1938: 100,
+    1948: 105,
     1952: 105,
+    1965: 121,
     1986: 121,
     1991: 152,
     2003: 157,

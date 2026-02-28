@@ -4,7 +4,10 @@ import Image from "next/image";
  * Map of constitution years to their corresponding coat of arms image paths.
  */
 const COAT_OF_ARMS_MAP: Record<number, string> = {
+  // Kingdom-era constitutions (1866, 1923, 1938) have no coat of arms images yet
+  1948: "/images/logo1952.webp", // People's Republic era — same emblem as 1952
   1952: "/images/logo1952.webp",
+  1965: "/images/logo1986.webp", // Socialist Republic era — same emblem as 1986
   1986: "/images/logo1986.webp",
   1991: "/images/logo1991.webp",
   2003: "/images/logo2003.webp",
@@ -16,7 +19,7 @@ const COAT_OF_ARMS_MAP: Record<number, string> = {
  * Displays the version-specific coat of arms using Next.js Image for optimization.
  * Adapts to dark mode with a subtle drop shadow and light border for visibility.
  *
- * @param year - The constitution year (1952, 1986, 1991, 2003)
+ * @param year - The constitution year (1866–2003). Returns null for years without images.
  * @param size - Size in pixels (used for both width and height)
  * @param className - Additional CSS classes
  */

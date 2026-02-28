@@ -202,10 +202,35 @@ interface VersionMeta {
 }
 
 const VERSION_META: Record<number, VersionMeta> = {
+  1866: {
+    name: "Constituția din 1866",
+    description:
+      "Constituțiunea României din 1866, adoptată la 30 iunie 1866 sub domnia lui Carol I. Prima constituție modernă a României, inspirată de modelul belgian, a stabilit monarhia constituțională.",
+  },
+  1923: {
+    name: "Constituția din 1923",
+    description:
+      "Constituțiunea României din 1923, adoptată la 28 martie 1923 sub regele Ferdinand I. Constituția României Mari, a introdus votul universal masculin și controlul constituționalității legilor.",
+  },
+  1938: {
+    name: "Constituția din 1938",
+    description:
+      "Constituțiunea României din 1938, promulgată la 27 februarie 1938 de regele Carol al II-lea. A instaurat un regim de autoritate monarhică, suspendând libertățile democratice.",
+  },
+  1948: {
+    name: "Constituția din 1948",
+    description:
+      "Constituția Republicii Populare Române din 1948, adoptată la 13 aprilie 1948. Prima constituție comunistă a României, a consacrat trecerea la regimul de democrație populară.",
+  },
   1952: {
     name: "Constituția din 1952",
     description:
       "Constituția Republicii Populare Române din 1952, adoptată la 24 septembrie 1952. Inspirată de modelul sovietic, a consacrat rolul conducător al Partidului Comunist Român.",
+  },
+  1965: {
+    name: "Constituția din 1965",
+    description:
+      "Constituția Republicii Socialiste România din 1965, adoptată la 21 august 1965. A proclamat România republică socialistă și a consolidat puterea Partidului Comunist Român.",
   },
   1986: {
     name: "Constituția din 1986",
@@ -233,14 +258,46 @@ interface DetectedHeading {
   articleTitle?: string | null;
 }
 
+/**
+ * Years that use ##### Articolul N. Title (H5) format — articles have titles
+ */
+const YEARS_WITH_ARTICLE_TITLES = new Set([1991, 2003]);
+
+/**
+ * Years that use ### Articolul N. (H3) format — articles without titles.
+ * This includes all pre-1991 constitutions.
+ */
+const YEARS_WITH_H3_ARTICLES = new Set([1866, 1923, 1938, 1948, 1952, 1965, 1986]);
+
+/**
+ * Years that use ## Capitolul N. (H2) chapters as top-level structural units
+ * (no Titluri above them). Only 1952 uses this format.
+ */
+const YEARS_WITH_H2_CHAPTERS = new Set([1952]);
+
+/**
+ * Years that have Capitol introductiv (introductory chapter without number)
+ */
+const YEARS_WITH_CAPITOL_INTRODUCTIV = new Set([1952]);
+
+/**
+ * Years that have #### Secțiunea N. sections
+ */
+const YEARS_WITH_SECTIONS = new Set([1991, 2003]);
+
+/**
+ * Years that have ### Capitolul N. chapters (under Titluri)
+ */
+const YEARS_WITH_H3_CHAPTERS = new Set([1866, 1923, 1938, 1948, 1965, 1991, 2003]);
+
 function detectHeading(line: string, year: number): DetectedHeading | null {
-  // Check for Capitol introductiv (1952 only)
-  if (year === 1952 && RE_CAPITOL_INTRODUCTIV.test(line)) {
+  // Check for Capitol introductiv
+  if (YEARS_WITH_CAPITOL_INTRODUCTIV.has(year) && RE_CAPITOL_INTRODUCTIV.test(line)) {
     return { type: "capitol", number: 0, name: "Capitol introductiv" };
   }
 
   // Check for articles first (more specific patterns)
-  if (year === 1991 || year === 2003) {
+  if (YEARS_WITH_ARTICLE_TITLES.has(year)) {
     const artH5 = line.match(RE_ARTICLE_H5);
     if (artH5) {
       const title = artH5[2]?.trim() || null;
@@ -253,7 +310,7 @@ function detectHeading(line: string, year: number): DetectedHeading | null {
     }
   }
 
-  if (year === 1952 || year === 1986) {
+  if (YEARS_WITH_H3_ARTICLES.has(year)) {
     const artH3 = line.match(RE_ARTICLE_H3);
     if (artH3) {
       return {
@@ -267,8 +324,8 @@ function detectHeading(line: string, year: number): DetectedHeading | null {
 
   // Check structural units (order matters: most specific first)
 
-  // Section (#### level) - only in 1991/2003
-  if (year === 1991 || year === 2003) {
+  // Section (#### level)
+  if (YEARS_WITH_SECTIONS.has(year)) {
     const secMatch = line.match(RE_SECTIUNE);
     if (secMatch) {
       return {
@@ -279,8 +336,8 @@ function detectHeading(line: string, year: number): DetectedHeading | null {
     }
   }
 
-  // Chapter at ### level (1991/2003)
-  if (year === 1991 || year === 2003) {
+  // Chapter at ### level (under Titluri)
+  if (YEARS_WITH_H3_CHAPTERS.has(year)) {
     const capH3 = line.match(RE_CAPITOL_H3);
     if (capH3) {
       return {
@@ -291,8 +348,8 @@ function detectHeading(line: string, year: number): DetectedHeading | null {
     }
   }
 
-  // Chapter at ## level (1952 only)
-  if (year === 1952) {
+  // Chapter at ## level (top-level, 1952 only)
+  if (YEARS_WITH_H2_CHAPTERS.has(year)) {
     const capH2 = line.match(RE_CAPITOL_H2);
     if (capH2) {
       return {
@@ -303,8 +360,8 @@ function detectHeading(line: string, year: number): DetectedHeading | null {
     }
   }
 
-  // Title at ## level (1986/1991/2003)
-  if (year !== 1952) {
+  // Title at ## level (all years except 1952 which only has chapters)
+  if (!YEARS_WITH_H2_CHAPTERS.has(year)) {
     const titluMatch = line.match(RE_TITLU);
     if (titluMatch) {
       return {
@@ -469,11 +526,17 @@ export function parseConstitution(markdown: string, year: number): ParsedVersion
 }
 
 /**
- * Parse all 4 constitution versions from their markdown content.
+ * All constitution years in chronological order.
+ */
+export const ALL_CONSTITUTION_YEARS = [
+  1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003,
+] as const;
+
+/**
+ * Parse all constitution versions from their markdown content.
  */
 export function parseAllConstitutions(files: Record<number, string>): ParsedVersion[] {
-  const years = [1952, 1986, 1991, 2003];
-  return years.map((year) => {
+  return ALL_CONSTITUTION_YEARS.map((year) => {
     const content = files[year];
     if (!content) {
       throw new Error(`Missing markdown content for year ${year}`);
