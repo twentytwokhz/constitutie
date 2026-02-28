@@ -18,14 +18,20 @@ const PARTICLES = [
 ];
 
 /**
- * GridBackground — Romanian folk motif geometric pattern background for the hero section.
+ * GridBackground — Romanian cross-stitch embroidery pattern background for the hero section.
+ *
+ * Inspired by traditional Romanian "cusături" (cross-stitch embroidery) featuring:
+ * - 8-pointed star motifs (steaua/floarea) — the signature Romanian folk pattern
+ * - Diamond lattice borders connecting the star motifs
+ * - Small cross accents filling negative space
+ * - All shapes built on a pixel grid for authentic cross-stitch appearance
+ *
+ * The patterns use stepped/staircase edges (rect-based) rather than smooth curves
+ * to faithfully represent the cross-stitch grid structure of Romanian embroidery.
  *
  * INTENTIONALLY uses DIFFERENT motifs from FolkDivider to create visual variety:
- * - GridBackground: rosette wheels, Tree of Life motif, meander/key patterns
- * - FolkDivider: diamond chains, chevron lines, cross-stitch dots
- *
- * This distinction ensures the hero background feels unique and complementary
- * rather than repetitive when combined with the folk divider bands.
+ * - GridBackground: 8-pointed stars, diamond lattice, small crosses (area fill)
+ * - FolkDivider: band patterns with repeating border motifs (horizontal dividers)
  *
  * Pattern visibility is boosted significantly in dark mode for strong contrast
  * against stone-950 backgrounds.
@@ -39,149 +45,510 @@ export function GridBackground({ className = "" }: { className?: string }) {
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       aria-hidden="true"
     >
-      {/* Romanian folk motif SVG patterns — distinct from FolkDivider patterns */}
+      {/* Romanian cross-stitch embroidery SVG patterns */}
       <svg
         className="absolute inset-0 h-full w-full animate-grid-fade"
         role="img"
-        aria-label="Romanian folk motif background pattern"
+        aria-label="Romanian cross-stitch embroidery background pattern"
       >
         <defs>
           {/*
-           * Pattern 1: Rosette / Solar wheel — a circular folk motif common in
-           * Romanian wood carving and painted eggs (ouă încondeiate).
-           * Differs from FolkDivider's diamond chains.
+           * Pattern 1: 8-pointed star (steaua) — the signature Romanian embroidery motif.
+           * Built from stepped rectangles on a grid to achieve authentic cross-stitch look.
+           * The star is formed by a central diamond with 4 diagonal arms.
            */}
-          <pattern
-            id="folk-rosette"
-            x="0"
-            y="0"
-            width="64"
-            height="64"
-            patternUnits="userSpaceOnUse"
-          >
-            {/* Outer circle */}
-            <circle
-              cx="32"
-              cy="32"
-              r="22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.9"
-              className="text-primary/[0.28] dark:text-primary/[0.45]"
+          <pattern id="folk-star" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+            {/* === 8-POINTED STAR MOTIF (centered at 40,40) === */}
+
+            {/* Central diamond — 4 rects forming a small diamond core */}
+            <rect
+              x="38"
+              y="34"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.32] dark:text-primary/[0.50]"
             />
-            {/* Inner circle */}
-            <circle
-              cx="32"
-              cy="32"
-              r="12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.7"
+            <rect
+              x="34"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.32] dark:text-primary/[0.50]"
+            />
+            <rect
+              x="42"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.32] dark:text-primary/[0.50]"
+            />
+            <rect
+              x="38"
+              y="42"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.32] dark:text-primary/[0.50]"
+            />
+            {/* Center fill */}
+            <rect
+              x="38"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.38] dark:text-primary/[0.55]"
+            />
+
+            {/* Diagonal arm — top-left (staircase pattern) */}
+            <rect
+              x="34"
+              y="30"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
+            />
+            <rect
+              x="30"
+              y="26"
+              width="4"
+              height="4"
+              fill="currentColor"
               className="text-primary/[0.22] dark:text-primary/[0.38]"
             />
-            {/* Radial spokes (6-pointed star within circle) */}
-            <path
-              d="M32 10 L32 54 M14 21 L50 43 M14 43 L50 21"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.6"
+            <rect
+              x="26"
+              y="22"
+              width="4"
+              height="4"
+              fill="currentColor"
               className="text-primary/[0.18] dark:text-primary/[0.32]"
             />
-            {/* Center dot */}
-            <circle
-              cx="32"
-              cy="32"
-              r="2.5"
-              className="fill-primary/[0.30] dark:fill-primary/[0.48]"
-            />
-          </pattern>
 
-          {/*
-           * Pattern 2: Tree of Life / Pomul Vieții — a vertical branching motif
-           * fundamental to Romanian folk embroidery. Distinct from FolkDivider's
-           * horizontal chevron bands.
-           */}
-          <pattern id="folk-tree" x="0" y="0" width="48" height="48" patternUnits="userSpaceOnUse">
-            {/* Central trunk */}
-            <line
-              x1="24"
-              y1="6"
-              x2="24"
-              y2="42"
-              stroke="currentColor"
-              strokeWidth="0.8"
+            {/* Diagonal arm — top-right */}
+            <rect
+              x="42"
+              y="30"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
+            />
+            <rect
+              x="46"
+              y="26"
+              width="4"
+              height="4"
+              fill="currentColor"
               className="text-primary/[0.22] dark:text-primary/[0.38]"
             />
-            {/* Upper branches (V shapes) */}
-            <path
-              d="M24 14 L16 22 M24 14 L32 22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.7"
+            <rect
+              x="50"
+              y="22"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.18] dark:text-primary/[0.32]"
+            />
+
+            {/* Diagonal arm — bottom-left */}
+            <rect
+              x="34"
+              y="46"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
+            />
+            <rect
+              x="30"
+              y="50"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.22] dark:text-primary/[0.38]"
+            />
+            <rect
+              x="26"
+              y="54"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.18] dark:text-primary/[0.32]"
+            />
+
+            {/* Diagonal arm — bottom-right */}
+            <rect
+              x="42"
+              y="46"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
+            />
+            <rect
+              x="46"
+              y="50"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.22] dark:text-primary/[0.38]"
+            />
+            <rect
+              x="50"
+              y="54"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.18] dark:text-primary/[0.32]"
+            />
+
+            {/* Cardinal arms — top */}
+            <rect
+              x="38"
+              y="26"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
+            />
+            <rect
+              x="38"
+              y="20"
+              width="4"
+              height="4"
+              fill="currentColor"
               className="text-primary/[0.20] dark:text-primary/[0.35]"
             />
-            {/* Lower branches */}
-            <path
-              d="M24 26 L14 34 M24 26 L34 34"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.7"
+
+            {/* Cardinal arms — bottom */}
+            <rect
+              x="38"
+              y="50"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
+            />
+            <rect
+              x="38"
+              y="56"
+              width="4"
+              height="4"
+              fill="currentColor"
               className="text-primary/[0.20] dark:text-primary/[0.35]"
             />
-            {/* Root base */}
-            <path
-              d="M20 42 L24 42 L28 42"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.9"
-              className="text-primary/[0.24] dark:text-primary/[0.40]"
+
+            {/* Cardinal arms — left */}
+            <rect
+              x="26"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
             />
-            {/* Leaf dots at branch tips */}
-            <circle
-              cx="16"
-              cy="22"
-              r="1.5"
-              className="fill-primary/[0.18] dark:fill-primary/[0.32]"
+            <rect
+              x="20"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.20] dark:text-primary/[0.35]"
             />
-            <circle
-              cx="32"
-              cy="22"
-              r="1.5"
-              className="fill-primary/[0.18] dark:fill-primary/[0.32]"
+
+            {/* Cardinal arms — right */}
+            <rect
+              x="50"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.26] dark:text-primary/[0.42]"
             />
-            <circle
-              cx="14"
-              cy="34"
-              r="1.5"
-              className="fill-primary/[0.16] dark:fill-primary/[0.28]"
+            <rect
+              x="56"
+              y="38"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.20] dark:text-primary/[0.35]"
             />
-            <circle
-              cx="34"
-              cy="34"
-              r="1.5"
-              className="fill-primary/[0.16] dark:fill-primary/[0.28]"
+
+            {/* Extra arm tips — gives 8-pointed fullness */}
+            <rect
+              x="30"
+              y="30"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.20] dark:text-primary/[0.35]"
+            />
+            <rect
+              x="46"
+              y="30"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.20] dark:text-primary/[0.35]"
+            />
+            <rect
+              x="30"
+              y="46"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.20] dark:text-primary/[0.35]"
+            />
+            <rect
+              x="46"
+              y="46"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.20] dark:text-primary/[0.35]"
+            />
+
+            {/* Corner accent crosses — small crosses at pattern tile corners
+                (visible where 4 tiles meet, creating the lattice effect) */}
+            <rect
+              x="2"
+              y="0"
+              width="2"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <rect
+              x="0"
+              y="2"
+              width="2"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <rect
+              x="4"
+              y="2"
+              width="2"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <rect
+              x="2"
+              y="4"
+              width="2"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
             />
           </pattern>
 
           {/*
-           * Pattern 3: Meander / Greek key — found in Romanian folk pottery and
-           * carpet weaving. A continuous angular spiral distinct from cross-stitch dots.
+           * Pattern 2: Diamond lattice with inner cross — traditional Romanian
+           * "romb" (rhombus) pattern used as filler between larger star motifs.
+           * Smaller tile size creates a denser, more intricate texture.
            */}
           <pattern
-            id="folk-meander"
+            id="folk-diamond-lattice"
             x="0"
             y="0"
-            width="32"
-            height="32"
+            width="40"
+            height="40"
             patternUnits="userSpaceOnUse"
           >
-            {/* Angular spiral motif */}
-            <path
-              d="M4 16 L4 4 L20 4 L20 12 L12 12 L12 20 L28 20 L28 28 L4 28 L4 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.7"
-              className="text-primary/[0.20] dark:text-primary/[0.35]"
+            {/* Diamond outline — stepped edges */}
+            <rect
+              x="18"
+              y="4"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.18] dark:text-primary/[0.30]"
+            />
+            <rect
+              x="14"
+              y="8"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            <rect
+              x="22"
+              y="8"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            <rect
+              x="10"
+              y="12"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.25]"
+            />
+            <rect
+              x="26"
+              y="12"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.25]"
+            />
+            <rect
+              x="6"
+              y="16"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <rect
+              x="30"
+              y="16"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            {/* Diamond bottom half (mirror) */}
+            <rect
+              x="10"
+              y="24"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.25]"
+            />
+            <rect
+              x="26"
+              y="24"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.25]"
+            />
+            <rect
+              x="14"
+              y="28"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            <rect
+              x="22"
+              y="28"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            <rect
+              x="18"
+              y="32"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.18] dark:text-primary/[0.30]"
+            />
+            {/* Inner cross at diamond center */}
+            <rect
+              x="18"
+              y="16"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.22] dark:text-primary/[0.38]"
+            />
+            <rect
+              x="14"
+              y="20"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            <rect
+              x="22"
+              y="20"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            <rect
+              x="18"
+              y="20"
+              width="4"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.24] dark:text-primary/[0.40]"
+            />
+          </pattern>
+
+          {/*
+           * Pattern 3: Small repeating crosses — traditional "cruciulițe" filler
+           * motif found throughout Romanian embroidery. Creates fine texture between
+           * the larger star and diamond patterns.
+           */}
+          <pattern
+            id="folk-crosses"
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            {/* Small + cross */}
+            <rect
+              x="8"
+              y="6"
+              width="4"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.26]"
+            />
+            <rect
+              x="8"
+              y="12"
+              width="4"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.26]"
+            />
+            <rect
+              x="6"
+              y="8"
+              width="2"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.26]"
+            />
+            <rect
+              x="12"
+              y="8"
+              width="2"
+              height="4"
+              fill="currentColor"
+              className="text-primary/[0.14] dark:text-primary/[0.26]"
+            />
+            {/* Center dot */}
+            <rect
+              x="9"
+              y="9"
+              width="2"
+              height="2"
+              fill="currentColor"
+              className="text-primary/[0.18] dark:text-primary/[0.32]"
             />
           </pattern>
 
@@ -196,25 +563,25 @@ export function GridBackground({ className = "" }: { className?: string }) {
           </mask>
         </defs>
 
-        {/* Layer 1: Rosette pattern (primary motif — distinct circular shapes) */}
-        <rect width="100%" height="100%" fill="url(#folk-rosette)" mask="url(#folk-pattern-fade)" />
+        {/* Layer 1: 8-pointed star pattern (primary motif — hero centerpiece) */}
+        <rect width="100%" height="100%" fill="url(#folk-star)" mask="url(#folk-pattern-fade)" />
 
-        {/* Layer 2: Tree of Life pattern (secondary, offset) */}
+        {/* Layer 2: Diamond lattice (secondary, offset for depth) */}
         <rect
           width="100%"
           height="100%"
-          fill="url(#folk-tree)"
+          fill="url(#folk-diamond-lattice)"
           mask="url(#folk-pattern-fade)"
-          style={{ opacity: 0.8 }}
+          style={{ opacity: 0.7 }}
         />
 
-        {/* Layer 3: Meander key pattern (texture fill) */}
+        {/* Layer 3: Small crosses (fine texture fill) */}
         <rect
           width="100%"
           height="100%"
-          fill="url(#folk-meander)"
+          fill="url(#folk-crosses)"
           mask="url(#folk-pattern-fade)"
-          style={{ opacity: 0.65 }}
+          style={{ opacity: 0.5 }}
         />
       </svg>
 

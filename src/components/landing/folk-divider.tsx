@@ -1,13 +1,16 @@
 /**
- * FolkDivider — Geometric section divider inspired by Romanian ie folk motifs.
+ * FolkDivider — Romanian cross-stitch embroidery band divider between landing sections.
  *
- * Renders an SVG band of traditional Romanian embroidery patterns between
- * landing page sections. Supports three intensity levels:
- * - "strong": full opacity, used in hero/features transitions
- * - "medium": reduced opacity, used between mid-page sections
- * - "subtle": barely visible, used near the footer
+ * Inspired by traditional Romanian "cusături" (cross-stitch embroidery) bands,
+ * featuring repeating 8-pointed star motifs connected by diagonal lattice grids,
+ * with small cross accents filling negative space — all built on a pixel grid
+ * for authentic cross-stitch stepped-edge appearance.
  *
- * Motifs include diamond chains, chevron lines, and cross-stitch geometry.
+ * Supports three intensity levels:
+ * - "strong": full opacity, prominent band near hero (tallest)
+ * - "medium": reduced opacity, mid-page section transitions
+ * - "subtle": lightest, near footer
+ *
  * Adapts to dark/light mode via CSS currentColor and Tailwind dark: variants.
  * Respects prefers-reduced-motion (static rendering, no animation).
  */
@@ -26,47 +29,54 @@ interface FolkDividerProps {
 const intensityMap: Record<
   FolkDividerIntensity,
   {
-    stroke: string;
-    darkStroke: string;
+    /** Base opacity multiplier for primary pattern elements (0-1 range) */
+    opacityBase: number;
+    /** Opacity multiplier for dark mode (added on top of base) */
+    opacityDarkBoost: number;
+    /** Band height in px */
     height: number;
-    strokeWidth: number;
-    innerStrokeWidth: number;
-    accentStrokeWidth: number;
+    /** Cell size for the cross-stitch grid */
+    cellSize: number;
+    /** Background tint opacity class */
     bgOpacity: string;
     darkBgOpacity: string;
   }
 > = {
   strong: {
-    stroke: "text-primary/[0.50]",
-    darkStroke: "dark:text-primary/[0.70]",
-    height: 56,
-    strokeWidth: 1.4,
-    innerStrokeWidth: 1.0,
-    accentStrokeWidth: 1.1,
-    bgOpacity: "bg-primary/[0.07]",
-    darkBgOpacity: "dark:bg-primary/[0.14]",
+    opacityBase: 0.4,
+    opacityDarkBoost: 0.2,
+    height: 64,
+    cellSize: 4,
+    bgOpacity: "bg-primary/[0.06]",
+    darkBgOpacity: "dark:bg-primary/[0.12]",
   },
   medium: {
-    stroke: "text-primary/[0.38]",
-    darkStroke: "dark:text-primary/[0.55]",
-    height: 44,
-    strokeWidth: 1.2,
-    innerStrokeWidth: 0.85,
-    accentStrokeWidth: 0.95,
-    bgOpacity: "bg-primary/[0.05]",
-    darkBgOpacity: "dark:bg-primary/[0.10]",
+    opacityBase: 0.28,
+    opacityDarkBoost: 0.16,
+    height: 52,
+    cellSize: 3,
+    bgOpacity: "bg-primary/[0.04]",
+    darkBgOpacity: "dark:bg-primary/[0.09]",
   },
   subtle: {
-    stroke: "text-primary/[0.25]",
-    darkStroke: "dark:text-primary/[0.42]",
-    height: 32,
-    strokeWidth: 1.0,
-    innerStrokeWidth: 0.7,
-    accentStrokeWidth: 0.8,
+    opacityBase: 0.18,
+    opacityDarkBoost: 0.12,
+    height: 40,
+    cellSize: 3,
     bgOpacity: "bg-primary/[0.03]",
-    darkBgOpacity: "dark:bg-primary/[0.08]",
+    darkBgOpacity: "dark:bg-primary/[0.07]",
   },
 };
+
+/**
+ * Generate opacity class string for light and dark mode.
+ * Uses Tailwind arbitrary values for precise control.
+ */
+function opClasses(base: number, darkBoost: number, factor: number): string {
+  const light = Math.round(base * factor * 100) / 100;
+  const dark = Math.round((base + darkBoost) * factor * 100) / 100;
+  return `text-primary/[${light.toFixed(2)}] dark:text-primary/[${dark.toFixed(2)}]`;
+}
 
 export function FolkDivider({
   intensity = "medium",
@@ -74,6 +84,13 @@ export function FolkDivider({
   flip = false,
 }: FolkDividerProps) {
   const config = intensityMap[intensity];
+  const { opacityBase: ob, opacityDarkBoost: db, height, cellSize: c } = config;
+
+  // Pattern tile dimensions — the star motif repeats every tileW pixels
+  const tileW = c * 16; // 16 cells wide
+  const tileH = height;
+  const mid = tileW / 2; // center x of tile
+  const midY = tileH / 2; // center y of tile
 
   return (
     <div
@@ -83,97 +100,405 @@ export function FolkDivider({
     >
       <svg
         className="w-full"
-        style={{ height: config.height }}
-        viewBox={`0 0 1200 ${config.height}`}
+        style={{ height }}
+        viewBox={`0 0 1200 ${height}`}
         preserveAspectRatio="none"
         role="img"
-        aria-label="Decorative folk pattern divider"
+        aria-label="Decorative Romanian cross-stitch band pattern"
       >
         <defs>
-          {/* Diamond chain pattern — repeating horizontal band */}
+          {/*
+           * Cross-stitch star band pattern — a horizontally-repeating 8-pointed
+           * star motif with connecting lattice, built entirely from small rects
+           * on a grid to achieve authentic embroidery appearance.
+           */}
           <pattern
-            id={`divider-diamond-${intensity}`}
+            id={`band-star-${intensity}`}
             x="0"
             y="0"
-            width="48"
-            height={config.height}
+            width={tileW}
+            height={tileH}
             patternUnits="userSpaceOnUse"
           >
-            {/* Central diamond */}
-            <path
-              d={`M24 ${config.height * 0.15} L${24 + config.height * 0.35} ${config.height * 0.5} L24 ${config.height * 0.85} L${24 - config.height * 0.35} ${config.height * 0.5} Z`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={config.strokeWidth}
-              className={`${config.stroke} ${config.darkStroke}`}
+            {/* === CENTRAL 8-POINTED STAR === */}
+
+            {/* Center core */}
+            <rect
+              x={mid - c}
+              y={midY - c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 1.0)}
             />
-            {/* Inner diamond */}
-            <path
-              d={`M24 ${config.height * 0.3} L${24 + config.height * 0.2} ${config.height * 0.5} L24 ${config.height * 0.7} L${24 - config.height * 0.2} ${config.height * 0.5} Z`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={config.innerStrokeWidth}
-              className={`${config.stroke} ${config.darkStroke}`}
+
+            {/* Inner ring — 4 cardinal rects */}
+            <rect
+              x={mid - c}
+              y={midY - c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.85)}
             />
-            {/* Cross at center */}
-            <line
-              x1="22"
-              y1={config.height * 0.5}
-              x2="26"
-              y2={config.height * 0.5}
-              stroke="currentColor"
-              strokeWidth={config.accentStrokeWidth}
-              className={`${config.stroke} ${config.darkStroke}`}
+            <rect
+              x={mid - c}
+              y={midY + c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.85)}
             />
-            <line
-              x1="24"
-              y1={config.height * 0.5 - 2}
-              x2="24"
-              y2={config.height * 0.5 + 2}
-              stroke="currentColor"
-              strokeWidth={config.accentStrokeWidth}
-              className={`${config.stroke} ${config.darkStroke}`}
+            <rect
+              x={mid - c * 3}
+              y={midY - c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.85)}
+            />
+            <rect
+              x={mid + c}
+              y={midY - c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.85)}
+            />
+
+            {/* Inner ring — 4 diagonal rects */}
+            <rect
+              x={mid - c * 3}
+              y={midY - c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.75)}
+            />
+            <rect
+              x={mid + c}
+              y={midY - c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.75)}
+            />
+            <rect
+              x={mid - c * 3}
+              y={midY + c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.75)}
+            />
+            <rect
+              x={mid + c}
+              y={midY + c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.75)}
+            />
+
+            {/* Outer arms — cardinal extensions (staircase) */}
+            <rect
+              x={mid - c}
+              y={midY - c * 5}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.65)}
+            />
+            <rect
+              x={mid - c}
+              y={midY + c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.65)}
+            />
+            <rect
+              x={mid - c * 5}
+              y={midY - c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.65)}
+            />
+            <rect
+              x={mid + c * 3}
+              y={midY - c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.65)}
+            />
+
+            {/* Outer arms — diagonal extensions */}
+            <rect
+              x={mid - c * 5}
+              y={midY - c * 5}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.5)}
+            />
+            <rect
+              x={mid + c * 3}
+              y={midY - c * 5}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.5)}
+            />
+            <rect
+              x={mid - c * 5}
+              y={midY + c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.5)}
+            />
+            <rect
+              x={mid + c * 3}
+              y={midY + c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.5)}
+            />
+
+            {/* Star tip points — furthest reach */}
+            <rect
+              x={mid - c * 5}
+              y={midY - c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid + c * 3}
+              y={midY - c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid - c * 5}
+              y={midY + c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid + c * 3}
+              y={midY + c}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid - c * 3}
+              y={midY - c * 5}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid + c}
+              y={midY - c * 5}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid - c * 3}
+              y={midY + c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+            <rect
+              x={mid + c}
+              y={midY + c * 3}
+              width={c * 2}
+              height={c * 2}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.55)}
+            />
+
+            {/* === CONNECTING LATTICE DOTS at tile corners === */}
+            {/* These are visible where 4 tiles meet, creating the lattice grid */}
+            <rect
+              x={0}
+              y={0}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.4)}
+            />
+            <rect
+              x={c}
+              y={c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.3)}
+            />
+            <rect
+              x={tileW - c}
+              y={0}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.4)}
+            />
+            <rect
+              x={tileW - c * 2}
+              y={c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.3)}
+            />
+            <rect
+              x={0}
+              y={tileH - c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.4)}
+            />
+            <rect
+              x={c}
+              y={tileH - c * 2}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.3)}
+            />
+            <rect
+              x={tileW - c}
+              y={tileH - c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.4)}
+            />
+            <rect
+              x={tileW - c * 2}
+              y={tileH - c * 2}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.3)}
             />
           </pattern>
 
-          {/* Chevron border lines at top and bottom */}
+          {/* Top/bottom border pattern — small repeating stepped chevron */}
           <pattern
-            id={`divider-chevron-${intensity}`}
+            id={`band-border-${intensity}`}
             x="0"
             y="0"
-            width="24"
-            height="8"
+            width={c * 8}
+            height={c * 3}
             patternUnits="userSpaceOnUse"
           >
-            <path
-              d="M0 6 L6 2 L12 6 L18 2 L24 6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={config.accentStrokeWidth}
-              className={`${config.stroke} ${config.darkStroke}`}
+            {/* Zigzag staircase — 2-cell steps */}
+            <rect
+              x={0}
+              y={c * 2}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c}
+              y={c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c * 2}
+              y={0}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c * 3}
+              y={c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c * 4}
+              y={c * 2}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c * 5}
+              y={c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c * 6}
+              y={0}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
+            />
+            <rect
+              x={c * 7}
+              y={c}
+              width={c}
+              height={c}
+              fill="currentColor"
+              className={opClasses(ob, db, 0.7)}
             />
           </pattern>
         </defs>
 
-        {/* Top chevron border line */}
-        <rect x="0" y="0" width="1200" height="8" fill={`url(#divider-chevron-${intensity})`} />
+        {/* Top border — stepped zigzag line */}
+        <rect x="0" y="0" width="1200" height={c * 3} fill={`url(#band-border-${intensity})`} />
 
-        {/* Central diamond chain band */}
+        {/* Central star band */}
         <rect
           x="0"
-          y="4"
+          y={c * 3}
           width="1200"
-          height={config.height - 8}
-          fill={`url(#divider-diamond-${intensity})`}
+          height={height - c * 6}
+          fill={`url(#band-star-${intensity})`}
         />
 
-        {/* Bottom chevron border line */}
+        {/* Bottom border — stepped zigzag line (mirrored) */}
         <rect
           x="0"
-          y={config.height - 8}
+          y={height - c * 3}
           width="1200"
-          height="8"
-          fill={`url(#divider-chevron-${intensity})`}
+          height={c * 3}
+          fill={`url(#band-border-${intensity})`}
+          style={{ transform: "scaleY(-1)", transformOrigin: `0 ${height - c * 1.5}px` }}
         />
       </svg>
     </div>
