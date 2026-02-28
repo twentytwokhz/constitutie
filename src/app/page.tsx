@@ -8,6 +8,7 @@ import {
 } from "@/components/illustrations";
 import { AnimatedText } from "@/components/landing/animated-text";
 import { GridBackground } from "@/components/landing/grid-background";
+import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { StatsSection } from "@/components/landing/stats-section";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
 import Link from "next/link";
@@ -71,98 +72,112 @@ export default function HomePage() {
       {/* Feature Cards Section */}
       <section className="border-t bg-muted/30 py-12 sm:py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-            Descoperă funcționalitățile
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
-            Tot ce ai nevoie pentru a explora și înțelege Constituția României
-          </p>
+          <ScrollReveal>
+            <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
+              Descoperă funcționalitățile
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
+              Tot ce ai nevoie pentru a explora și înțelege Constituția României
+            </p>
+          </ScrollReveal>
           <div className="mt-8 grid gap-6 sm:mt-14 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Explore card */}
-            <div className="group rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-              <IllustrationExplore className="mx-auto h-36 w-36" />
-              <div className="mt-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Explorare articole</h3>
+            <ScrollReveal delay={0}>
+              <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
+                <IllustrationExplore className="mx-auto h-36 w-36" />
+                <div className="mt-4 flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Explorare articole</h3>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Navighează articol cu articol prin toate versiunile constituției, cu table of
+                  contents interactiv și deep linking.
+                </p>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Navighează articol cu articol prin toate versiunile constituției, cu table of
-                contents interactiv și deep linking.
-              </p>
-            </div>
+            </ScrollReveal>
             {/* Compare card */}
-            <div className="group rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-              <IllustrationCompare className="mx-auto h-36 w-36" />
-              <div className="mt-4 flex items-center gap-2">
-                <GitCompareArrows className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Comparare versiuni</h3>
+            <ScrollReveal delay={100}>
+              <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
+                <IllustrationCompare className="mx-auto h-36 w-36" />
+                <div className="mt-4 flex items-center gap-2">
+                  <GitCompareArrows className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Comparare versiuni</h3>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Compară orice două versiuni ale Constituției cu diff viewer modern, vizualizare
+                  adăugări, eliminări și modificări.
+                </p>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Compară orice două versiuni ale Constituției cu diff viewer modern, vizualizare
-                adăugări, eliminări și modificări.
-              </p>
-            </div>
+            </ScrollReveal>
             {/* Graph card */}
-            <div className="group rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-              <IllustrationGraph className="mx-auto h-36 w-36" />
-              <div className="mt-4 flex items-center gap-2">
-                <Network className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Vizualizare graf</h3>
+            <ScrollReveal delay={200}>
+              <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
+                <IllustrationGraph className="mx-auto h-36 w-36" />
+                <div className="mt-4 flex items-center gap-2">
+                  <Network className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Vizualizare graf</h3>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Vizualizează structura ierarhică și referințele inter-articol printr-un graf
+                  interactiv.
+                </p>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Vizualizează structura ierarhică și referințele inter-articol printr-un graf
-                interactiv.
-              </p>
-            </div>
+            </ScrollReveal>
             {/* Search card */}
-            <div className="group rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-              <IllustrationSearch className="mx-auto h-36 w-36" />
-              <div className="mt-4 flex items-center gap-2">
-                <Search className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Căutare cross-versiune</h3>
+            <ScrollReveal delay={0}>
+              <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
+                <IllustrationSearch className="mx-auto h-36 w-36" />
+                <div className="mt-4 flex items-center gap-2">
+                  <Search className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Căutare cross-versiune</h3>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Caută instantaneu articole prin toate versiunile, cu command palette (Ctrl+K) și
+                  preview cu highlight.
+                </p>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Caută instantaneu articole prin toate versiunile, cu command palette (Ctrl+K) și
-                preview cu highlight.
-              </p>
-            </div>
+            </ScrollReveal>
             {/* Feedback card */}
-            <div className="group rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-              <IllustrationFeedback className="mx-auto h-36 w-36" />
-              <div className="mt-4 flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Feedback anonim</h3>
+            <ScrollReveal delay={100}>
+              <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
+                <IllustrationFeedback className="mx-auto h-36 w-36" />
+                <div className="mt-4 flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Feedback anonim</h3>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Exprimă-ți acordul sau dezacordul și lasă comentarii anonime, moderate automat de
+                  AI.
+                </p>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Exprimă-ți acordul sau dezacordul și lasă comentarii anonime, moderate automat de
-                AI.
-              </p>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Statistics Section */}
-      <Suspense
-        fallback={
-          <section className="py-12 sm:py-20">
-            <div className="container mx-auto px-4">
-              <div className="mx-auto max-w-2xl text-center">
-                <div className="mx-auto h-8 w-48 animate-pulse rounded bg-muted sm:h-10 sm:w-64" />
-                <div className="mx-auto mt-4 h-5 w-full max-w-sm animate-pulse rounded bg-muted sm:max-w-96" />
+      <ScrollReveal>
+        <Suspense
+          fallback={
+            <section className="py-12 sm:py-20">
+              <div className="container mx-auto px-4">
+                <div className="mx-auto max-w-2xl text-center">
+                  <div className="mx-auto h-8 w-48 animate-pulse rounded bg-muted sm:h-10 sm:w-64" />
+                  <div className="mx-auto mt-4 h-5 w-full max-w-sm animate-pulse rounded bg-muted sm:max-w-96" />
+                </div>
+                <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
+                  <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
+                  <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
+                  <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
+                </div>
               </div>
-              <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
-                <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
-                <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
-                <div className="h-28 animate-pulse rounded-xl border border-border bg-card sm:h-32" />
-              </div>
-            </div>
-          </section>
-        }
-      >
-        <StatsSection />
-      </Suspense>
+            </section>
+          }
+        >
+          <StatsSection />
+        </Suspense>
+      </ScrollReveal>
     </main>
   );
 }

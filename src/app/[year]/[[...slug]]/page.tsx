@@ -319,13 +319,23 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           {prevArticle ? (
             <Link
               href={buildArticlePath(prevArticle)}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
             >
-              <ChevronLeft className="h-4 w-4" />
-              Art. {prevArticle.number}
-              {prevArticle.title && (
-                <span className="hidden sm:inline"> — {prevArticle.title}</span>
-              )}
+              <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
+              <div className="text-left">
+                <span className="block text-xs uppercase tracking-wide text-muted-foreground/70">
+                  Anterior
+                </span>
+                <span className="block font-medium text-foreground">
+                  Art. {prevArticle.number}
+                  {prevArticle.title && (
+                    <span className="hidden sm:inline text-muted-foreground font-normal">
+                      {" "}
+                      — {prevArticle.title}
+                    </span>
+                  )}
+                </span>
+              </div>
             </Link>
           ) : (
             <div />
@@ -333,13 +343,23 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           {nextArticle ? (
             <Link
               href={buildArticlePath(nextArticle)}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
             >
-              Art. {nextArticle.number}
-              {nextArticle.title && (
-                <span className="hidden sm:inline"> — {nextArticle.title}</span>
-              )}
-              <ChevronRight className="h-4 w-4" />
+              <div className="text-right">
+                <span className="block text-xs uppercase tracking-wide text-muted-foreground/70">
+                  Următor
+                </span>
+                <span className="block font-medium text-foreground">
+                  Art. {nextArticle.number}
+                  {nextArticle.title && (
+                    <span className="hidden sm:inline text-muted-foreground font-normal">
+                      {" "}
+                      — {nextArticle.title}
+                    </span>
+                  )}
+                </span>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           ) : (
             <div />
