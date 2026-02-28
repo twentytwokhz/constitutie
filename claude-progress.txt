@@ -1,5 +1,49 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #196)
+
+### Completed Features
+
+#### Feature #196: Reset DB with EN+RO translations ✅
+- **Database reset**: Ran full DB reseed (TRUNCATE + repopulate) with all 4 constitution
+  versions (1952, 1986, 1991, 2003) — 535 articles, 71 structural units, 55 references.
+- **English translations applied**: All content has both Romanian and English versions:
+  - 4/4 version names + descriptions translated
+  - 53/53 structural units (titles, chapters, sections) translated
+  - 534/535 articles translated (one duplicate article number in 2003, both copies covered)
+  - All TipTap JSON for English content generated
+  - NULL check: 0 NULLs across all _en columns
+- **Translation export files committed**: `public/translations/` directory with
+  `versions-en.json`, `units-en.json`, `articles-en.json` — enables reproducible DB
+  seeding without needing OpenRouter API re-translation.
+- **Lint fixes** (pre-existing issues resolved):
+  - Added `locale` to useEffect dependency arrays in `graph-client.tsx` and
+    `command-palette.tsx` (was missing, causing stale locale on language switch)
+  - Removed unused `biome-ignore` comments in `header.tsx` and `mobile-toc.tsx`
+- **Verification**:
+  - All pages return HTTP 200 in both `/ro` and `/en` locales
+  - API returns both `title`/`titleEn`, `content`/`contentEn` fields
+  - Biome lint: 0 errors, TypeScript tsc: 0 errors
+  - Zero mock data patterns in codebase
+  - verify-translations.mjs: ALL TRANSLATIONS VERIFIED
+
+### Files Modified
+- src/app/[locale]/graph/graph-client.tsx — Added locale to useEffect deps
+- src/components/search/command-palette.tsx — Added locale to useEffect deps
+- src/components/layout/header.tsx — Removed unused biome-ignore comment
+- src/components/reader/mobile-toc.tsx — Removed unused biome-ignore comment
+
+### Files Added
+- public/translations/versions-en.json — Version translation export
+- public/translations/units-en.json — Structural unit translation export
+- public/translations/articles-en.json — Article translation export (~1MB)
+- scripts/export-translations.mjs — DB to JSON export script for translations
+
+### Current Status
+- Features passing: 196/203
+- Total features: 203
+- Percentage: ~96.6%
+
 ## Session: 2026-02-28 (Agent handling features #201, #202)
 
 ### Completed Features
