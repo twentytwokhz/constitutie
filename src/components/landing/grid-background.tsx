@@ -20,12 +20,12 @@ const PARTICLES = [
 /**
  * GridBackground — Romanian folk motif geometric pattern background for the hero section.
  *
- * INTENTIONALLY uses DIFFERENT motifs from FolkDivider to create visual variety:
- * - GridBackground: rosette wheels, Tree of Life motif, meander/key patterns
- * - FolkDivider: diamond chains, chevron lines, cross-stitch dots
+ * All patterns are rotated 45° (diamond orientation) to avoid rigid square-grid
+ * appearance and create a softer, more intricate textile-like visual.
  *
- * This distinction ensures the hero background feels unique and complementary
- * rather than repetitive when combined with the folk divider bands.
+ * INTENTIONALLY uses DIFFERENT motifs from FolkDivider to create visual variety:
+ * - GridBackground: interlocking diamond lattice, rosette stars, fine cross-hatch
+ * - FolkDivider: diamond chains, chevron lines, cross-stitch dots
  *
  * Pattern visibility is boosted significantly in dark mode for strong contrast
  * against stone-950 backgrounds.
@@ -39,7 +39,7 @@ export function GridBackground({ className = "" }: { className?: string }) {
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       aria-hidden="true"
     >
-      {/* Romanian folk motif SVG patterns — distinct from FolkDivider patterns */}
+      {/* Romanian folk motif SVG patterns — all rotated 45° for diamond orientation */}
       <svg
         className="absolute inset-0 h-full w-full animate-grid-fade"
         role="img"
@@ -47,41 +47,148 @@ export function GridBackground({ className = "" }: { className?: string }) {
       >
         <defs>
           {/*
-           * Pattern 1: Rosette / Solar wheel — a circular folk motif common in
-           * Romanian wood carving and painted eggs (ouă încondeiate).
-           * Differs from FolkDivider's diamond chains.
+           * Pattern 1: Diamond lattice with inner cross — classic Romanian embroidery motif.
+           * Rotated 45° so diamonds appear as upright rhombi, not squares.
+           * Smaller tile size (40px) for denser, more intricate texture.
            */}
           <pattern
-            id="folk-rosette"
+            id="folk-diamond-lattice"
             x="0"
             y="0"
-            width="64"
-            height="64"
+            width="40"
+            height="40"
             patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
           >
-            {/* Outer circle */}
-            <circle
-              cx="32"
-              cy="32"
-              r="22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.9"
-              className="text-primary/[0.28] dark:text-primary/[0.45]"
-            />
-            {/* Inner circle */}
-            <circle
-              cx="32"
-              cy="32"
-              r="12"
+            {/* Outer diamond frame */}
+            <path
+              d="M20 2 L38 20 L20 38 L2 20 Z"
               fill="none"
               stroke="currentColor"
               strokeWidth="0.7"
               className="text-primary/[0.22] dark:text-primary/[0.38]"
             />
-            {/* Radial spokes (6-pointed star within circle) */}
+            {/* Inner diamond */}
             <path
-              d="M32 10 L32 54 M14 21 L50 43 M14 43 L50 21"
+              d="M20 10 L30 20 L20 30 L10 20 Z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-primary/[0.16] dark:text-primary/[0.28]"
+            />
+            {/* Central cross */}
+            <line
+              x1="20"
+              y1="13"
+              x2="20"
+              y2="27"
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-primary/[0.14] dark:text-primary/[0.24]"
+            />
+            <line
+              x1="13"
+              y1="20"
+              x2="27"
+              y2="20"
+              stroke="currentColor"
+              strokeWidth="0.5"
+              className="text-primary/[0.14] dark:text-primary/[0.24]"
+            />
+            {/* Corner dots (connecting points between tiles) */}
+            <circle
+              cx="20"
+              cy="2"
+              r="1.2"
+              className="fill-primary/[0.18] dark:fill-primary/[0.30]"
+            />
+            <circle
+              cx="20"
+              cy="38"
+              r="1.2"
+              className="fill-primary/[0.18] dark:fill-primary/[0.30]"
+            />
+            <circle
+              cx="2"
+              cy="20"
+              r="1.2"
+              className="fill-primary/[0.18] dark:fill-primary/[0.30]"
+            />
+            <circle
+              cx="38"
+              cy="20"
+              r="1.2"
+              className="fill-primary/[0.18] dark:fill-primary/[0.30]"
+            />
+            {/* Center dot */}
+            <circle
+              cx="20"
+              cy="20"
+              r="1.8"
+              className="fill-primary/[0.24] dark:fill-primary/[0.40]"
+            />
+          </pattern>
+
+          {/*
+           * Pattern 2: 8-pointed star rosette — signature Romanian folk motif (steaua).
+           * Rotated 45° for diagonal alignment. Larger tile (56px) for visual hierarchy.
+           */}
+          <pattern
+            id="folk-star-rosette"
+            x="0"
+            y="0"
+            width="56"
+            height="56"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            {/* 8-pointed star: 4 cardinal + 4 diagonal rays */}
+            <path
+              d="M28 6 L32 22 L28 18 L24 22 Z"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <path
+              d="M28 50 L32 34 L28 38 L24 34 Z"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <path
+              d="M6 28 L22 24 L18 28 L22 32 Z"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            <path
+              d="M50 28 L34 32 L38 28 L34 24 Z"
+              fill="currentColor"
+              className="text-primary/[0.12] dark:text-primary/[0.22]"
+            />
+            {/* Diagonal rays */}
+            <path
+              d="M12 12 L24 22 L20 20 L22 24 Z"
+              fill="currentColor"
+              className="text-primary/[0.10] dark:text-primary/[0.18]"
+            />
+            <path
+              d="M44 12 L34 22 L36 20 L32 24 Z"
+              fill="currentColor"
+              className="text-primary/[0.10] dark:text-primary/[0.18]"
+            />
+            <path
+              d="M12 44 L22 34 L20 36 L24 32 Z"
+              fill="currentColor"
+              className="text-primary/[0.10] dark:text-primary/[0.18]"
+            />
+            <path
+              d="M44 44 L34 34 L36 36 L32 32 Z"
+              fill="currentColor"
+              className="text-primary/[0.10] dark:text-primary/[0.18]"
+            />
+            {/* Center ring */}
+            <circle
+              cx="28"
+              cy="28"
+              r="5"
               fill="none"
               stroke="currentColor"
               strokeWidth="0.6"
@@ -89,99 +196,53 @@ export function GridBackground({ className = "" }: { className?: string }) {
             />
             {/* Center dot */}
             <circle
-              cx="32"
-              cy="32"
-              r="2.5"
-              className="fill-primary/[0.30] dark:fill-primary/[0.48]"
+              cx="28"
+              cy="28"
+              r="2"
+              className="fill-primary/[0.22] dark:fill-primary/[0.38]"
             />
           </pattern>
 
           {/*
-           * Pattern 2: Tree of Life / Pomul Vieții — a vertical branching motif
-           * fundamental to Romanian folk embroidery. Distinct from FolkDivider's
-           * horizontal chevron bands.
-           */}
-          <pattern id="folk-tree" x="0" y="0" width="48" height="48" patternUnits="userSpaceOnUse">
-            {/* Central trunk */}
-            <line
-              x1="24"
-              y1="6"
-              x2="24"
-              y2="42"
-              stroke="currentColor"
-              strokeWidth="0.8"
-              className="text-primary/[0.22] dark:text-primary/[0.38]"
-            />
-            {/* Upper branches (V shapes) */}
-            <path
-              d="M24 14 L16 22 M24 14 L32 22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.7"
-              className="text-primary/[0.20] dark:text-primary/[0.35]"
-            />
-            {/* Lower branches */}
-            <path
-              d="M24 26 L14 34 M24 26 L34 34"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.7"
-              className="text-primary/[0.20] dark:text-primary/[0.35]"
-            />
-            {/* Root base */}
-            <path
-              d="M20 42 L24 42 L28 42"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.9"
-              className="text-primary/[0.24] dark:text-primary/[0.40]"
-            />
-            {/* Leaf dots at branch tips */}
-            <circle
-              cx="16"
-              cy="22"
-              r="1.5"
-              className="fill-primary/[0.18] dark:fill-primary/[0.32]"
-            />
-            <circle
-              cx="32"
-              cy="22"
-              r="1.5"
-              className="fill-primary/[0.18] dark:fill-primary/[0.32]"
-            />
-            <circle
-              cx="14"
-              cy="34"
-              r="1.5"
-              className="fill-primary/[0.16] dark:fill-primary/[0.28]"
-            />
-            <circle
-              cx="34"
-              cy="34"
-              r="1.5"
-              className="fill-primary/[0.16] dark:fill-primary/[0.28]"
-            />
-          </pattern>
-
-          {/*
-           * Pattern 3: Meander / Greek key — found in Romanian folk pottery and
-           * carpet weaving. A continuous angular spiral distinct from cross-stitch dots.
+           * Pattern 3: Fine diagonal cross-hatch — delicate filler texture inspired
+           * by Romanian woven textile backgrounds. Tiny tile (20px) for very fine grain.
+           * Rotated additional 45° (total 90° from original = back to 0°, but because
+           * the other patterns are at 45° this creates visual contrast).
            */}
           <pattern
-            id="folk-meander"
+            id="folk-crosshatch"
             x="0"
             y="0"
-            width="32"
-            height="32"
+            width="20"
+            height="20"
             patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
           >
-            {/* Angular spiral motif */}
-            <path
-              d="M4 16 L4 4 L20 4 L20 12 L12 12 L12 20 L28 20 L28 28 L4 28 L4 20"
-              fill="none"
+            {/* Fine diagonal lines */}
+            <line
+              x1="0"
+              y1="10"
+              x2="20"
+              y2="10"
               stroke="currentColor"
-              strokeWidth="0.7"
-              className="text-primary/[0.20] dark:text-primary/[0.35]"
+              strokeWidth="0.35"
+              className="text-primary/[0.10] dark:text-primary/[0.18]"
+            />
+            <line
+              x1="10"
+              y1="0"
+              x2="10"
+              y2="20"
+              stroke="currentColor"
+              strokeWidth="0.35"
+              className="text-primary/[0.10] dark:text-primary/[0.18]"
+            />
+            {/* Small accent dots at intersections */}
+            <circle
+              cx="10"
+              cy="10"
+              r="0.8"
+              className="fill-primary/[0.12] dark:fill-primary/[0.20]"
             />
           </pattern>
 
@@ -196,25 +257,30 @@ export function GridBackground({ className = "" }: { className?: string }) {
           </mask>
         </defs>
 
-        {/* Layer 1: Rosette pattern (primary motif — distinct circular shapes) */}
-        <rect width="100%" height="100%" fill="url(#folk-rosette)" mask="url(#folk-pattern-fade)" />
-
-        {/* Layer 2: Tree of Life pattern (secondary, offset) */}
+        {/* Layer 1: Diamond lattice (primary structural pattern) */}
         <rect
           width="100%"
           height="100%"
-          fill="url(#folk-tree)"
+          fill="url(#folk-diamond-lattice)"
           mask="url(#folk-pattern-fade)"
-          style={{ opacity: 0.8 }}
         />
 
-        {/* Layer 3: Meander key pattern (texture fill) */}
+        {/* Layer 2: 8-pointed star rosette (secondary decorative motif) */}
         <rect
           width="100%"
           height="100%"
-          fill="url(#folk-meander)"
+          fill="url(#folk-star-rosette)"
           mask="url(#folk-pattern-fade)"
-          style={{ opacity: 0.65 }}
+          style={{ opacity: 0.75 }}
+        />
+
+        {/* Layer 3: Fine cross-hatch texture (background fill for depth) */}
+        <rect
+          width="100%"
+          height="100%"
+          fill="url(#folk-crosshatch)"
+          mask="url(#folk-pattern-fade)"
+          style={{ opacity: 0.5 }}
         />
       </svg>
 

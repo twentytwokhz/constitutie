@@ -34,7 +34,7 @@
     "art": "Art.",
     "articlePrefix": "Article",
     "metaTitle": "Romanian Constitution - Interactive Explorer",
-    "metaDescription": "Interactive platform for exploring the Romanian Constitution through all its historical versions (1952, 1986, 1991, 2003)."
+    "metaDescription": "Interactive platform for exploring the Romanian Constitution through all 9 historical versions (1866–2003)."
   },
   "nav": {
     "explore": "Explore",
@@ -52,7 +52,7 @@
     "headline": "Romanian",
     "headlineHighlight": "Constitution",
     "subtitle": "Explore Romania's fundamental law through all its historical versions:",
-    "years": "1952, 1986, 1991, 2003.",
+    "years": "1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003.",
     "ctaExplore": "Explore the Constitution",
     "ctaCompare": "Compare Versions",
     "romania": "Romania",
@@ -76,7 +76,7 @@
     "sectionTitle": "How it works",
     "sectionDescription": "Three simple steps to explore the fundamental law",
     "step1Title": "Choose a version",
-    "step1Desc": "Select one of the 4 historical versions of the Constitution: 1952, 1986, 1991, or 2003. Navigate article by article through the interactive table of contents.",
+    "step1Desc": "Select one of the 9 historical versions of the Constitution, from 1866 to 2003. Navigate article by article through the interactive table of contents.",
     "step2Title": "Compare and analyze",
     "step2Desc": "Use the diff viewer to see exactly what changed between versions. Visualize the structure through the interactive graph.",
     "step3Title": "Express your opinion",
@@ -260,9 +260,9 @@
     "metaDescription": "Dashboard with real statistics: articles, versions, inter-article references, comments and citizen votes.",
     "subtitle": "Dashboard with real data from the Romanian Constitution database.",
     "totalArticles": "Total Articles",
-    "totalArticlesDesc": "From all 4 versions",
+    "totalArticlesDesc": "From all 9 versions",
     "totalVersions": "Versions",
-    "totalVersionsDesc": "1952, 1986, 1991, 2003",
+    "totalVersionsDesc": "1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003",
     "totalReferences": "Inter-article references",
     "totalReferencesDesc": "Links between articles",
     "totalComments": "Comments",

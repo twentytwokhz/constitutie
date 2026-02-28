@@ -34,7 +34,7 @@
     "art": "Art.",
     "articlePrefix": "Articolul",
     "metaTitle": "Constituția României - Explorare Interactivă",
-    "metaDescription": "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003)."
+    "metaDescription": "Platformă interactivă pentru explorarea Constituției României prin toate cele 9 versiuni istorice (1866–2003)."
   },
   "nav": {
     "explore": "Explorare",
@@ -52,7 +52,7 @@
     "headline": "Constituția",
     "headlineHighlight": "României",
     "subtitle": "Explorează legea fundamentală a României prin toate versiunile sale istorice:",
-    "years": "1952, 1986, 1991, 2003.",
+    "years": "1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003.",
     "ctaExplore": "Explorează Constituția",
     "ctaCompare": "Compară Versiuni",
     "romania": "România",
@@ -76,7 +76,7 @@
     "sectionTitle": "Cum funcționează",
     "sectionDescription": "Trei pași simpli pentru a explora legea fundamentală",
     "step1Title": "Alege o versiune",
-    "step1Desc": "Selectează una din cele 4 versiuni istorice ale Constituției: 1952, 1986, 1991 sau 2003. Navighează articol cu articol prin tabla of contents interactivă.",
+    "step1Desc": "Selectează una din cele 9 versiuni istorice ale Constituției, de la 1866 la 2003. Navighează articol cu articol prin tabla of contents interactivă.",
     "step2Title": "Compară și analizează",
     "step2Desc": "Folosește diff viewer-ul pentru a vedea exact ce s-a schimbat între versiuni. Vizualizează structura prin graful interactiv.",
     "step3Title": "Exprimă-ți opinia",
@@ -260,9 +260,9 @@
     "metaDescription": "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
     "subtitle": "Dashboard cu date reale din baza de date a Constituției României.",
     "totalArticles": "Total Articole",
-    "totalArticlesDesc": "Din toate cele 4 versiuni",
+    "totalArticlesDesc": "Din toate cele 9 versiuni",
     "totalVersions": "Versiuni",
-    "totalVersionsDesc": "1952, 1986, 1991, 2003",
+    "totalVersionsDesc": "1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003",
     "totalReferences": "Referințe inter-articol",
     "totalReferencesDesc": "Legături între articole",
     "totalComments": "Comentarii",
