@@ -53,16 +53,35 @@ export async function GET(request: NextRequest) {
       .orderBy(asc(constitutionVersions.year), asc(articles.number))
       .limit(50);
 
-    // Create search result snippets with highlights
+    // Create search result snippets centered on the search term
+    const queryLower = query.trim().toLowerCase();
     const enrichedResults = results.map((result) => {
-      const contentPreview =
-        result.content.length > 200 ? `${result.content.substring(0, 200)}...` : result.content;
+      // Try to find the search term in content and extract context around it
+      const contentLower = result.content.toLowerCase();
+      const matchIndex = contentLower.indexOf(queryLower);
+
+      let snippet: string;
+      if (matchIndex >= 0) {
+        // Extract ~80 chars before and ~120 chars after the match for context
+        const snippetStart = Math.max(0, matchIndex - 80);
+        const snippetEnd = Math.min(result.content.length, matchIndex + queryLower.length + 120);
+        const raw = result.content.substring(snippetStart, snippetEnd).replace(/\n/g, " ");
+        const prefix = snippetStart > 0 ? "..." : "";
+        const suffix = snippetEnd < result.content.length ? "..." : "";
+        snippet = `${prefix}${raw.trim()}${suffix}`;
+      } else {
+        // Fallback: first 200 chars (match was in title or article number)
+        snippet =
+          result.content.length > 200
+            ? `${result.content.substring(0, 200).replace(/\n/g, " ")}...`
+            : result.content.replace(/\n/g, " ");
+      }
 
       return {
         id: result.id,
         number: result.number,
         title: result.title,
-        snippet: contentPreview,
+        snippet,
         versionYear: result.versionYear,
         versionName: result.versionName,
         slug: result.slug,

@@ -8,9 +8,12 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { FileText } from "lucide-react";
+import { Clock, FileText, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
+
+const RECENT_SEARCHES_KEY = "constitution-recent-searches";
+const MAX_RECENT_SEARCHES = 5;
 
 interface SearchResult {
   id: number;
@@ -19,6 +22,47 @@ interface SearchResult {
   versionYear: number;
   snippet: string;
   slug: string;
+}
+
+/** Load recent search terms from localStorage */
+function loadRecentSearches(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed.slice(0, MAX_RECENT_SEARCHES) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Save a search term to the recent searches list */
+function saveRecentSearch(term: string): string[] {
+  const trimmed = term.trim();
+  if (!trimmed || trimmed.length < 2) return loadRecentSearches();
+  const current = loadRecentSearches();
+  // Remove duplicate (case-insensitive) and prepend
+  const filtered = current.filter((s) => s.toLowerCase() !== trimmed.toLowerCase());
+  const updated = [trimmed, ...filtered].slice(0, MAX_RECENT_SEARCHES);
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  } catch {
+    // localStorage full or unavailable
+  }
+  return updated;
+}
+
+/** Remove a single term from recent searches */
+function removeRecentSearch(term: string): string[] {
+  const current = loadRecentSearches();
+  const updated = current.filter((s) => s.toLowerCase() !== term.toLowerCase());
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  } catch {
+    // ignore
+  }
+  return updated;
 }
 
 /**
@@ -33,6 +77,7 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   // Register Ctrl+K / ⌘K keyboard shortcut
   useEffect(() => {
@@ -52,6 +97,13 @@ export function CommandPalette() {
     document.addEventListener("open-command-palette", handleOpenEvent);
     return () => document.removeEventListener("open-command-palette", handleOpenEvent);
   }, []);
+
+  // Load recent searches from localStorage when palette opens
+  useEffect(() => {
+    if (open) {
+      setRecentSearches(loadRecentSearches());
+    }
+  }, [open]);
 
   // Debounced search when query changes
   useEffect(() => {
@@ -87,12 +139,57 @@ export function CommandPalette() {
 
   const handleSelect = useCallback(
     (result: SearchResult) => {
+      // Save current query to recent searches before closing
+      if (query.trim().length >= 2) {
+        const updated = saveRecentSearch(query.trim());
+        setRecentSearches(updated);
+      }
       setOpen(false);
       setQuery("");
       setResults([]);
       router.push(`/${result.versionYear}/articolul-${result.number}`);
     },
-    [router],
+    [router, query],
+  );
+
+  /** When user clicks a recent search term, fill the query to re-execute */
+  const handleRecentClick = useCallback((term: string) => {
+    setQuery(term);
+  }, []);
+
+  /** Remove a single recent search entry */
+  const handleRemoveRecent = useCallback((term: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = removeRecentSearch(term);
+    setRecentSearches(updated);
+  }, []);
+
+  /**
+   * Highlight all occurrences of the search query in text.
+   * Returns an array of ReactNode fragments with <mark> around matches.
+   */
+  const highlightText = useCallback(
+    (text: string): ReactNode[] => {
+      if (!query || query.length < 2) return [text];
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`(${escaped})`, "gi");
+      const parts = text.split(regex);
+      const nodes: ReactNode[] = [];
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if (regex.test(part)) {
+          nodes.push(
+            <mark key={i} className="bg-primary/20 text-primary font-medium rounded-sm px-0.5">
+              {part}
+            </mark>,
+          );
+        } else {
+          nodes.push(part);
+        }
+      }
+      return nodes;
+    },
+    [query],
   );
 
   // Group results by version year
@@ -118,10 +215,32 @@ export function CommandPalette() {
             Niciun rezultat pentru „{query}". Încearcă alt termen de căutare.
           </CommandEmpty>
         )}
-        {!loading && query.length < 2 && (
+        {!loading && query.length < 2 && recentSearches.length === 0 && (
           <div className="py-6 text-center text-sm text-muted-foreground">
             Scrie cel puțin 2 caractere pentru a căuta
           </div>
+        )}
+        {!loading && query.length < 2 && recentSearches.length > 0 && (
+          <CommandGroup heading="Căutări recente">
+            {recentSearches.map((term) => (
+              <CommandItem
+                key={`recent-${term}`}
+                value={`recent-${term}`}
+                onSelect={() => handleRecentClick(term)}
+              >
+                <Clock className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="flex-1 text-sm">{term}</span>
+                <button
+                  type="button"
+                  className="ml-auto p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={(e) => handleRemoveRecent(term, e)}
+                  aria-label={`Șterge „${term}" din căutări recente`}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </CommandItem>
+            ))}
+          </CommandGroup>
         )}
         {Object.entries(grouped)
           .sort(([a], [b]) => Number(b) - Number(a))
@@ -142,8 +261,8 @@ export function CommandPalette() {
                       )}
                     </span>
                     {result.snippet && (
-                      <span className="text-xs text-muted-foreground line-clamp-1">
-                        {result.snippet}
+                      <span className="text-xs text-muted-foreground line-clamp-2">
+                        {highlightText(result.snippet)}
                       </span>
                     )}
                   </div>
