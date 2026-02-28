@@ -616,7 +616,8 @@ export function ComparePageClient() {
       </div>
 
       {/* ── Scrollable content area (only this part scrolls) ── */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-3 py-4 sm:px-4">
+      {/* min-h-0 overrides flexbox default min-height:auto so overflow-y-auto activates */}
+      <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-y-auto px-3 py-4 sm:px-4">
         <div className="container mx-auto max-w-full">
           {/* Loading State */}
           {loading && (
