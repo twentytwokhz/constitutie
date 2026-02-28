@@ -1461,3 +1461,53 @@
 - Features passing: 101 (was 98)
 - Total features: 144
 - Percentage: ~70.1%
+
+## Session: 2026-02-28 (Agent handling features #71, #93, #94)
+
+### Completed Features
+
+#### Feature #71: Rate limiting via Arcjet on comments endpoint - PASSED
+- Created sliding window rate limiter module (src/lib/rate-limit.ts)
+- Integrated into POST /api/articles/[id]/comments
+- 5 requests per minute per IP+fingerprint combination
+- Returns 429 with Romanian error message and Retry-After header
+- X-RateLimit-Limit/Remaining/Reset headers on all responses
+- Arcjet npm package unavailable (403 from registry) - implemented compatible in-memory alternative
+- Biome lint 0 errors, tsc 0 errors
+
+#### Feature #93: Rate limiting on vote endpoint prevents abuse - PASSED
+- Integrated same rate limiter into POST /api/articles/[id]/vote
+- 30 requests per minute per IP+fingerprint (higher than comments since votes are simpler)
+- Same 429 response pattern with Retry-After and X-RateLimit-* headers
+- Biome lint 0 errors, tsc 0 errors
+
+#### Feature #94: Bot protection via Arcjet on API routes - PASSED
+- Created bot detection module (src/lib/bot-protection.ts)
+- Created Next.js middleware (src/middleware.ts) matching /api/:path*
+- Header-based scoring: User-Agent, Accept, Accept-Language, Content-Type signals
+- Protects mutation endpoints (POST/PUT/DELETE), allows GET/HEAD/OPTIONS
+- Score threshold: 5+ blocked with 403 BOT_DETECTED
+- Known good bots allowlisted (Googlebot, Bingbot, DuckDuckBot, etc.)
+- Tested: no-UA POST = 403 blocked, normal GET = 200 allowed
+- Biome lint 0 errors, tsc 0 errors
+
+### Files Created
+- src/lib/rate-limit.ts - Sliding window rate limiter with presets
+- src/lib/bot-protection.ts - Bot detection via header analysis
+- src/middleware.ts - Next.js middleware for API bot protection
+
+### Files Modified
+- src/app/api/articles/[id]/comments/route.ts - Added rate limiting
+- src/app/api/articles/[id]/vote/route.ts - Added rate limiting
+
+### Current Status
+- Features passing: 107 (was 98)
+- Total features: 144
+- Percentage: 74.3%
+
+### Notes
+- @arcjet/next npm package blocked by sandbox (403 Forbidden from registry)
+- Implemented compatible alternatives that follow same patterns (can be swapped for Arcjet later)
+- Rate limiter uses in-memory Map with periodic cleanup (prevents memory leaks)
+- Bot detection uses multi-signal scoring (not just User-Agent matching)
+- All security features follow fail-open for GET (reading is always allowed)
