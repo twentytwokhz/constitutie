@@ -1,5 +1,40 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #32, #33, #62)
+
+### Completed Features
+
+#### Feature #32: Reading progress indicator works ✅
+- Created ReadingProgress client component (src/components/reader/reading-progress.tsx)
+- Thin indigo progress bar at top of reader tracks scroll position (0-100%)
+- Article position badge shows "X / Y (Z%)" for article-in-version progress
+- Uses passive scroll listener with requestAnimationFrame-style updates
+- Integrated into reader page layout (flex-col wrapper with progress above content)
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #33: Share article link button copies URL to clipboard ✅
+- Created ShareButton client component (src/components/reader/share-button.tsx)
+- "Copiază link" button with Link2 icon in article header area
+- Uses navigator.clipboard.writeText() with fallback for older browsers
+- Visual feedback: checkmark icon + "Copiat!" text for 2 seconds
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #62: Vote count displays next to vote buttons ✅
+- Already fully implemented in VoteButtons component from earlier session
+- Pill badges with tabular-nums show agreeCount / disagreeCount next to each button
+- Counts increment by 1 on vote, persist via database (initialAgreeCount from SSR)
+- Zero mock data patterns, all counts from real Drizzle ORM queries
+- No code changes needed — verification only
+
+### Components Created
+- src/components/reader/reading-progress.tsx - NEW: Scroll progress bar + article position badge
+- src/components/reader/share-button.tsx - NEW: Copy article deep link to clipboard
+
+### Current Status
+- Features passing: ~73 (was ~70)
+- Total features: 144
+- Percentage: ~50.7%
+
 ## Session: 2026-02-28 (Agent handling features #34, #69, #27)
 
 ### Completed Features
