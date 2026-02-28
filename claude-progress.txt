@@ -1,5 +1,44 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #28, #30, #31)
+
+### Completed Features
+
+#### Feature #28: Article-to-article navigation with Previous/Next buttons ✅
+- Enhanced navigation buttons with explicit "Anterior" and "Următor" labels
+- Styled as card-like buttons with border, padding, and hover effects
+- Chevron icons with group-hover translate animation
+- Previous hidden at Article 1, Next hidden at last article (156 for 2003)
+- Shows article number and title (title visible on sm+ screens)
+- Full deep-link URLs via buildArticlePath()
+- Biome lint: 0 errors
+
+#### Feature #30: Smooth scroll to article from TOC click ✅
+- Already implemented: TOC uses Next.js Link for client-side navigation
+- scroll-behavior: smooth set globally in CSS
+- TOC auto-scrolls active item into view (scrollActiveIntoView callback)
+- URL updates on TOC click to article path
+- Article renders at top of content area
+- Verified across /2003/articolul-100 and other URLs
+
+#### Feature #31: Article paragraphs (alineate) numbered correctly ✅
+- TipTap JSON uses orderedList → listItem → paragraph structure
+- CSS counters display (1), (2), (3) numbering (Romanian legal convention)
+- Numbers styled in primary color, tabular-nums, font-weight 600
+- Flex layout with gap and border-bottom between items
+- contentTiptap present for all articles across all 4 versions
+- Biome lint: 0 errors
+
+### Current Status
+- Features passing: ~72 (was ~69)
+- Total features: 144
+- Percentage: ~50%
+
+### Notes
+- Navigation buttons now visually indicate direction with "Anterior"/"Următor" labels
+- The TOC smooth scroll works via Next.js client-side routing + CSS scroll-behavior
+- All 535 articles have TipTap JSON content with proper ordered list parsing
+
 ## Session: 2026-02-28 (Agent handling features #32, #33, #62)
 
 ### Completed Features
