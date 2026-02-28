@@ -367,7 +367,12 @@ function SummaryStat({
   label,
   color,
   bgColor,
-}: { count: number; label: string; color: string; bgColor: string }) {
+}: {
+  count: number;
+  label: string;
+  color: string;
+  bgColor: string;
+}) {
   return (
     <View style={[styles.summaryItem, { backgroundColor: bgColor }]}>
       <Text style={[styles.summaryNumber, { color, fontFamily: "InterLatin" }]}>{count}</Text>
@@ -381,7 +386,11 @@ function ArticleCard({
   article,
   yearA,
   yearB,
-}: { article: PdfDiffArticle; yearA: number; yearB: number }) {
+}: {
+  article: PdfDiffArticle;
+  yearA: number;
+  yearB: number;
+}) {
   const status = getStatusStyles(article.status);
   const title = article.a?.title || article.b?.title;
 

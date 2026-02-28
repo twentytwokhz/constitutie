@@ -1,15 +1,5 @@
 "use client";
 
-import { MonacoDiffViewer } from "@/components/diff/monaco-diff-viewer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   ArrowLeftRight,
   ChevronDown,
@@ -25,8 +15,18 @@ import {
   Share2,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MonacoDiffViewer } from "@/components/diff/monaco-diff-viewer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 /** Constitution version metadata from the API */
 interface Version {
@@ -81,6 +81,7 @@ interface SingleArticleDiffResponse {
  */
 export function ComparePageClient() {
   const t = useTranslations();
+  const locale = useLocale();
   const [versions, setVersions] = useState<Version[]>([]);
   const [versionA, setVersionA] = useState<string>("");
   const [versionB, setVersionB] = useState<string>("");
@@ -289,6 +290,7 @@ export function ComparePageClient() {
           yearB: Number(versionB),
           summary: diffData.summary,
           articles: diffData.diff,
+          locale,
         }),
       });
       if (!res.ok) {
@@ -312,7 +314,7 @@ export function ComparePageClient() {
       setExportingPdf(false);
       isExportingRef.current = false;
     }
-  }, [diffData, versionA, versionB]);
+  }, [diffData, versionA, versionB, locale]);
 
   /** Share the comparison URL */
   const handleShare = useCallback(async () => {
@@ -339,7 +341,7 @@ export function ComparePageClient() {
     } catch {
       // Silent fallback
     }
-  }, [versionA, versionB]);
+  }, [versionA, versionB, t]);
 
   /** Keyboard shortcuts: Alt+↓ next change, Alt+↑ previous change */
   useEffect(() => {
@@ -441,17 +443,19 @@ export function ComparePageClient() {
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-500/30 dark:text-emerald-300">
                 <Plus className="mr-1 h-3 w-3" />
-                {diffData.summary.added} adăugate
+                {diffData.summary.added} {t("compare.added")}
               </Badge>
               <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300">
                 <Minus className="mr-1 h-3 w-3" />
-                {diffData.summary.removed} eliminate
+                {diffData.summary.removed} {t("compare.removed")}
               </Badge>
               <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300">
                 <FileText className="mr-1 h-3 w-3" />
-                {diffData.summary.modified} modificate
+                {diffData.summary.modified} {t("compare.modified")}
               </Badge>
-              <Badge variant="secondary">{diffData.summary.unchanged} neschimbate</Badge>
+              <Badge variant="secondary">
+                {diffData.summary.unchanged} {t("compare.unchanged")}
+              </Badge>
             </div>
             {/* Jump to change navigation */}
             {changedArticles.length > 0 && !selectedArticle && (
@@ -461,26 +465,26 @@ export function ComparePageClient() {
                   size="sm"
                   onClick={jumpToPrevChange}
                   className="h-7 gap-1 px-2.5 text-xs"
-                  title="Modificarea anterioară (Alt+↑)"
-                  aria-label="Modificarea anterioară"
+                  title={`${t("compare.prevChange")} (Alt+\u2191)`}
+                  aria-label={t("compare.prevChange")}
                 >
                   <ChevronUp className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Anterioară</span>
+                  <span className="hidden sm:inline">{t("common.previous")}</span>
                 </Button>
                 <span className="min-w-[3.5rem] text-center text-xs tabular-nums text-muted-foreground">
                   {currentChangeIdx >= 0
                     ? `${currentChangeIdx + 1} / ${changedArticles.length}`
-                    : `${changedArticles.length} mod.`}
+                    : `${changedArticles.length} ${t("compare.changes")}`}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={jumpToNextChange}
                   className="h-7 gap-1 px-2.5 text-xs"
-                  title="Modificarea următoare (Alt+↓)"
-                  aria-label="Modificarea următoare"
+                  title={`${t("compare.nextChange")} (Alt+\u2193)`}
+                  aria-label={t("compare.nextChange")}
                 >
-                  <span className="hidden sm:inline">Următoare</span>
+                  <span className="hidden sm:inline">{t("common.next")}</span>
                   <ChevronDown className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -494,7 +498,7 @@ export function ComparePageClient() {
                   className="h-7 gap-1.5 px-2.5 text-xs"
                 >
                   <Columns2 className="h-3.5 w-3.5" />
-                  Side-by-side
+                  {t("compare.sideBySide")}
                 </Button>
                 <Button
                   variant={!sideBySide ? "secondary" : "ghost"}
@@ -503,7 +507,7 @@ export function ComparePageClient() {
                   className="h-7 gap-1.5 px-2.5 text-xs"
                 >
                   <Rows2 className="h-3.5 w-3.5" />
-                  Inline
+                  {t("compare.inline")}
                 </Button>
               </div>
               <Button
@@ -512,25 +516,25 @@ export function ComparePageClient() {
                 onClick={handleExportPdf}
                 disabled={exportingPdf || !diffData}
                 className="h-7 gap-1.5 px-3 text-xs"
-                title="Exportă comparația ca PDF"
+                title={t("compare.exportPdf")}
               >
                 {exportingPdf ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (
                   <Download className="h-3.5 w-3.5" />
                 )}
-                {exportingPdf ? "Se generează..." : "Export PDF"}
+                {exportingPdf ? t("compare.exporting") : t("compare.exportPdf")}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleShare}
                 className="h-7 gap-1.5 px-3 text-xs"
-                title="Distribuie comparația"
-                aria-label="Distribuie comparația"
+                title={t("compare.shareComparison")}
+                aria-label={t("compare.shareComparison")}
               >
                 <Share2 className="h-3.5 w-3.5" />
-                Distribuie
+                {t("common.share")}
               </Button>
             </div>
           </div>
@@ -538,19 +542,19 @@ export function ComparePageClient() {
           {/* Article-level navigation: filter to a specific article */}
           <div className="flex flex-wrap items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Articol specific:</span>
+            <span className="text-sm text-muted-foreground">{t("compare.specificArticle")}</span>
             <Select
               value={selectedArticle !== null ? String(selectedArticle) : "all"}
               onValueChange={handleArticleSelect}
             >
               <SelectTrigger className="h-8 w-[240px] text-sm">
-                <SelectValue placeholder="Toate articolele" />
+                <SelectValue placeholder={t("compare.allArticles")} />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
-                <SelectItem value="all">Toate articolele</SelectItem>
+                <SelectItem value="all">{t("compare.allArticles")}</SelectItem>
                 {diffData.diff.map((article) => (
                   <SelectItem key={article.articleNumber} value={String(article.articleNumber)}>
-                    Art. {article.articleNumber}
+                    {t("common.art")} {article.articleNumber}
                     {article.a?.title || article.b?.title
                       ? ` — ${article.a?.title || article.b?.title}`
                       : ""}
@@ -565,10 +569,10 @@ export function ComparePageClient() {
                 size="sm"
                 onClick={clearArticleSelection}
                 className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
-                title="Arată toate articolele"
+                title={t("compare.showAllArticles")}
               >
                 <X className="h-3.5 w-3.5" />
-                Resetează
+                {t("common.reset")}
               </Button>
             )}
           </div>
@@ -579,7 +583,7 @@ export function ComparePageClient() {
       {loading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">Se calculează diferențele...</span>
+          <span className="ml-3 text-muted-foreground">{t("compare.computing")}</span>
         </div>
       )}
 
@@ -594,7 +598,7 @@ export function ComparePageClient() {
       {singleDiffLoading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">Se încarcă diff-ul articolului...</span>
+          <span className="ml-3 text-muted-foreground">{t("compare.loadingArticleDiff")}</span>
         </div>
       )}
 
@@ -602,7 +606,7 @@ export function ComparePageClient() {
       {selectedArticle !== null && singleDiffData && !singleDiffLoading && diffData && (
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">
-            Articolul {singleDiffData.articleNumber}
+            {t("common.articlePrefix")} {singleDiffData.articleNumber}
             {(singleDiffData.articleA?.title || singleDiffData.articleB?.title) && (
               <span className="ml-2 text-base font-normal text-muted-foreground">
                 {singleDiffData.articleA?.title || singleDiffData.articleB?.title}
@@ -616,13 +620,15 @@ export function ComparePageClient() {
               variant={singleDiffData.exists.inA ? "default" : "secondary"}
               className={singleDiffData.exists.inA ? "" : "opacity-50"}
             >
-              {versionA}: {singleDiffData.exists.inA ? "Există" : "Nu există"}
+              {versionA}:{" "}
+              {singleDiffData.exists.inA ? t("common.exists") : t("common.doesNotExist")}
             </Badge>
             <Badge
               variant={singleDiffData.exists.inB ? "default" : "secondary"}
               className={singleDiffData.exists.inB ? "" : "opacity-50"}
             >
-              {versionB}: {singleDiffData.exists.inB ? "Există" : "Nu există"}
+              {versionB}:{" "}
+              {singleDiffData.exists.inB ? t("common.exists") : t("common.doesNotExist")}
             </Badge>
           </div>
 
@@ -650,8 +656,8 @@ export function ComparePageClient() {
             <div className="rounded-lg border p-4">
               <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
                 {singleDiffData.exists.inA
-                  ? `${versionA} (Eliminat în ${versionB})`
-                  : `${versionB} (Adăugat)`}
+                  ? `${versionA} (${t("compare.removedIn")} ${versionB})`
+                  : `${versionB} (${t("compare.addedIn")})`}
               </div>
               <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-background/50 rounded p-3 border">
                 {singleDiffData.exists.inA
@@ -670,7 +676,7 @@ export function ComparePageClient() {
           {changedArticles.length > 0 && (
             <div className="space-y-3">
               <h2 className="text-lg font-semibold">
-                Articole modificate ({changedArticles.length})
+                {t("compare.changedArticles")} ({changedArticles.length})
               </h2>
               {changedArticles.map((article, idx) => (
                 <DiffArticleCard
@@ -702,8 +708,8 @@ export function ComparePageClient() {
                 ) : (
                   <ChevronDown className="mr-2 h-4 w-4" />
                 )}
-                {showUnchanged ? "Ascunde" : "Arată"} {unchangedArticles.length} articole
-                neschimbate
+                {showUnchanged ? t("common.hide") : t("common.showAll")} {unchangedArticles.length}{" "}
+                {t("common.unchangedArticles")}
               </Button>
               {showUnchanged && (
                 <div className="mt-3 space-y-2">
@@ -717,9 +723,7 @@ export function ComparePageClient() {
 
           {/* No changes state */}
           {changedArticles.length === 0 && unchangedArticles.length > 0 && (
-            <div className="py-12 text-center text-muted-foreground">
-              Nu există diferențe între cele două versiuni selectate.
-            </div>
+            <div className="py-12 text-center text-muted-foreground">{t("compare.noChanges")}</div>
           )}
         </div>
       )}
@@ -728,7 +732,7 @@ export function ComparePageClient() {
       {!diffData && !loading && !error && !versionA && !versionB && (
         <div className="py-20 text-center text-muted-foreground">
           <FileText className="mx-auto mb-4 h-12 w-12 opacity-30" />
-          <p className="text-lg">Selectează două versiuni pentru a începe comparația.</p>
+          <p className="text-lg">{t("compare.selectVersions")}</p>
         </div>
       )}
     </div>
@@ -757,6 +761,7 @@ function DiffArticleCard({
   onForceExpandHandled?: () => void;
   isActive?: boolean;
 }) {
+  const t = useTranslations();
   const [expanded, setExpanded] = useState(false);
 
   /** Auto-expand when parent triggers a jump-to-change */
@@ -797,7 +802,9 @@ function DiffArticleCard({
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5">
             {statusIcon(article.status)}
-            <span className="font-semibold">Articolul {article.articleNumber}</span>
+            <span className="font-semibold">
+              {t("common.articlePrefix")} {article.articleNumber}
+            </span>
           </span>
           {(article.a?.title || article.b?.title) && (
             <span className="text-sm opacity-80">{article.a?.title || article.b?.title}</span>
@@ -821,7 +828,9 @@ function DiffArticleCard({
           {isOnlyOneSide ? (
             <div className="p-4">
               <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
-                {article.status === "added" ? `${yearB} (Adăugat)` : `${yearA} (Eliminat)`}
+                {article.status === "added"
+                  ? `${yearB} (${t("compare.addedIn")})`
+                  : `${yearA} (${t("compare.statusRemoved")})`}
               </div>
               <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-background/50 rounded p-3 border border-inherit">
                 {article.status === "added" ? modifiedText : originalText}
@@ -855,6 +864,7 @@ function DiffArticleCard({
 
 /** Expandable card for an unchanged article - shows full content when expanded */
 function UnchangedArticleCard({ article }: { article: DiffArticle }) {
+  const t = useTranslations();
   const [expanded, setExpanded] = useState(false);
   const content = article.a?.content || article.b?.content || "";
 
@@ -866,7 +876,9 @@ function UnchangedArticleCard({ article }: { article: DiffArticle }) {
         className="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-muted-foreground hover:bg-accent/20 transition-colors"
       >
         <span>
-          <span className="font-medium">Articolul {article.articleNumber}</span>
+          <span className="font-medium">
+            {t("common.articlePrefix")} {article.articleNumber}
+          </span>
           {article.a?.title && <span className="ml-1 opacity-70">— {article.a.title}</span>}
         </span>
         {expanded ? (
