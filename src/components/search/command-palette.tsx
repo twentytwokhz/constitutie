@@ -177,7 +177,8 @@ export function CommandPalette() {
 
   /**
    * Highlight all occurrences of the search query in text.
-   * Returns an array of ReactNode fragments with <mark> around matches.
+   * Uses split with a capturing group — odd-indexed parts are always matches.
+   * This avoids the regex.test() global flag lastIndex bug.
    */
   const highlightText = useCallback(
     (text: string): ReactNode[] => {
@@ -188,13 +189,14 @@ export function CommandPalette() {
       const nodes: ReactNode[] = [];
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i];
-        if (regex.test(part)) {
+        // When splitting with a capturing group, odd indices are the captured matches
+        if (i % 2 === 1) {
           nodes.push(
             <mark key={i} className="bg-primary/20 text-primary font-medium rounded-sm px-0.5">
               {part}
             </mark>,
           );
-        } else {
+        } else if (part) {
           nodes.push(part);
         }
       }
