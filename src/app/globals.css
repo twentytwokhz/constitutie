@@ -184,6 +184,22 @@
   animation: grid-fade 1.5s ease-out forwards;
 }
 
+/* Floating particle animation — subtle vertical drift */
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.15);
+  }
+}
+
+.animate-particle {
+  animation: particle-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
 /* TipTap Reader Styles — Constitution article content */
 .tiptap-content .tiptap {
   outline: none;
@@ -315,6 +331,7 @@
 
   .animate-word-reveal,
   .animate-grid-fade,
+  .animate-particle,
   .animate-slide-down,
   .animate-fade-in-out,
   .scroll-reveal-hidden,
