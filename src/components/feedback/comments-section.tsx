@@ -92,6 +92,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
   } | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const MAX_COMMENT_LENGTH = 5000;
 
   const fetchComments = useCallback(async () => {
     try {
@@ -168,6 +169,13 @@ export function CommentsSection({ articleId }: { articleId: number }) {
       textareaRef.current?.focus();
       return;
     }
+    if (trimmedContent.length > MAX_COMMENT_LENGTH) {
+      setValidationError(
+        `Comentariul depășește limita maximă de ${MAX_COMMENT_LENGTH.toLocaleString("ro-RO")} caractere.`,
+      );
+      textareaRef.current?.focus();
+      return;
+    }
     setValidationError(null);
 
     // Client-side dedup: prevent resubmission of same content after back/forward nav
@@ -239,16 +247,22 @@ export function CommentsSection({ articleId }: { articleId: number }) {
           ref={textareaRef}
           value={newComment}
           onChange={(e) => {
-            setNewComment(e.target.value);
-            if (validationError && e.target.value.trim()) {
+            const value = e.target.value;
+            if (value.length <= MAX_COMMENT_LENGTH) {
+              setNewComment(value);
+            }
+            if (validationError && value.trim()) {
               setValidationError(null);
             }
           }}
+          maxLength={MAX_COMMENT_LENGTH}
           placeholder="Scrie un comentariu constructiv despre acest articol..."
           className={`w-full rounded-lg border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 resize-y min-h-[80px] ${
-            validationError
+            validationError || newComment.length >= MAX_COMMENT_LENGTH
               ? "border-destructive focus:ring-destructive"
-              : "border-border focus:ring-ring"
+              : newComment.length >= MAX_COMMENT_LENGTH * 0.9
+                ? "border-amber-500 focus:ring-amber-500"
+                : "border-border focus:ring-ring"
           }`}
           rows={3}
           disabled={submitting}
@@ -259,10 +273,30 @@ export function CommentsSection({ articleId }: { articleId: number }) {
             {validationError}
           </p>
         )}
-        <div className="mt-2 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
-            Comentariul va fi verificat automat de AI înainte de publicare.
+        {newComment.length >= MAX_COMMENT_LENGTH && (
+          <p className="mt-1 text-sm text-destructive flex items-center gap-1.5">
+            <XCircle className="h-3.5 w-3.5 shrink-0" />
+            Limita maximă de {MAX_COMMENT_LENGTH.toLocaleString("ro-RO")} caractere a fost atinsă.
           </p>
+        )}
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <p className="text-xs text-muted-foreground">
+              Comentariul va fi verificat automat de AI înainte de publicare.
+            </p>
+            <span
+              className={`text-xs tabular-nums ${
+                newComment.length >= MAX_COMMENT_LENGTH
+                  ? "text-destructive font-medium"
+                  : newComment.length >= MAX_COMMENT_LENGTH * 0.9
+                    ? "text-amber-600 dark:text-amber-400 font-medium"
+                    : "text-muted-foreground"
+              }`}
+            >
+              {newComment.length.toLocaleString("ro-RO")}/
+              {MAX_COMMENT_LENGTH.toLocaleString("ro-RO")}
+            </span>
+          </div>
           <button
             type="submit"
             disabled={submitting || !newComment.trim()}
