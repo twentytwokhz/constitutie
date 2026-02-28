@@ -334,36 +334,116 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Locale-aware labels for PDF content.
+ *
+ * Since @react-pdf components cannot use React hooks (useTranslations),
+ * we keep a simple map here and select the right set based on the
+ * `locale` prop passed to DiffPdfDocument.
+ */
+const pdfLabels = {
+  ro: {
+    statusAdded: "Adăugat",
+    statusRemoved: "Eliminat",
+    statusModified: "Modificat",
+    statusUnchanged: "Neschimbat",
+    summaryAdded: "Adăugate",
+    summaryRemoved: "Eliminate",
+    summaryModified: "Modificate",
+    summaryUnchanged: "Neschimbate",
+    articlePrefix: "Articolul",
+    comparisonTitle: "Comparație Constituție",
+    constitutionOf: "Constituția din",
+    generatedAt: "Generat la",
+    footerLabel: "Constituția României — Comparație",
+    pageLabel: "Pagina",
+    pageOf: "/",
+    noChanges: "Nu există diferențe între cele două versiuni.",
+    docTitle: (yearA: number, yearB: number) => `Comparație Constituția ${yearA} vs ${yearB}`,
+    docAuthor: "Constituția României",
+    docSubject: (yearA: number, yearB: number) =>
+      `Diferențe între versiunile ${yearA} și ${yearB} ale Constituției României`,
+  },
+  en: {
+    statusAdded: "Added",
+    statusRemoved: "Removed",
+    statusModified: "Modified",
+    statusUnchanged: "Unchanged",
+    summaryAdded: "Added",
+    summaryRemoved: "Removed",
+    summaryModified: "Modified",
+    summaryUnchanged: "Unchanged",
+    articlePrefix: "Article",
+    comparisonTitle: "Constitution Comparison",
+    constitutionOf: "Constitution of",
+    generatedAt: "Generated at",
+    footerLabel: "Romanian Constitution — Comparison",
+    pageLabel: "Page",
+    pageOf: "/",
+    noChanges: "No differences between the two versions.",
+    docTitle: (yearA: number, yearB: number) => `Constitution Comparison ${yearA} vs ${yearB}`,
+    docAuthor: "Romanian Constitution",
+    docSubject: (yearA: number, yearB: number) =>
+      `Differences between the ${yearA} and ${yearB} versions of the Romanian Constitution`,
+  },
+};
+
+interface PdfLabels {
+  statusAdded: string;
+  statusRemoved: string;
+  statusModified: string;
+  statusUnchanged: string;
+  summaryAdded: string;
+  summaryRemoved: string;
+  summaryModified: string;
+  summaryUnchanged: string;
+  articlePrefix: string;
+  comparisonTitle: string;
+  constitutionOf: string;
+  generatedAt: string;
+  footerLabel: string;
+  pageLabel: string;
+  pageOf: string;
+  noChanges: string;
+  docTitle: (yearA: number, yearB: number) => string;
+  docAuthor: string;
+  docSubject: (yearA: number, yearB: number) => string;
+}
+
+function getLabels(locale: string): PdfLabels {
+  return locale === "en" ? pdfLabels.en : pdfLabels.ro;
+}
+
 /** Get styling for an article card based on status */
-function getStatusStyles(status: PdfDiffArticle["status"]) {
+function getStatusStyles(status: PdfDiffArticle["status"], labels: PdfLabels) {
   switch (status) {
     case "added":
       return {
         bg: colors.addedBg,
         border: colors.addedBorder,
         text: colors.added,
-        label: "Adăugat",
+        label: labels.statusAdded,
       };
     case "removed":
       return {
         bg: colors.removedBg,
         border: colors.removedBorder,
         text: colors.removed,
-        label: "Eliminat",
+        label: labels.statusRemoved,
       };
     case "modified":
       return {
         bg: colors.modifiedBg,
         border: colors.modifiedBorder,
         text: colors.modified,
-        label: "Modificat",
+        label: labels.statusModified,
       };
     default:
       return {
         bg: colors.bgSection,
         border: colors.border,
         text: colors.textMuted,
-        label: "Neschimbat",
+        label: labels.statusUnchanged,
       };
   }
 }
@@ -393,12 +473,14 @@ function ArticleCard({
   article,
   yearA,
   yearB,
+  labels,
 }: {
   article: PdfDiffArticle;
   yearA: number;
   yearB: number;
+  labels: PdfLabels;
 }) {
-  const status = getStatusStyles(article.status);
+  const status = getStatusStyles(article.status, labels);
   const title = article.a?.title || article.b?.title;
 
   return (
@@ -411,7 +493,7 @@ function ArticleCard({
       {/* Article header */}
       <View style={[styles.articleHeader, { borderBottom: `1px solid ${status.border}` }]}>
         <RoText style={[styles.articleNumber, { color: status.text }]} bold>
-          {`Articolul ${article.articleNumber}`}
+          {`${labels.articlePrefix} ${article.articleNumber}`}
         </RoText>
         {title && <RoText style={styles.articleTitle}>{title}</RoText>}
         <RoText
@@ -443,7 +525,7 @@ function ArticleCard({
       {article.status === "added" && article.b && (
         <View style={styles.singleContent}>
           <RoText style={styles.contentColumnLabel} bold>
-            {`${yearB} (Adăugat)`}
+            {`${yearB} (${labels.statusAdded})`}
           </RoText>
           <RoText style={styles.contentText}>{article.b.content}</RoText>
         </View>
@@ -452,7 +534,7 @@ function ArticleCard({
       {article.status === "removed" && article.a && (
         <View style={styles.singleContent}>
           <RoText style={styles.contentColumnLabel} bold>
-            {`${yearA} (Eliminat)`}
+            {`${yearA} (${labels.statusRemoved})`}
           </RoText>
           <RoText style={styles.contentText}>{article.a.content}</RoText>
         </View>
@@ -474,6 +556,7 @@ function ArticleCard({
  * black-rectangle and line-break bugs from the old Helvetica+InterExt mix.
  */
 export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro" }: DiffPdfProps) {
+  const labels = getLabels(locale);
   const changedArticles = articles.filter((a) => a.status !== "unchanged");
   const now = new Date();
   // Use Intl.DateTimeFormat directly (equivalent to next-intl's format.dateTime)
@@ -488,45 +571,45 @@ export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro"
 
   return (
     <Document
-      title={`Comparație Constituția ${yearA} vs ${yearB}`}
-      author="Constituția României"
-      subject={`Diferențe între versiunile ${yearA} și ${yearB} ale Constituției României`}
+      title={labels.docTitle(yearA, yearB)}
+      author={labels.docAuthor}
+      subject={labels.docSubject(yearA, yearB)}
     >
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
           <RoText style={styles.title} bold>
-            {"Comparație Constituție"}
+            {labels.comparisonTitle}
           </RoText>
           <RoText style={styles.subtitle}>
-            {`Constituția din ${yearA} vs Constituția din ${yearB}`}
+            {`${labels.constitutionOf} ${yearA} vs ${labels.constitutionOf} ${yearB}`}
           </RoText>
-          <RoText style={styles.dateText}>{`Generat la ${dateStr}`}</RoText>
+          <RoText style={styles.dateText}>{`${labels.generatedAt} ${dateStr}`}</RoText>
         </View>
 
         {/* Summary Stats */}
         <View style={styles.summaryContainer}>
           <SummaryStat
             count={summary.added}
-            label="Adăugate"
+            label={labels.summaryAdded}
             color={colors.added}
             bgColor={colors.addedBg}
           />
           <SummaryStat
             count={summary.removed}
-            label="Eliminate"
+            label={labels.summaryRemoved}
             color={colors.removed}
             bgColor={colors.removedBg}
           />
           <SummaryStat
             count={summary.modified}
-            label="Modificate"
+            label={labels.summaryModified}
             color={colors.modified}
             bgColor={colors.modifiedBg}
           />
           <SummaryStat
             count={summary.unchanged}
-            label="Neschimbate"
+            label={labels.summaryUnchanged}
             color={colors.textMuted}
             bgColor={colors.bgSection}
           />
@@ -534,26 +617,30 @@ export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro"
 
         {/* Changed articles */}
         {changedArticles.map((article) => (
-          <ArticleCard key={article.articleNumber} article={article} yearA={yearA} yearB={yearB} />
+          <ArticleCard
+            key={article.articleNumber}
+            article={article}
+            yearA={yearA}
+            yearB={yearB}
+            labels={labels}
+          />
         ))}
 
         {/* Empty state */}
         {changedArticles.length === 0 && (
           <View style={{ padding: 20, alignItems: "center" }}>
-            <RoText style={{ color: colors.textMuted, fontSize: 12 }}>
-              {"Nu există diferențe între cele două versiuni."}
-            </RoText>
+            <RoText style={{ color: colors.textMuted, fontSize: 12 }}>{labels.noChanges}</RoText>
           </View>
         )}
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <RoText style={styles.footerText}>
-            {`Constituția României — Comparație ${yearA} vs ${yearB}`}
-          </RoText>
+          <RoText style={styles.footerText}>{`${labels.footerLabel} ${yearA} vs ${yearB}`}</RoText>
           <Text
             style={styles.pageNumber}
-            render={({ pageNumber, totalPages }) => `Pagina ${pageNumber} / ${totalPages}`}
+            render={({ pageNumber, totalPages }) =>
+              `${labels.pageLabel} ${pageNumber} ${labels.pageOf} ${totalPages}`
+            }
           />
         </View>
       </Page>

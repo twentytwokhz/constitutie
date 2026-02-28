@@ -33,6 +33,7 @@ interface Version {
   id: number;
   year: number;
   name: string;
+  nameEn: string | null;
   totalArticles: number;
 }
 
@@ -328,7 +329,10 @@ export function ComparePageClient() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `constitutia-comparatie-${versionA}-vs-${versionB}.pdf`;
+      link.download =
+        locale === "en"
+          ? `constitution-comparison-${versionA}-vs-${versionB}.pdf`
+          : `constitutia-comparatie-${versionA}-vs-${versionB}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -418,7 +422,8 @@ export function ComparePageClient() {
                 <SelectContent>
                   {versions.map((v) => (
                     <SelectItem key={v.year} value={String(v.year)}>
-                      {v.name} ({v.totalArticles} {t("common.articles")})
+                      {locale === "en" && v.nameEn ? v.nameEn : v.name} ({v.totalArticles}{" "}
+                      {t("common.articles")})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -453,7 +458,8 @@ export function ComparePageClient() {
                 <SelectContent>
                   {versions.map((v) => (
                     <SelectItem key={v.year} value={String(v.year)}>
-                      {v.name} ({v.totalArticles} {t("common.articles")})
+                      {locale === "en" && v.nameEn ? v.nameEn : v.name} ({v.totalArticles}{" "}
+                      {t("common.articles")})
                     </SelectItem>
                   ))}
                 </SelectContent>

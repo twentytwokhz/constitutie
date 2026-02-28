@@ -63,8 +63,12 @@ export async function POST(request: NextRequest) {
       }),
     );
 
-    // Return as downloadable PDF
-    const filename = `constitutia-comparatie-${yearA}-vs-${yearB}.pdf`;
+    // Return as downloadable PDF — locale-aware filename
+    const effectiveLocale = typeof locale === "string" ? locale : "ro";
+    const filename =
+      effectiveLocale === "en"
+        ? `constitution-comparison-${yearA}-vs-${yearB}.pdf`
+        : `constitutia-comparatie-${yearA}-vs-${yearB}.pdf`;
 
     // Convert Buffer → Uint8Array for NextResponse BodyInit compatibility
     return new NextResponse(new Uint8Array(pdfBuffer), {
