@@ -45,6 +45,40 @@ function generateFingerprint(): string {
   return `fp-${Math.abs(hash).toString(36)}`;
 }
 
+/**
+ * Track recently submitted comment content in sessionStorage to prevent
+ * duplicate submissions after browser back/forward navigation.
+ * Returns true if the content was already submitted recently.
+ */
+function isDuplicateSubmission(articleId: number, content: string): boolean {
+  const key = `submitted_comments_${articleId}`;
+  try {
+    const stored = sessionStorage.getItem(key);
+    const submissions: { content: string; timestamp: number }[] = stored ? JSON.parse(stored) : [];
+    // Clean up entries older than 5 minutes
+    const cutoff = Date.now() - 5 * 60 * 1000;
+    const recent = submissions.filter((s) => s.timestamp > cutoff);
+    return recent.some((s) => s.content === content);
+  } catch {
+    return false;
+  }
+}
+
+/** Record a successful submission in sessionStorage for dedup tracking. */
+function recordSubmission(articleId: number, content: string): void {
+  const key = `submitted_comments_${articleId}`;
+  try {
+    const stored = sessionStorage.getItem(key);
+    const submissions: { content: string; timestamp: number }[] = stored ? JSON.parse(stored) : [];
+    const cutoff = Date.now() - 5 * 60 * 1000;
+    const recent = submissions.filter((s) => s.timestamp > cutoff);
+    recent.push({ content, timestamp: Date.now() });
+    sessionStorage.setItem(key, JSON.stringify(recent));
+  } catch {
+    // sessionStorage unavailable — server-side dedup is the fallback
+  }
+}
+
 export function CommentsSection({ articleId }: { articleId: number }) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,7 +160,18 @@ export function CommentsSection({ articleId }: { articleId: number }) {
     e.preventDefault();
     // Synchronous ref check prevents race condition from rapid double-clicks
     // (React state updates are async, so submitting may not reflect yet)
-    if (!newComment.trim() || isSubmittingRef.current) return;
+    const trimmedContent = newComment.trim();
+    if (!trimmedContent || isSubmittingRef.current) return;
+
+    // Client-side dedup: prevent resubmission of same content after back/forward nav
+    if (isDuplicateSubmission(articleId, trimmedContent)) {
+      setSubmitResult({
+        type: "success",
+        message: "Acest comentariu a fost deja trimis.",
+      });
+      setNewComment("");
+      return;
+    }
 
     isSubmittingRef.current = true;
     setSubmitting(true);
@@ -138,7 +183,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: newComment.trim(),
+          content: trimmedContent,
           fingerprintHash: fingerprint,
         }),
       });
@@ -156,6 +201,8 @@ export function CommentsSection({ articleId }: { articleId: number }) {
           message: data.rejectionReason || "Comentariul nu respectă regulile platformei.",
         });
       } else {
+        // Track the submitted content to prevent back-button resubmission
+        recordSubmission(articleId, trimmedContent);
         setSubmitResult({ type: "success", message: "Comentariul a fost adăugat cu succes!" });
         setNewComment("");
         // Refresh comments list to show the new comment

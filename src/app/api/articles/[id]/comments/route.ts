@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { articles, comments } from "@/lib/db/schema";
 import { moderateComment } from "@/lib/moderation";
 import { RATE_LIMITS, checkRateLimit } from "@/lib/rate-limit";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -100,6 +100,30 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     if (article.length === 0) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
+    }
+
+    // Deduplication: prevent duplicate comments from back-button resubmit
+    // Check if the same fingerprint already posted the same content on this article
+    // within the last 5 minutes — return the existing comment instead of duplicating.
+    const DEDUP_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+    const dedupCutoff = new Date(Date.now() - DEDUP_WINDOW_MS);
+
+    const existingDuplicate = await db
+      .select()
+      .from(comments)
+      .where(
+        and(
+          eq(comments.articleId, articleId),
+          eq(comments.fingerprintHash, fingerprintHash),
+          eq(comments.content, sanitizedContent),
+          gt(comments.createdAt, dedupCutoff),
+        ),
+      )
+      .limit(1);
+
+    if (existingDuplicate.length > 0) {
+      // Idempotent: return the existing comment as if it was just created
+      return NextResponse.json(existingDuplicate[0], { status: 200 });
     }
 
     // AI moderation via OpenRouter (uses sanitized content)
