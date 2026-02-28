@@ -1,5 +1,47 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #38, #39, #40)
+
+### Completed Features
+
+#### Feature #38: Full-text search in article content works ✅
+- Improved search API snippet extraction: now centers snippet around the actual search term match
+  instead of showing first 200 chars (which often missed the match entirely)
+- Snippets show ~80 chars before and ~120 chars after the match for context
+- Fallback to first 200 chars when match is in title or article number (not content)
+- Newlines replaced with spaces in snippets for clean display
+- Verified "drepturi" returns results from all 4 versions (1952, 1986, 1991, 2003)
+- Verified "proprietate" returns cross-version results
+- Article URLs return 200 for all tested paths
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #39: Search results grouped per constitution version ✅
+- Already implemented in command palette: `reduce` groups by versionYear
+- Groups rendered as `CommandGroup` with heading "Constituția {year}"
+- Groups sorted descending (2003 first, 1952 last)
+- Within groups, articles ordered by number (from API orderBy)
+- Verified with "republica" query showing results from all 4 versions
+
+#### Feature #40: Click on search result navigates to article ✅
+- handleSelect already implemented: closes palette, clears state, calls router.push
+- Navigation URL pattern: /${versionYear}/articolul-${number}
+- Reader page correctly parses slug via regex ^articolul-(\d+)$
+- Verified URLs return 200 for /1952/articolul-17, /2003/articolul-1, /1991/articolul-50
+
+### Components Modified
+- src/app/api/articles/search/route.ts - Improved snippet extraction with context around match
+- src/components/search/command-palette.tsx - Added search term highlighting + recent searches
+
+### Current Status
+- Features passing: 73 (was 70)
+- Total features: 144
+- Percentage: ~50.7%
+
+### Notes
+- "cetățeni" search returns empty - likely a diacritics encoding difference in the DB
+- Recent searches feature was added by another session and included in this commit
+- highlightText uses regex split + mark elements with bg-primary/20 styling
+
 ## Session: 2026-02-28 (Agent handling features #28, #30, #31)
 
 ### Completed Features
