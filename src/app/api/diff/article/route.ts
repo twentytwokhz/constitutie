@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { articles, constitutionVersions } from "@/lib/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const versionB = searchParams.get("b");
   const articleNum = searchParams.get("article");
   const locale = searchParams.get("locale") || "ro";
-  const useEn = locale === "en";
+  let useEn = locale === "en";
 
   if (!versionA || !versionB || !articleNum) {
     return NextResponse.json(
@@ -42,6 +42,27 @@ export async function GET(request: NextRequest) {
 
     if (!verA || !verB) {
       return NextResponse.json({ error: "One or both versions not found" }, { status: 404 });
+    }
+
+    // When locale is EN, verify BOTH versions have English translations.
+    // If either version lacks translations, fall back to Romanian for BOTH sides
+    // to avoid comparing Romanian text against English text.
+    if (useEn) {
+      const [enCountA] = await db
+        .select({ count: articles.id })
+        .from(articles)
+        .where(and(eq(articles.versionId, verA.id), isNotNull(articles.contentEn)))
+        .limit(1);
+
+      const [enCountB] = await db
+        .select({ count: articles.id })
+        .from(articles)
+        .where(and(eq(articles.versionId, verB.id), isNotNull(articles.contentEn)))
+        .limit(1);
+
+      if (!enCountA?.count || !enCountB?.count) {
+        useEn = false;
+      }
     }
 
     // Fetch the specific article from each version

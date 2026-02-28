@@ -1,7 +1,27 @@
 {
+  "1866": {
+    "nameEn": "The Constitution of 1866",
+    "descriptionEn": "The Constitution of Romania of 1866, adopted on June 30, 1866, under the reign of Carol I. The first modern constitution of Romania, inspired by the Belgian model, it established the constitutional monarchy."
+  },
+  "1923": {
+    "nameEn": "The Constitution of 1923",
+    "descriptionEn": "The Constitution of Romania of 1923, adopted on March 28, 1923, under King Ferdinand I. The Constitution of Greater Romania, it introduced universal male suffrage and the constitutional review of laws."
+  },
+  "1938": {
+    "nameEn": "The Constitution of 1938",
+    "descriptionEn": "The Constitution of Romania of 1938, promulgated on February 27, 1938, by King Carol II. It established a regime of monarchical authority, suspending democratic freedoms."
+  },
+  "1948": {
+    "nameEn": "The Constitution of 1948",
+    "descriptionEn": "The Constitution of the Romanian People's Republic of 1948, adopted on April 13, 1948. The first communist constitution of Romania, it consecrated the transition to the regime of people's democracy."
+  },
   "1952": {
     "nameEn": "The 1952 Constitution",
     "descriptionEn": "The Constitution of the Romanian People's Republic of 1952, adopted on September 24, 1952. Inspired by the Soviet model, it enshrined the leading role of the Romanian Communist Party."
+  },
+  "1965": {
+    "nameEn": "The Constitution of 1965",
+    "descriptionEn": "The Constitution of the Socialist Republic of Romania of 1965, adopted on August 21, 1965. It proclaimed Romania a socialist republic and consolidated the power of the Romanian Communist Party."
   },
   "1986": {
     "nameEn": "The 1965 Constitution",
