@@ -1548,3 +1548,34 @@
 - Rate limiter uses in-memory Map with periodic cleanup (prevents memory leaks)
 - Bot detection uses multi-signal scoring (not just User-Agent matching)
 - All security features follow fail-open for GET (reading is always allowed)
+
+## Session: 2026-02-28 (Agent handling features #91, #92)
+
+### Completed Features
+
+#### Feature #91: Theme preference saved in localStorage persists across sessions ✅
+- next-themes configured with attribute="class", defaultTheme="system", enableSystem
+- Uses default storageKey "theme" in localStorage
+- ThemeToggle calls setTheme() which triggers localStorage persistence
+- suppressHydrationWarning on html element prevents SSR mismatch
+- No code changes needed — already fully implemented by next-themes
+- Biome lint: 0 errors
+
+#### Feature #92: Auto-detect system preference for dark/light mode ✅
+- defaultTheme="system" ensures first visit uses OS preference
+- enableSystem activates prefers-color-scheme media query listener
+- resolvedTheme in ThemeToggle reflects the computed actual theme
+- Realtime updates when OS preference changes (next-themes built-in)
+- No code changes needed — already fully implemented by next-themes
+- Biome lint: 0 errors
+
+### Current Status
+- Features passing: 110 (was 108)
+- Total features: 144
+- Percentage: ~76.4%
+
+### Notes
+- Both features were verification features requiring no code changes
+- next-themes@^0.4.0 handles localStorage persistence and system preference detection
+- ThemeProvider wraps entire app in root layout.tsx
+- No mock data patterns found in source code
