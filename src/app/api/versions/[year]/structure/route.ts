@@ -70,13 +70,12 @@ function buildTree(
   return roots;
 }
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ year: string }> },
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ year: string }> }) {
   try {
     const { year } = await params;
     const yearNum = Number.parseInt(year, 10);
+    const locale = request.nextUrl.searchParams.get("locale") || "ro";
+    const useEn = locale === "en";
 
     if (Number.isNaN(yearNum)) {
       return NextResponse.json({ error: "Invalid year parameter" }, { status: 400 });
@@ -104,6 +103,7 @@ export async function GET(
           id: articles.id,
           number: articles.number,
           title: articles.title,
+          titleEn: articles.titleEn,
           slug: articles.slug,
           orderIndex: articles.orderIndex,
           structuralUnitId: articles.structuralUnitId,
@@ -113,7 +113,18 @@ export async function GET(
         .orderBy(asc(articles.orderIndex)),
     ]);
 
-    // Group articles by structural unit
+    // Map units to locale-aware names
+    const localizedUnits = units.map((u) => ({
+      id: u.id,
+      type: u.type,
+      number: u.number,
+      name: (useEn && u.nameEn) || u.name,
+      slug: u.slug,
+      orderIndex: u.orderIndex,
+      parentId: u.parentId,
+    }));
+
+    // Group articles by structural unit with locale-aware titles
     const articlesByUnit = new Map<
       number,
       { id: number; number: number; title: string | null; slug: string; orderIndex: number }[]
@@ -123,14 +134,14 @@ export async function GET(
       list.push({
         id: article.id,
         number: article.number,
-        title: article.title,
+        title: (useEn && article.titleEn) || article.title,
         slug: article.slug,
         orderIndex: article.orderIndex,
       });
       articlesByUnit.set(article.structuralUnitId, list);
     }
 
-    const tree = buildTree(units, articlesByUnit);
+    const tree = buildTree(localizedUnits, articlesByUnit);
 
     return NextResponse.json({ year: yearNum, structure: tree });
   } catch (error) {

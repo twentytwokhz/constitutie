@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const versionA = searchParams.get("a");
   const versionB = searchParams.get("b");
+  const locale = searchParams.get("locale") || "ro";
+  const useEn = locale === "en";
 
   if (!versionA || !versionB) {
     return NextResponse.json(
@@ -66,6 +68,14 @@ export async function GET(request: NextRequest) {
       b: { title: string | null; content: string } | null;
     }> = [];
 
+    /** Pick locale-appropriate title and content from an article row */
+    function localized(art: (typeof articlesA)[0]) {
+      return {
+        title: (useEn && art.titleEn) || art.title,
+        content: (useEn && art.contentEn) || art.content,
+      };
+    }
+
     for (const num of [...allNumbers].sort((x, y) => x - y)) {
       const artA = mapA.get(num);
       const artB = mapB.get(num);
@@ -74,7 +84,7 @@ export async function GET(request: NextRequest) {
         diff.push({
           articleNumber: num,
           status: "removed",
-          a: { title: artA.title, content: artA.content },
+          a: localized(artA),
           b: null,
         });
       } else if (!artA && artB) {
@@ -82,15 +92,17 @@ export async function GET(request: NextRequest) {
           articleNumber: num,
           status: "added",
           a: null,
-          b: { title: artB.title, content: artB.content },
+          b: localized(artB),
         });
       } else if (artA && artB) {
-        const isModified = artA.content !== artB.content || artA.title !== artB.title;
+        const la = localized(artA);
+        const lb = localized(artB);
+        const isModified = la.content !== lb.content || la.title !== lb.title;
         diff.push({
           articleNumber: num,
           status: isModified ? "modified" : "unchanged",
-          a: { title: artA.title, content: artA.content },
-          b: { title: artB.title, content: artB.content },
+          a: la,
+          b: lb,
         });
       }
     }

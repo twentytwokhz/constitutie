@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/command";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
@@ -96,6 +96,7 @@ export function CommandPalette() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations();
+  const locale = useLocale();
   const suggestedSearches = useSuggestedSearches();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -201,9 +202,12 @@ export function CommandPalette() {
     const timeoutId = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/articles/search?q=${encodeURIComponent(query)}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `/api/articles/search?q=${encodeURIComponent(query)}&locale=${locale}`,
+          {
+            signal: controller.signal,
+          },
+        );
         if (res.ok) {
           const data = await res.json();
           const items = Array.isArray(data) ? data : data.results || [];
@@ -220,7 +224,7 @@ export function CommandPalette() {
       clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [query]);
+  }, [query, locale]);
 
   const handleSelect = useCallback(
     (result: SearchResult) => {

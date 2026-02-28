@@ -64,7 +64,6 @@ export function MobileToc({ year }: MobileTocProps) {
       {open && (
         <div className="lg:hidden fixed inset-0 z-50">
           {/* Backdrop */}
-          {/* biome-ignore lint/a11y/useSemanticElements: backdrop overlay needs div for full-screen positioning */}
           <div
             role="button"
             tabIndex={0}

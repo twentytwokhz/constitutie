@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
   const versionA = searchParams.get("a");
   const versionB = searchParams.get("b");
   const articleNum = searchParams.get("article");
+  const locale = searchParams.get("locale") || "ro";
+  const useEn = locale === "en";
 
   if (!versionA || !versionB || !articleNum) {
     return NextResponse.json(
@@ -59,8 +61,18 @@ export async function GET(request: NextRequest) {
       a: yearA,
       b: yearB,
       articleNumber: artNum,
-      articleA: artA ? { title: artA.title, content: artA.content } : null,
-      articleB: artB ? { title: artB.title, content: artB.content } : null,
+      articleA: artA
+        ? {
+            title: (useEn && artA.titleEn) || artA.title,
+            content: (useEn && artA.contentEn) || artA.content,
+          }
+        : null,
+      articleB: artB
+        ? {
+            title: (useEn && artB.titleEn) || artB.title,
+            content: (useEn && artB.contentEn) || artB.content,
+          }
+        : null,
       exists: { inA: !!artA, inB: !!artB },
     });
   } catch (error) {

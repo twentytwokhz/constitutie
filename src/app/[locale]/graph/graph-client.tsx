@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Link } from "@/i18n/navigation";
 import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GraphNode {
@@ -44,6 +44,7 @@ interface VersionInfo {
 
 export function GraphPageClient() {
   const t = useTranslations();
+  const locale = useLocale();
   const [versions, setVersions] = useState<VersionInfo[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("2003");
   const [graphData, setGraphData] = useState<GraphData | null>(null);
@@ -90,7 +91,7 @@ export function GraphPageClient() {
   useEffect(() => {
     setLoading(true);
     setSelectedNode(null);
-    fetch(`/api/versions/${selectedYear}/graph`)
+    fetch(`/api/versions/${selectedYear}/graph?locale=${locale}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.nodes) {
@@ -99,7 +100,7 @@ export function GraphPageClient() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [selectedYear]);
+  }, [selectedYear, locale]);
 
   const handleNodeClick = useCallback((node: GraphNode) => {
     setSelectedNode(node);

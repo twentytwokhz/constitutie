@@ -125,7 +125,6 @@ export function Header() {
       {mobileMenuOpen && (
         <>
           {/* Backdrop overlay: click outside to close */}
-          {/* biome-ignore lint/a11y/useSemanticElements: backdrop overlay needs div for full-screen positioning */}
           <div
             role="button"
             tabIndex={0}

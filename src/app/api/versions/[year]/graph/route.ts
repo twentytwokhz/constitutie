@@ -8,13 +8,12 @@ import {
 import { asc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ year: string }> },
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ year: string }> }) {
   try {
     const { year } = await params;
     const yearNum = Number.parseInt(year, 10);
+    const locale = request.nextUrl.searchParams.get("locale") || "ro";
+    const useEn = locale === "en";
 
     if (Number.isNaN(yearNum)) {
       return NextResponse.json({ error: "Invalid year parameter" }, { status: 400 });
@@ -44,22 +43,30 @@ export async function GET(
       .where(eq(articles.versionId, version.id))
       .orderBy(asc(articles.orderIndex));
 
-    // Build nodes from structural units and articles
+    // Build nodes from structural units and articles (locale-aware labels)
+    const typeLabels = useEn
+      ? { titlu: "Title", capitol: "Chapter", sectiune: "Section" }
+      : { titlu: "Titlul", capitol: "Capitolul", sectiune: "Secțiunea" };
+
     const nodes = [
       ...units.map((unit) => ({
         id: `unit-${unit.id}`,
         type: unit.type,
-        label: `${unit.type === "titlu" ? "Titlul" : unit.type === "capitol" ? "Capitolul" : "Secțiunea"} ${unit.number}. ${unit.name}`,
+        label: `${typeLabels[unit.type as keyof typeof typeLabels] || unit.type} ${unit.number}. ${(useEn && unit.nameEn) || unit.name}`,
         parentId: unit.parentId ? `unit-${unit.parentId}` : null,
       })),
-      ...versionArticles.map((article) => ({
-        id: `article-${article.id}`,
-        type: "articol" as const,
-        label: `Art. ${article.number}${article.title ? `. ${article.title}` : ""}`,
-        parentId: `unit-${article.structuralUnitId}`,
-        articleNumber: article.number,
-        contentSnippet: article.content ? article.content.slice(0, 200) : null,
-      })),
+      ...versionArticles.map((article) => {
+        const title = (useEn && article.titleEn) || article.title;
+        const content = (useEn && article.contentEn) || article.content;
+        return {
+          id: `article-${article.id}`,
+          type: "articol" as const,
+          label: `Art. ${article.number}${title ? `. ${title}` : ""}`,
+          parentId: `unit-${article.structuralUnitId}`,
+          articleNumber: article.number,
+          contentSnippet: content ? content.slice(0, 200) : null,
+        };
+      }),
     ];
 
     // Build hierarchical edges (parent to child)
