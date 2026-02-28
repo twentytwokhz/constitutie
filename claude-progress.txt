@@ -1,5 +1,53 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #34, #69, #27)
+
+### Completed Features
+
+#### Feature #34: Text selection triggers inline feedback option ✅
+- Created TextSelectionFeedback client component (src/components/feedback/text-selection-feedback.tsx)
+- Detects text selection via mouseup/touchend events on article content
+- Shows floating "Comentează selecția" button positioned above selection (using getBoundingClientRect)
+- Click opens inline comment form with quoted selected text
+- Submits comment with selectedText to existing POST /api/articles/[id]/comments
+- Integrates with AI moderation pipeline
+- Auto-closes form after successful submission
+- Wrapped article content in reader page with TextSelectionFeedback component
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #69: Inline feedback on selected text works end-to-end ✅
+- Verified full workflow: select text → click feedback → submit comment → stored with selectedText
+- Tested via API: POST with selectedText field stores correctly in database
+- GET /api/articles/[id]/comments returns approved comment with selectedText field
+- CommentsSection already displays selectedText in blockquote above comment text
+- Substantive comment approved by AI moderation; short test rejected correctly
+- No mock data patterns in any changed files
+
+#### Feature #27: TOC scroll spy highlights current article on scroll ✅
+- Added data-toc-article and data-toc-active attributes to article links in TOC
+- Implemented scrollActiveIntoView callback using scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+- TOC auto-scrolls to show active article when tree loads (150ms delay for DOM render)
+- Tree auto-expands branch containing the current article via checkContainsCurrent
+- Only one item highlighted at a time (single currentArticleNumber comparison)
+- Active item styled with bg-primary/10 text-primary font-semibold
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Created/Modified
+- src/components/feedback/text-selection-feedback.tsx - NEW: Floating feedback on text selection
+- src/app/[year]/[[...slug]]/page.tsx - Modified: wrapped article content with TextSelectionFeedback
+- src/components/reader/toc-sidebar.tsx - Modified: added scroll spy with auto-scroll
+
+### Current Status
+- Features passing: 68 (was 60)
+- Total features: 144
+- Percentage: 47.2%
+
+### Notes
+- TextSelectionFeedback uses relative positioning within its container for accurate button placement
+- Selection detection requires minimum 3 characters and checks containment within the article area
+- TOC scroll spy uses data attributes instead of refs to avoid prop drilling through recursive TocNodeItem
+- scrollIntoView({ block: 'nearest' }) ensures smooth scrolling without unnecessary movement
+
 ## Session: 2026-02-28 (Agent handling feature #143)
 
 ### Completed Features
