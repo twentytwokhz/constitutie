@@ -1,5 +1,36 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #127)
+
+### Completed Features
+
+#### Feature #127: Reader page responsive on mobile (single column) ✅
+- Created MobileToc component (src/components/reader/mobile-toc.tsx)
+- Floating "Cuprins" FAB button visible below lg breakpoint (< 1024px)
+- Bottom sheet slides up from bottom with 75vh max height
+- Reuses existing TocSidebar component inside scrollable container
+- Backdrop blur overlay with click-to-close and Escape key support
+- Body scroll lock while sheet is open (prevents background scrolling)
+- Drag indicator bar for visual affordance
+- Added slide-up and fade-in CSS animations + reduced-motion overrides
+- Desktop TOC sidebar remains unchanged (hidden lg:block)
+- Existing mobile layout already single-column: content uses min-w-0, px-4, max-w-4xl
+- Navigation buttons accessible (title text hidden sm:inline for compact mobile view)
+- Comments section accessible below article in same column flow
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Files Created
+- src/components/reader/mobile-toc.tsx - Mobile TOC bottom sheet component
+
+### Files Modified
+- src/app/[year]/[[...slug]]/page.tsx - Added MobileToc import and component
+- src/app/globals.css - Added slide-up, fade-in animations + reduced-motion overrides
+
+### Current Status
+- Features passing: 134 (was 133)
+- Total features: 144
+- Percentage: ~93.1%
+
 ## Session: 2026-02-28 (Agent handling features #104, #105, #106)
 
 ### Completed Features
