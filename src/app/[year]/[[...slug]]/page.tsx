@@ -2,6 +2,7 @@ import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
 import { ReadingProgress } from "@/components/reader/reading-progress";
+import { ShareButton } from "@/components/reader/share-button";
 import { TipTapReader } from "@/components/reader/tiptap-reader";
 import { TocSidebar } from "@/components/reader/toc-sidebar";
 import { db } from "@/lib/db";
@@ -279,9 +280,12 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                 Articolul {article.number}
               </h1>
             )}
-            <p className="mt-2 text-sm text-muted-foreground">
-              Constituția din {year} &middot; {allArticles.length} articole
-            </p>
+            <div className="mt-2 flex items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                Constituția din {year} &middot; {allArticles.length} articole
+              </p>
+              <ShareButton />
+            </div>
           </header>
 
           {/* Article Content via TipTap — wrapped with inline feedback on text selection */}
