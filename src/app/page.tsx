@@ -8,6 +8,7 @@ import {
 } from "@/components/illustrations";
 import { AnimatedText } from "@/components/landing/animated-text";
 import { GridBackground } from "@/components/landing/grid-background";
+import { HowItWorks } from "@/components/landing/how-it-works";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import { StatsSection } from "@/components/landing/stats-section";
 import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
@@ -154,6 +155,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* How It Works — 3-step visual section */}
+      <ScrollReveal>
+        <HowItWorks />
+      </ScrollReveal>
 
       {/* Statistics Section */}
       <ScrollReveal>
