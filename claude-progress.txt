@@ -1428,3 +1428,36 @@
 - Pre-existing TS error in statistics/page.tsx (totalArticles null type) - not my change
 - Mock data grep: zero matches for all prohibited patterns
 - Dev server running on port 3000 with turbopack
+
+## Session: 2026-02-28 (Agent handling features #70, #124, #125)
+
+### Completed Features
+
+#### Feature #70: Loading state visible during AI moderation - PASSED
+- Already implemented in prior session (CommentsSection component)
+- Loader2 spinner with Se verifice text during comment submission
+- Submit button disabled during processing (submitting state)
+- No code changes needed
+
+#### Feature #124: Success feedback shown after voting - PASSED
+- Added CheckCircle2 icon + Multumim message after successful vote
+- Message auto-dismisses after 3 seconds via setTimeout + CSS fade-in-out animation
+- Button scale-105 pop effect when vote cast (transition-all duration-200)
+- Added animate-fade-in-out to prefers-reduced-motion overrides
+- Vote count updates immediately (optimistic update)
+- Biome lint 0 errors, tsc 0 errors
+
+#### Feature #125: Success feedback after comment approval - PASSED
+- Already implemented in prior session (CommentsSection component)
+- After approval: CheckCircle2 + success message in emerald styling
+- fetchComments() refreshes list to show the new comment
+- No code changes needed
+
+### Components Modified
+- src/components/feedback/vote-buttons.tsx - Added success message, scale animation
+- src/app/globals.css - Added keyframes fade-in-out + reduced-motion override
+
+### Current Status
+- Features passing: 101 (was 98)
+- Total features: 144
+- Percentage: ~70.1%
