@@ -7,7 +7,6 @@ import { useCallback, useEffect, useState } from "react";
 
 interface MobileTocProps {
   year: number;
-  currentArticleNumber: number | null;
 }
 
 /**
@@ -17,7 +16,7 @@ interface MobileTocProps {
  * that opens a bottom sheet containing the full TocSidebar.
  * The sheet slides up from the bottom with backdrop blur overlay.
  */
-export function MobileToc({ year, currentArticleNumber }: MobileTocProps) {
+export function MobileToc({ year }: MobileTocProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("reader");
 
@@ -101,7 +100,7 @@ export function MobileToc({ year, currentArticleNumber }: MobileTocProps) {
 
             {/* TOC content — scrollable */}
             <div className="flex-1 overflow-y-auto overscroll-contain">
-              <TocSidebar year={year} currentArticleNumber={currentArticleNumber} />
+              <TocSidebar year={year} />
             </div>
           </div>
         </div>

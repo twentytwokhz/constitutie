@@ -2,18 +2,16 @@ import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
 import { CoatOfArms, TricolorStripe } from "@/components/national-symbols";
-import { MobileToc } from "@/components/reader/mobile-toc";
 import { ReadingProgress } from "@/components/reader/reading-progress";
 import { ShareButton } from "@/components/reader/share-button";
 import { TipTapReader } from "@/components/reader/tiptap-reader";
-import { TocSidebar } from "@/components/reader/toc-sidebar";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
 import { and, asc, eq } from "drizzle-orm";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 /**
@@ -72,11 +70,16 @@ export async function generateMetadata({
     };
   }
 
+  const metaLocale = await getLocale();
+  const metaUseEn = metaLocale === "en";
+
   const [article] = await db
     .select({
       number: articles.number,
       title: articles.title,
+      titleEn: articles.titleEn,
       content: articles.content,
+      contentEn: articles.contentEn,
     })
     .from(articles)
     .where(and(eq(articles.versionId, version.id), eq(articles.number, articleNumber)))
@@ -86,12 +89,15 @@ export async function generateMetadata({
     return {};
   }
 
+  const metaTitle = (metaUseEn && article.titleEn) || article.title;
+  const metaContent = (metaUseEn && article.contentEn) || article.content;
+
   const titleParts = [`${tCommon("art")} ${article.number}`];
-  if (article.title) {
-    titleParts.push(`\u2014 ${article.title}`);
+  if (metaTitle) {
+    titleParts.push(`\u2014 ${metaTitle}`);
   }
   const ogTitle = `${titleParts.join(" ")} | ${tCommon("appName")} (${year})`;
-  const ogDescription = article.content.substring(0, 200).trim();
+  const ogDescription = metaContent.substring(0, 200).trim();
 
   return {
     title: ogTitle,
@@ -128,6 +134,8 @@ interface ReaderPageProps {
 export default async function ReaderPage({ params }: ReaderPageProps) {
   const { year, slug } = await params;
   const yearNum = Number.parseInt(year, 10);
+  const locale = await getLocale();
+  const useEn = locale === "en";
 
   // Only allow valid constitution years (digits only)
   if (Number.isNaN(yearNum) || !/^\d+$/.test(year)) {
@@ -157,17 +165,24 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
   }
 
   // Fetch all articles for this version (ordered), include structuralUnitId for path building
-  const allArticles = await db
+  const allArticlesRaw = await db
     .select({
       id: articles.id,
       number: articles.number,
       title: articles.title,
+      titleEn: articles.titleEn,
       slug: articles.slug,
       structuralUnitId: articles.structuralUnitId,
     })
     .from(articles)
     .where(eq(articles.versionId, version.id))
     .orderBy(asc(articles.orderIndex));
+
+  // Apply locale: pick English title when in English mode
+  const allArticles = allArticlesRaw.map((a) => ({
+    ...a,
+    title: (useEn && a.titleEn) || a.title,
+  }));
 
   // Fetch all structural units for this version (single query for efficiency)
   const allUnits = await db
@@ -273,7 +288,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     while (currentUnit) {
       chain.unshift({
         type: currentUnit.type,
-        name: currentUnit.name,
+        name: (useEn && currentUnit.nameEn) || currentUnit.name,
         slug: currentUnit.slug,
       });
       if (currentUnit.parentId) {
@@ -309,231 +324,222 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
     }
   };
 
-  // Use TipTap JSON if available, otherwise fall back to raw content
-  const tiptapContent = article.contentTiptap as Record<string, unknown> | null;
+  // Use locale-aware content: prefer English when in English locale
+  const articleTitle = (useEn && article.titleEn) || article.title;
+  const articleContent = (useEn && article.contentEn) || article.content;
+  const tiptapContent = useEn
+    ? ((article.contentTiptapEn as Record<string, unknown> | null) ??
+      (article.contentTiptap as Record<string, unknown> | null))
+    : (article.contentTiptap as Record<string, unknown> | null);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-67px)]">
+    <>
       {/* Reading progress indicator */}
       <ReadingProgress currentArticle={currentIndex + 1} totalArticles={allArticles.length} />
 
-      <div className="flex flex-1">
-        {/* TOC Sidebar — desktop only */}
-        <aside className="hidden lg:block w-[280px] shrink-0 border-r border-border sticky top-[67px] h-[calc(100vh-67px)] overflow-y-auto">
-          <TocSidebar year={yearNum} currentArticleNumber={article.number} />
-        </aside>
+      {/* Main content area — sidebar is in the year-level layout.tsx */}
+      <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-8 max-w-4xl mx-auto w-full">
+        {/* Version header with coat of arms */}
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3 overflow-hidden">
+          <CoatOfArms year={yearNum} size={36} className="shrink-0" />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-sm font-semibold tracking-tight whitespace-nowrap sm:text-base">
+              {t("constitutionFrom")} {year}
+            </h2>
+            <p className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
+              {allArticles.length} {tCommon("articles")}
+            </p>
+          </div>
+          <TricolorStripe
+            height="3px"
+            className="w-16 rounded-full overflow-hidden hidden sm:flex shrink-0"
+          />
+        </div>
 
-        {/* Main content area */}
-        <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-8 max-w-4xl mx-auto w-full">
-          {/* Version header with coat of arms */}
-          <div className="mb-6 flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:px-4 sm:py-3 overflow-hidden">
-            <CoatOfArms year={yearNum} size={36} className="shrink-0" />
-            <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-semibold tracking-tight whitespace-nowrap sm:text-base">
-                {t("constitutionFrom")} {year}
-              </h2>
-              <p className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">
-                {allArticles.length} {tCommon("articles")}
+        {/* Breadcrumb */}
+        <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            {tCommon("home")}
+          </Link>
+          <span className="text-muted-foreground/70">/</span>
+          <Link href={`/${year}`} className="hover:text-foreground transition-colors">
+            {year}
+          </Link>
+          {breadcrumbParts.map((part, idx) => {
+            // Build cumulative path: /year/titlul-X or /year/titlul-X/capitolul-Y
+            const cumulativePath = `/${year}/${breadcrumbParts
+              .slice(0, idx + 1)
+              .map((p) => p.slug)
+              .join("/")}`;
+            return (
+              <span key={part.slug} className="flex items-center gap-2">
+                <span className="text-muted-foreground/70">/</span>
+                <Link href={cumulativePath} className="hover:text-foreground transition-colors">
+                  {getTypeLabel(part.type)} {part.name}
+                </Link>
+              </span>
+            );
+          })}
+          <span className="text-muted-foreground/70">/</span>
+          <span className="text-foreground font-medium">
+            {t("article")} {article.number}
+          </span>
+        </nav>
+
+        {/* Structural Unit Heading (Titlu/Capitol/Secțiune) */}
+        {breadcrumbParts.length > 0 && (
+          <div className="mb-4 space-y-1">
+            {breadcrumbParts.map((part) => (
+              <p
+                key={part.slug}
+                className={
+                  part.type === "titlu"
+                    ? "text-xs font-semibold uppercase tracking-widest text-primary"
+                    : part.type === "capitol"
+                      ? "text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                      : "text-xs font-medium italic text-muted-foreground"
+                }
+              >
+                {getTypeLabel(part.type)} {part.name}
               </p>
-            </div>
-            <TricolorStripe
-              height="3px"
-              className="w-16 rounded-full overflow-hidden hidden sm:flex shrink-0"
+            ))}
+          </div>
+        )}
+
+        {/* Article Header */}
+        <header className="mb-8">
+          <div className="flex items-baseline gap-3">
+            <span className="text-lg font-bold tabular-nums text-primary">
+              Art. {article.number}
+            </span>
+            {articleTitle && (
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{articleTitle}</h1>
+            )}
+          </div>
+          {!articleTitle && (
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-1">
+              {t("article")} {article.number}
+            </h1>
+          )}
+          <div className="mt-2 flex items-center gap-3">
+            <p className="text-sm text-muted-foreground">
+              {t("constitutionFrom")} {year} &middot; {allArticles.length} {tCommon("articles")}
+            </p>
+            <ShareButton
+              articleNumber={article.number}
+              articleTitle={articleTitle ?? undefined}
+              year={yearNum}
             />
           </div>
+        </header>
 
-          {/* Breadcrumb */}
-          <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-            <Link href="/" className="hover:text-foreground transition-colors">
-              {tCommon("home")}
-            </Link>
-            <span className="text-muted-foreground/70">/</span>
-            <Link href={`/${year}`} className="hover:text-foreground transition-colors">
-              {year}
-            </Link>
-            {breadcrumbParts.map((part, idx) => {
-              // Build cumulative path: /year/titlul-X or /year/titlul-X/capitolul-Y
-              const cumulativePath = `/${year}/${breadcrumbParts
-                .slice(0, idx + 1)
-                .map((p) => p.slug)
-                .join("/")}`;
-              return (
-                <span key={part.slug} className="flex items-center gap-2">
-                  <span className="text-muted-foreground/70">/</span>
-                  <Link href={cumulativePath} className="hover:text-foreground transition-colors">
-                    {getTypeLabel(part.type)} {part.name}
-                  </Link>
-                </span>
-              );
-            })}
-            <span className="text-muted-foreground/70">/</span>
-            <span className="text-foreground font-medium">
-              {t("article")} {article.number}
-            </span>
-          </nav>
-
-          {/* Structural Unit Heading (Titlu/Capitol/Secțiune) */}
-          {breadcrumbParts.length > 0 && (
-            <div className="mb-4 space-y-1">
-              {breadcrumbParts.map((part) => (
-                <p
-                  key={part.slug}
-                  className={
-                    part.type === "titlu"
-                      ? "text-xs font-semibold uppercase tracking-widest text-primary"
-                      : part.type === "capitol"
-                        ? "text-xs font-medium uppercase tracking-wide text-muted-foreground"
-                        : "text-xs font-medium italic text-muted-foreground"
-                  }
-                >
-                  {getTypeLabel(part.type)} {part.name}
-                </p>
-              ))}
-            </div>
-          )}
-
-          {/* Article Header */}
-          <header className="mb-8">
-            <div className="flex items-baseline gap-3">
-              <span className="text-lg font-bold tabular-nums text-primary">
-                Art. {article.number}
-              </span>
-              {article.title && (
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{article.title}</h1>
-              )}
-            </div>
-            {!article.title && (
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-1">
-                {t("article")} {article.number}
-              </h1>
+        {/* Article Content via TipTap — wrapped with inline feedback on text selection */}
+        <TextSelectionFeedback articleId={article.id} articleNumber={article.number} year={yearNum}>
+          <article className="max-w-none">
+            {tiptapContent ? (
+              <TipTapReader content={tiptapContent} />
+            ) : (
+              <div className="space-y-3">
+                {articleContent
+                  .split("\n")
+                  .filter((p) => p.trim().length > 0)
+                  .map((paragraph, idx) => (
+                    <p
+                      key={`p-${idx}-${paragraph.substring(0, 20)}`}
+                      className="text-base leading-relaxed"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+              </div>
             )}
-            <div className="mt-2 flex items-center gap-3">
-              <p className="text-sm text-muted-foreground">
-                {t("constitutionFrom")} {year} &middot; {allArticles.length} {tCommon("articles")}
-              </p>
+          </article>
+        </TextSelectionFeedback>
+
+        {/* Article Engagement: Vote & Share */}
+        <div className="mt-8 border-t border-border pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                {tFeedback("whatDoYouThink")}
+              </h3>
+              <VoteButtons
+                articleId={article.id}
+                initialAgreeCount={article.agreeCount ?? 0}
+                initialDisagreeCount={article.disagreeCount ?? 0}
+              />
+            </div>
+            <div className="sm:text-right">
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                {t("shareArticle")}
+              </h3>
               <ShareButton
                 articleNumber={article.number}
                 articleTitle={article.title ?? undefined}
                 year={yearNum}
+                variant="footer"
               />
             </div>
-          </header>
-
-          {/* Article Content via TipTap — wrapped with inline feedback on text selection */}
-          <TextSelectionFeedback
-            articleId={article.id}
-            articleNumber={article.number}
-            year={yearNum}
-          >
-            <article className="max-w-none">
-              {tiptapContent ? (
-                <TipTapReader content={tiptapContent} />
-              ) : (
-                <div className="space-y-3">
-                  {article.content
-                    .split("\n")
-                    .filter((p) => p.trim().length > 0)
-                    .map((paragraph, idx) => (
-                      <p
-                        key={`p-${idx}-${paragraph.substring(0, 20)}`}
-                        className="text-base leading-relaxed"
-                      >
-                        {paragraph}
-                      </p>
-                    ))}
-                </div>
-              )}
-            </article>
-          </TextSelectionFeedback>
-
-          {/* Article Engagement: Vote & Share */}
-          <div className="mt-8 border-t border-border pt-6">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">
-                  {tFeedback("whatDoYouThink")}
-                </h3>
-                <VoteButtons
-                  articleId={article.id}
-                  initialAgreeCount={article.agreeCount ?? 0}
-                  initialDisagreeCount={article.disagreeCount ?? 0}
-                />
-              </div>
-              <div className="sm:text-right">
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">
-                  {t("shareArticle")}
-                </h3>
-                <ShareButton
-                  articleNumber={article.number}
-                  articleTitle={article.title ?? undefined}
-                  year={yearNum}
-                  variant="footer"
-                />
-              </div>
-            </div>
           </div>
-
-          {/* Article Navigation (Prev/Next) — full deep links */}
-          <nav className="mt-10 flex items-center justify-between border-t border-border pt-6">
-            {prevArticle ? (
-              <Link
-                href={buildArticlePath(prevArticle)}
-                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
-                <div className="text-left">
-                  <span className="block text-xs uppercase tracking-wide text-muted-foreground">
-                    {tCommon("previous")}
-                  </span>
-                  <span className="block font-medium text-foreground">
-                    Art. {prevArticle.number}
-                    {prevArticle.title && (
-                      <span className="hidden sm:inline text-muted-foreground font-normal">
-                        {" "}
-                        — {prevArticle.title}
-                      </span>
-                    )}
-                  </span>
-                </div>
-              </Link>
-            ) : (
-              <div />
-            )}
-            {nextArticle ? (
-              <Link
-                href={buildArticlePath(nextArticle)}
-                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <div className="text-right">
-                  <span className="block text-xs uppercase tracking-wide text-muted-foreground">
-                    {tCommon("next")}
-                  </span>
-                  <span className="block font-medium text-foreground">
-                    Art. {nextArticle.number}
-                    {nextArticle.title && (
-                      <span className="hidden sm:inline text-muted-foreground font-normal">
-                        {" "}
-                        — {nextArticle.title}
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            ) : (
-              <div />
-            )}
-          </nav>
-
-          {/* Comments Section */}
-          <section className="mt-8 border-t border-border pt-6">
-            <CommentsSection articleId={article.id} />
-          </section>
         </div>
-      </div>
 
-      {/* Mobile TOC — floating button + bottom sheet (visible below lg breakpoint) */}
-      <MobileToc year={yearNum} currentArticleNumber={article.number} />
-    </div>
+        {/* Article Navigation (Prev/Next) — full deep links */}
+        <nav className="mt-10 flex items-center justify-between border-t border-border pt-6">
+          {prevArticle ? (
+            <Link
+              href={buildArticlePath(prevArticle)}
+              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
+              <div className="text-left">
+                <span className="block text-xs uppercase tracking-wide text-muted-foreground">
+                  {tCommon("previous")}
+                </span>
+                <span className="block font-medium text-foreground">
+                  Art. {prevArticle.number}
+                  {prevArticle.title && (
+                    <span className="hidden sm:inline text-muted-foreground font-normal">
+                      {" "}
+                      — {prevArticle.title}
+                    </span>
+                  )}
+                </span>
+              </div>
+            </Link>
+          ) : (
+            <div />
+          )}
+          {nextArticle ? (
+            <Link
+              href={buildArticlePath(nextArticle)}
+              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <div className="text-right">
+                <span className="block text-xs uppercase tracking-wide text-muted-foreground">
+                  {tCommon("next")}
+                </span>
+                <span className="block font-medium text-foreground">
+                  Art. {nextArticle.number}
+                  {nextArticle.title && (
+                    <span className="hidden sm:inline text-muted-foreground font-normal">
+                      {" "}
+                      — {nextArticle.title}
+                    </span>
+                  )}
+                </span>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          ) : (
+            <div />
+          )}
+        </nav>
+
+        {/* Comments Section */}
+        <section className="mt-8 border-t border-border pt-6">
+          <CommentsSection articleId={article.id} />
+        </section>
+      </div>
+    </>
   );
 }

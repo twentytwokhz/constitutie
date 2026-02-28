@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface TocArticle {
   id: number;
@@ -26,7 +26,8 @@ interface TocNode {
 
 interface TocSidebarProps {
   year: number;
-  currentArticleNumber: number | null;
+  /** @deprecated Derived from URL via usePathname(). Only pass for testing. */
+  currentArticleNumber?: number | null;
 }
 
 function getTypeLabel(type: string, t: (key: string) => string): string {
@@ -145,16 +146,35 @@ function checkContainsCurrent(node: TocNode, articleNumber: number | null): bool
   return node.children.some((child) => checkContainsCurrent(child, articleNumber));
 }
 
-export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
+export function TocSidebar({
+  year,
+  currentArticleNumber: currentArticleNumberProp,
+}: TocSidebarProps) {
   const t = useTranslations("reader");
+  const locale = useLocale();
+  const pathname = usePathname();
   const [tree, setTree] = useState<TocNode[]>([]);
   const [loading, setLoading] = useState(true);
   const navRef = useRef<HTMLElement>(null);
 
+  // Derive current article number from the URL pathname (e.g. /2003/titlul-2/articolul-15)
+  // Falls back to explicit prop if provided (for testing/mobile-toc)
+  const currentArticleNumber = useMemo(() => {
+    if (currentArticleNumberProp !== undefined) return currentArticleNumberProp;
+    const segments = pathname.split("/").filter(Boolean);
+    for (let i = segments.length - 1; i >= 0; i--) {
+      const match = segments[i].match(/^articolul-(\d+)$/);
+      if (match) return Number.parseInt(match[1], 10);
+    }
+    return null;
+  }, [pathname, currentArticleNumberProp]);
+
   useEffect(() => {
+    // Show loading skeleton when year or locale changes (different content)
+    setLoading(true);
     async function fetchStructure() {
       try {
-        const resp = await fetch(`/api/versions/${year}/structure`);
+        const resp = await fetch(`/api/versions/${year}/structure?locale=${locale}`);
         if (!resp.ok) return;
         const data = await resp.json();
         setTree(data.structure ?? []);
@@ -165,7 +185,7 @@ export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
       }
     }
     fetchStructure();
-  }, [year]);
+  }, [year, locale]);
 
   /** Scroll the active TOC item into view when article changes or tree loads */
   const scrollActiveIntoView = useCallback(() => {
