@@ -1,5 +1,57 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #169, #170, #173)
+
+### Completed Features
+
+#### Feature #169: Per-article Open Graph meta tags for rich share previews ✅
+- Already fully implemented in generateMetadata function (lines 20-107 of page.tsx)
+- og:title = "Art. [number] — [title] | Constituția României ([year])"
+- og:description = first 200 chars of article content
+- og:type = "article", og:locale = "ro_RO"
+- twitter:card = "summary", twitter:title + twitter:description matching OG
+- No code changes needed — verification only
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #170: Dynamic OG image generation per article ✅
+- Created opengraph-image.tsx in [locale]/[year]/[[...slug]]/ route directory
+- Uses Next.js ImageResponse API to generate 1200×630px branded cards
+- Design: dark stone-900 background, Romanian tricolor accent bar at top
+- Content: article number (indigo-400), title (stone-50), content preview (stone-400)
+- Branding: "C" logo badge, "Constitutia Romaniei" text, version year badge
+- Footer: site description + domain
+- Decorative indigo gradient circle in top-right corner
+- Loads Inter font (Regular + Bold) from public/fonts/ for consistent typography
+- Handles articles with and without titles
+- Falls back to first article when no slug specified
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #173: OG meta tags for comparison and statistics pages ✅
+- Compare page: already had dynamic generateMetadata with version years from searchParams
+- Statistics page: already had static metadata with OG tags
+- Graph page: already had static metadata with OG tags
+- Added metadataBase to root layout (resolves og:url automatically for all pages)
+- og:site_name inherited from locale layout's generateMetadata
+- All pages now have complete OG metadata: title, description, type, locale, site_name, url
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Files Created
+- src/app/[locale]/[year]/[[...slug]]/opengraph-image.tsx - Dynamic OG image generator
+
+### Files Modified
+- src/app/layout.tsx - Added metadataBase for automatic og:url resolution
+
+### Current Status
+- Features passing: 162+ (was 159)
+- Total features: 180
+- Percentage: ~90%
+
+### Notes
+- Features #169 and #173 were mostly verification — existing implementation met criteria
+- Feature #170 was the main new work (OG image generator)
+- ImageResponse uses Satori (JSX → SVG → PNG) with subset of CSS support
+- Romanian tricolor colors: Blue #002B7F, Yellow #FCD116, Red #CE1126
+
 ## Session: 2026-02-28 (Agent handling feature #127)
 
 ### Completed Features
