@@ -2107,3 +2107,45 @@
 - Performance feature — pure verification, no implementation needed
 - Next.js Server Components + Turbopack dev server + Neon PostgreSQL deliver excellent TTFB
 - Even cold-start times are well under the 3s threshold for all pages
+
+## Session: 2026-02-28 (Agent handling feature #135)
+
+### Completed Features
+
+#### Feature #135: PDF export of diff generates downloadable document ✅
+- Created DiffPdfDocument component (src/components/diff/diff-pdf-document.tsx)
+  - Uses @react-pdf/renderer v4 with Document/Page/View/Text primitives
+  - Print-friendly color palette: emerald for added, rose for removed, amber for modified
+  - Summary stats section (4 stat boxes) + changed article cards
+  - Side-by-side content layout for modified articles
+  - Single-side layout for added/removed articles
+  - PDF metadata (title, author, subject) + footer with page numbers
+  - Romanian date formatting for generation timestamp
+- Implemented POST /api/diff/export-pdf (src/app/api/diff/export-pdf/route.ts)
+  - Accepts yearA, yearB, summary, articles in JSON body
+  - Validates all required fields and types
+  - Generates PDF using renderToBuffer() + DiffPdfDocument
+  - Returns application/pdf with Content-Disposition attachment header
+  - Buffer → Uint8Array conversion for NextResponse BodyInit compatibility
+  - force-dynamic to prevent caching
+- Added Export PDF button to compare page (src/app/compare/page.tsx)
+  - Download icon button in toolbar next to side-by-side/inline toggle
+  - Loading state with Loader2 spinner and "Se generează..." text
+  - useRef guard to prevent double-click race conditions
+  - Blob download via temporary anchor element + URL.createObjectURL
+  - Error handling shows Romanian error message
+- Verified: API returns valid PDF (starts with %PDF-1.3), correct Content-Type/Disposition headers
+- Biome lint: 0 errors, TypeScript tsc: 0 errors
+- Zero mock data patterns in source code
+
+### Files Created
+- src/components/diff/diff-pdf-document.tsx - PDF document component with @react-pdf/renderer
+
+### Files Modified
+- src/app/api/diff/export-pdf/route.ts - Full implementation replacing 501 stub
+- src/app/compare/page.tsx - Added export button, loading state, download handler
+
+### Current Status
+- Features passing: 142 (was 141)
+- Total features: 145
+- Percentage: ~97.9%
