@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/layout/theme-provider";
 import { CommandPalette } from "@/components/search/command-palette";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 
 const inter = Inter({
@@ -48,7 +49,9 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           <Header />
-          <CommandPalette />
+          <Suspense fallback={null}>
+            <CommandPalette />
+          </Suspense>
           {children}
         </ThemeProvider>
       </body>

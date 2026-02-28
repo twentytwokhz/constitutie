@@ -8,8 +8,8 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Clock, FileText, Lightbulb, Search, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 const RECENT_SEARCHES_KEY = "constitution-recent-searches";
 const MAX_RECENT_SEARCHES = 5;
@@ -84,11 +84,18 @@ function removeRecentSearch(term: string): string[] {
  */
 export function CommandPalette() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  /** Guard to prevent circular updates between URL → query → URL */
+  const isUpdatingFromUrl = useRef(false);
+  /** Track whether we've handled the initial URL param */
+  const initialUrlHandled = useRef(false);
 
   // Register Ctrl+K / ⌘K keyboard shortcut
   useEffect(() => {
@@ -108,6 +115,59 @@ export function CommandPalette() {
     document.addEventListener("open-command-palette", handleOpenEvent);
     return () => document.removeEventListener("open-command-palette", handleOpenEvent);
   }, []);
+
+  // On mount or when searchParams change: check for ?q= and auto-open palette
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q && q.trim().length >= 2 && !initialUrlHandled.current) {
+      isUpdatingFromUrl.current = true;
+      setQuery(q.trim());
+      setOpen(true);
+      initialUrlHandled.current = true;
+      // Reset the flag after React processes the state update
+      requestAnimationFrame(() => {
+        isUpdatingFromUrl.current = false;
+      });
+    }
+  }, [searchParams]);
+
+  // When query changes from user input (not from URL), update URL with ?q=
+  useEffect(() => {
+    if (isUpdatingFromUrl.current || !open) return;
+    const currentQ = searchParams.get("q") ?? "";
+    const targetQ = query.length >= 2 ? query : "";
+    // Skip if URL already matches to prevent infinite loops
+    if (currentQ === targetQ) return;
+    const current = new URLSearchParams(searchParams.toString());
+    if (targetQ) {
+      current.set("q", targetQ);
+    } else {
+      current.delete("q");
+    }
+    const qs = current.toString();
+    const newUrl = qs ? `${pathname}?${qs}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [query, open, pathname, searchParams, router]);
+
+  // When palette is closed, remove ?q= from URL
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      if (!nextOpen) {
+        // Clear URL search param when closing
+        const current = new URLSearchParams(searchParams.toString());
+        if (current.has("q")) {
+          current.delete("q");
+          const qs = current.toString();
+          const newUrl = qs ? `${pathname}?${qs}` : pathname;
+          router.replace(newUrl, { scroll: false });
+        }
+        // Reset so next URL-triggered open works
+        initialUrlHandled.current = false;
+      }
+    },
+    [searchParams, pathname, router],
+  );
 
   // Load recent searches from localStorage when palette opens
   useEffect(() => {
@@ -155,12 +215,12 @@ export function CommandPalette() {
         const updated = saveRecentSearch(query.trim());
         setRecentSearches(updated);
       }
-      setOpen(false);
+      handleOpenChange(false);
       setQuery("");
       setResults([]);
       router.push(`/${result.versionYear}/articolul-${result.number}`);
     },
-    [router, query],
+    [router, query, handleOpenChange],
   );
 
   /** When user clicks a recent or suggested search term, fill the query to re-execute */
@@ -213,7 +273,7 @@ export function CommandPalette() {
   }, {});
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog open={open} onOpenChange={handleOpenChange}>
       <CommandInput
         placeholder="Caută articole... (ex: Art. 15, drepturi, proprietate)"
         value={query}
