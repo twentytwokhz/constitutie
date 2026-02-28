@@ -1,5 +1,20 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #155)
+
+### Completed Features
+
+#### Feature #155: Date and number formatting per locale ✅
+- Replaced all `toLocaleString('ro-RO')`, `toLocaleDateString`, and `numLocale` patterns with next-intl formatters
+- Client components: `useFormatter` → `format.number()` / `format.dateTime()` (comments-section, chart)
+- PDF renderer: `Intl.DateTimeFormat(locale, ...)` since @react-pdf/renderer can't use hooks
+- Compare page: added `useLocale()` + pass locale to PDF export API body
+- Fixed `useCallback` dependency arrays (added `locale`, `t`)
+- Zero old patterns remaining (verified by grep)
+- TypeScript ✅, Biome lint ✅, production build ✅
+
+---
+
 ## Session: 2026-02-28 (Agent handling feature #153)
 
 ### Completed Features
