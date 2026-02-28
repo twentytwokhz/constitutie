@@ -1,5 +1,40 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #189)
+
+### Completed Features
+
+#### Feature #189: Comment moderation — profanity filter fallback ✅
+- Created `src/lib/profanity-filter.ts` with comprehensive word lists:
+  - ~90 Romanian profanity/offensive terms with declension variations
+  - ~70 English profanity/offensive terms
+  - ~30 hate speech / violence keywords (both languages)
+- Smart matching features:
+  - Case-insensitive word-boundary matching (prevents "class" matching "ass")
+  - L33tspeak normalization (0→o, 3→e, @→a, $→s, etc.)
+  - Romanian diacritics normalization (ă→a, ș→s, ț→t, etc.)
+  - Repeated character collapsing ("fuuuuck" → "fuck")
+  - Separator removal ("f.u.c.k" → "fuck")
+- Updated `src/lib/moderation.ts`:
+  - Added `fallbackModeration()` helper that runs profanity filter
+  - All 5 previous "fail open" paths now call fallback instead of blindly approving
+  - No API key → fallback, API error → fallback, empty response → fallback,
+    invalid format → fallback, exception → fallback
+  - Clean comments still get approved (good UX), offensive ones get caught (good security)
+- Biome lint: 0 errors, TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Created
+- src/lib/profanity-filter.ts — Programmatic profanity filter module
+
+### Files Modified
+- src/lib/moderation.ts — Replaced "fail open" with profanity filter fallback
+
+### Current Status
+- Features passing: 187/189
+- Total features: 189
+- Percentage: ~98.9%
+
 ## Session: 2026-02-28 (Agent handling feature #183)
 
 ### Completed Features
