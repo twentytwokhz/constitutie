@@ -1,5 +1,24 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #143)
+
+### Completed Features
+
+#### Feature #143: Light mode buttons ✅
+- Root cause: Tailwind v4 defaults to @media (prefers-color-scheme: dark) for dark: variants
+- The project uses next-themes with class-based strategy (.dark class on html)
+- When OS is in dark mode but app toggled to light, dark: variants still activated
+- Result: dark:bg-emerald-950, dark:bg-primary/[0.08] etc. applied in light mode
+- Fix: Added @custom-variant dark (&:is(.dark *)); to globals.css
+- This overrides Tailwind v4 default dark mode to use .dark class selector
+- Verified: compiled CSS now uses :is(.dark *) instead of @media prefers-color-scheme
+- Biome lint: 0 errors in modified files | TypeScript: 0 errors
+
+### Current Status
+- Features passing: 56 (was 55)
+- Total features: 143
+- Percentage: ~39.2%
+
 ## Session: 2026-02-28 (Agent handling features #35, #36, #37)
 
 ### Completed Features
