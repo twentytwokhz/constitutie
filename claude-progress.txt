@@ -1162,6 +1162,37 @@
 - The component supports configurable delay and threshold props
 - IntersectionObserver is disconnected after first reveal (no ongoing CPU cost)
 
+## Session: 2026-02-28 (Agent handling features #41, #42, #136)
+
+### Completed Features
+
+#### Feature #41: Recent searches displayed in command palette
+- Already implemented in prior session (commit 1cbf03a)
+- Stores up to 5 recent terms in localStorage, shows on palette open
+- Click to re-execute, X to remove, case-insensitive dedup
+
+#### Feature #42: Empty search and no results state with suggestions
+- Added 8 curated suggestion terms (drepturi fundamentale, proprietate, etc.)
+- Shows suggestions when palette opens (with or without recent searches)
+- Enhanced no-results: search icon, message, clickable suggestion chips
+- Biome: 0 errors, tsc: 0 errors
+
+#### Feature #136: Search with special characters handled correctly
+- Escape SQL LIKE wildcards (percent, underscore) as literals
+- Max query length limit (200 chars) to prevent abuse
+- Fixed highlightText regex.test global flag bug with index-based matching
+- Verified: diacritics, quotes, XSS, LIKE wildcards all handled safely
+- Biome: 0 errors, tsc: 0 errors
+
+### Components Modified
+- src/components/search/command-palette.tsx - Suggestions, no-results UI, highlight fix
+- src/app/api/articles/search/route.ts - LIKE escaping, query length limit
+
+### Current Status
+- Features passing: 85 (was 76)
+- Total features: 144
+- Percentage: 59.0 percent
+
 ## Session: 2026-02-28 (Agent handling features #50, #51, #52)
 
 ### Completed Features
