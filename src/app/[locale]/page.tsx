@@ -77,10 +77,10 @@ export default async function HomePage() {
                   label={t("common.romanianFlag")}
                 />
                 <div className="flex flex-col items-start">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                  <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground sm:text-base md:text-lg">
                     {t("hero.romania")}
                   </span>
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 sm:text-xs">
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-foreground/70 dark:text-foreground/60 sm:text-xs md:text-sm">
                     {t("hero.fundamentalLaw")}
                   </span>
                 </div>

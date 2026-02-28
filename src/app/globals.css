@@ -425,8 +425,10 @@
     transform: none !important;
   }
 
-  /* Disable SVG <animate> elements when user prefers reduced motion */
+  /* Disable SVG SMIL <animate> elements when user prefers reduced motion.
+     Setting display:none on <animate> removes them from the SMIL timeline,
+     leaving the clip-path in its initial static shape. */
   svg animate {
-    animation: none !important;
+    display: none;
   }
 }
