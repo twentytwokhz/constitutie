@@ -51,6 +51,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
   const [error, setError] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false); // Synchronous guard against rapid double-clicks
   const [submitResult, setSubmitResult] = useState<{
     type: "success" | "rejected" | "error";
     message: string;
@@ -123,8 +124,11 @@ export function CommentsSection({ articleId }: { articleId: number }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!newComment.trim() || submitting) return;
+    // Synchronous ref check prevents race condition from rapid double-clicks
+    // (React state updates are async, so submitting may not reflect yet)
+    if (!newComment.trim() || isSubmittingRef.current) return;
 
+    isSubmittingRef.current = true;
     setSubmitting(true);
     setSubmitResult(null);
 
@@ -160,6 +164,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
     } catch {
       setSubmitResult({ type: "error", message: "Eroare de rețea. Încercați din nou." });
     } finally {
+      isSubmittingRef.current = false;
       setSubmitting(false);
     }
   }
