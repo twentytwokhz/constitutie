@@ -3306,3 +3306,46 @@
 - Feature #203 marked as passing
 - Features passing: 201/203
 - Total features: 203
+
+## Session: 2026-02-28 (Agent handling feature #208)
+
+### Completed Features
+
+#### Feature #208: steme constitutii (Historical coat of arms images) ✅
+- **Downloaded 6 authentic coat of arms** from constitutia.ro for constitution years
+  that previously had no dedicated emblem or used era-based fallbacks:
+  - 1866: Kingdom of Romania (Principalities united) — 39.9KB WebP
+  - 1923: Greater Romania (post-WWI) — 41.5KB WebP
+  - 1938: Royal dictatorship (Carol II) — 23.7KB WebP
+  - 1948: People's Republic (Soviet-influenced) — 41.1KB WebP
+  - 1952: People's Republic (updated) — 32.5KB WebP
+  - 1965: Socialist Republic — 33.1KB WebP
+- **Converted all to WebP** using sharp library (~80% size reduction vs source JPGs)
+- **Updated CoatOfArms component** to map all 9 years to their historically-accurate
+  emblems. Previously: 1866/1923/1938 returned null, 1948 mapped to 1952 image,
+  1965 mapped to 1986 image. Now each year has its own authentic coat of arms.
+- **Added utility scripts** for reproducibility:
+  - scripts/download-steme.mjs — downloads source JPGs from constitutia.ro
+  - scripts/convert-steme.mjs — converts JPGs to WebP via sharp
+- **Verification**:
+  - Biome lint: 0 errors
+  - TypeScript tsc: 0 errors
+  - All version pages return HTTP 200
+  - All 6 new WebP images served correctly (HTTP 200)
+  - Zero mock data patterns in codebase
+
+### Files Modified
+- src/components/national-symbols/coat-of-arms.tsx — All 9 years now have dedicated images
+
+### Files Added
+- public/images/stema-1866.webp — Kingdom of Romania coat of arms
+- public/images/stema-1923.webp — Greater Romania coat of arms
+- public/images/stema-1938.webp — Carol II era coat of arms
+- public/images/stema-1948.webp — People's Republic coat of arms
+- public/images/stema-1952.webp — People's Republic (updated) coat of arms
+- public/images/stema-1965.webp — Socialist Republic coat of arms
+- scripts/download-steme.mjs — Image download script
+- scripts/convert-steme.mjs — JPG to WebP conversion script
+
+### Current Status
+- Feature #208 marked as passing
