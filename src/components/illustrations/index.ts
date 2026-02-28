@@ -5,7 +5,8 @@
  * - Flat, minimal vector art with soft shapes
  * - Primary accent color (indigo) matching the app theme
  * - Neutral stone tones for secondary elements
- * - Dark/light mode adaptive via Tailwind classes
+ * - Dark/light mode adaptive via explicit Tailwind `dark:` variants
+ * - Boosted opacity values for strong contrast in both themes
  *
  * Each illustration is a React component accepting className for sizing.
  */
