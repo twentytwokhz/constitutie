@@ -12,7 +12,17 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
-const VERSION_YEARS = ["2003", "1991", "1986", "1952"] as const;
+const VERSION_YEARS = [
+  "2003",
+  "1991",
+  "1986",
+  "1965",
+  "1952",
+  "1948",
+  "1938",
+  "1923",
+  "1866",
+] as const;
 
 /**
  * Version selector dropdown for the header.

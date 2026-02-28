@@ -30,7 +30,12 @@ export async function Footer() {
   ];
 
   const versionLinks = [
+    { label: t("footer.constitution1866"), href: "/1866" },
+    { label: t("footer.constitution1923"), href: "/1923" },
+    { label: t("footer.constitution1938"), href: "/1938" },
+    { label: t("footer.constitution1948"), href: "/1948" },
     { label: t("footer.constitution1952"), href: "/1952" },
+    { label: t("footer.constitution1965"), href: "/1965" },
     { label: t("footer.constitution1986"), href: "/1986" },
     { label: t("footer.constitution1991"), href: "/1991" },
     { label: t("footer.constitution2003"), href: "/2003" },

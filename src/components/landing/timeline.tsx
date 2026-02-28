@@ -12,32 +12,67 @@ export function Timeline() {
 
   const timelineItems = [
     {
+      year: 1866,
+      title: t("timeline.item1866Title"),
+      description: t("timeline.item1866Desc"),
+      articles: 127,
+      highlight: t("timeline.item1866Highlight"),
+    },
+    {
+      year: 1923,
+      title: t("timeline.item1923Title"),
+      description: t("timeline.item1923Desc"),
+      articles: 137,
+      highlight: t("timeline.item1923Highlight"),
+    },
+    {
+      year: 1938,
+      title: t("timeline.item1938Title"),
+      description: t("timeline.item1938Desc"),
+      articles: 98,
+      highlight: t("timeline.item1938Highlight"),
+    },
+    {
+      year: 1948,
+      title: t("timeline.item1948Title"),
+      description: t("timeline.item1948Desc"),
+      articles: 104,
+      highlight: t("timeline.item1948Highlight"),
+    },
+    {
       year: 1952,
-      title: t("timeline.item1Title"),
-      description: t("timeline.item1Desc"),
+      title: t("timeline.item1952Title"),
+      description: t("timeline.item1952Desc"),
       articles: 105,
-      highlight: t("timeline.item1Highlight"),
+      highlight: t("timeline.item1952Highlight"),
+    },
+    {
+      year: 1965,
+      title: t("timeline.item1965Title"),
+      description: t("timeline.item1965Desc"),
+      articles: 121,
+      highlight: t("timeline.item1965Highlight"),
     },
     {
       year: 1986,
-      title: t("timeline.item2Title"),
-      description: t("timeline.item2Desc"),
+      title: t("timeline.item1986Title"),
+      description: t("timeline.item1986Desc"),
       articles: 121,
-      highlight: t("timeline.item2Highlight"),
+      highlight: t("timeline.item1986Highlight"),
     },
     {
       year: 1991,
-      title: t("timeline.item3Title"),
-      description: t("timeline.item3Desc"),
+      title: t("timeline.item1991Title"),
+      description: t("timeline.item1991Desc"),
       articles: 152,
-      highlight: t("timeline.item3Highlight"),
+      highlight: t("timeline.item1991Highlight"),
     },
     {
       year: 2003,
-      title: t("timeline.item4Title"),
-      description: t("timeline.item4Desc"),
+      title: t("timeline.item2003Title"),
+      description: t("timeline.item2003Desc"),
       articles: 157,
-      highlight: t("timeline.item4Highlight"),
+      highlight: t("timeline.item2003Highlight"),
     },
   ];
 
@@ -52,18 +87,18 @@ export function Timeline() {
         </p>
 
         {/* Desktop timeline - horizontal */}
-        <div className="mx-auto mt-10 hidden max-w-4xl sm:mt-14 md:block">
+        <div className="mx-auto mt-10 hidden sm:mt-14 md:block">
           {/* Year markers row */}
           <div className="relative flex items-end justify-between">
             {/* Connector line — positioned at center of the year circles (bottom row) */}
-            <div className="absolute bottom-8 right-0 left-0 h-0.5 bg-border" aria-hidden="true" />
+            <div className="absolute bottom-5 right-0 left-0 h-0.5 bg-border" aria-hidden="true" />
 
             {timelineItems.map((item, index) => (
-              <div key={item.year} className="flex flex-col items-center gap-2">
+              <div key={item.year} className="flex flex-col items-center gap-1.5">
                 {/* Coat of arms above year marker */}
                 <CoatOfArms
                   year={item.year}
-                  size={32}
+                  size={24}
                   className={`transition-all duration-200 ${
                     activeIndex === index ? "scale-110 opacity-100" : "opacity-60"
                   }`}
@@ -72,7 +107,7 @@ export function Timeline() {
                   type="button"
                   onClick={() => setActiveIndex(activeIndex === index ? null : index)}
                   onMouseEnter={() => setActiveIndex(index)}
-                  className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-200 ${
+                  className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 text-[10px] font-bold transition-all duration-200 ${
                     activeIndex === index
                       ? "scale-110 border-primary bg-primary text-primary-foreground shadow-lg"
                       : "border-border bg-background text-foreground hover:border-primary hover:shadow-md"
