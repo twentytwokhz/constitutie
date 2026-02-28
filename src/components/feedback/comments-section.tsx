@@ -291,6 +291,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
             }
           }}
           maxLength={MAX_COMMENT_LENGTH}
+          aria-label="Comentariu despre articol"
           placeholder="Scrie un comentariu constructiv despre acest articol..."
           className={`w-full rounded-lg border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 resize-y min-h-[80px] ${
             validationError || newComment.length >= MAX_COMMENT_LENGTH
@@ -335,7 +336,8 @@ export function CommentsSection({ articleId }: { articleId: number }) {
           <button
             type="submit"
             disabled={submitting || !newComment.trim()}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Trimite comentariul"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {submitting ? (
               <>

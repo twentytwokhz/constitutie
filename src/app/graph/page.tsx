@@ -198,7 +198,8 @@ export default function GraphPage() {
               <button
                 type="button"
                 onClick={() => setShowLegend(false)}
-                className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Ascunde legenda"
+                className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -261,7 +262,8 @@ export default function GraphPage() {
               <button
                 type="button"
                 onClick={closePreview}
-                className="ml-2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                aria-label="Închide previzualizarea"
+                className="ml-2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="h-4 w-4" />
               </button>

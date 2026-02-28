@@ -237,6 +237,7 @@ export function TextSelectionFeedback({
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
+              aria-label="Comentariu pe text selectat"
               placeholder="Scrie un comentariu despre acest text..."
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[60px]"
               rows={2}
@@ -251,14 +252,16 @@ export function TextSelectionFeedback({
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                  aria-label="Anulează comentariul"
+                  className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   Anulează
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !commentText.trim()}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Trimite comentariul pe selecție"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   {submitting ? (
                     <>
