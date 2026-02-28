@@ -2,149 +2,31 @@ import path from "node:path";
 import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 /**
- * Style type for @react-pdf/renderer components.
- * Defined locally because @react-pdf/types may not be hoisted in pnpm.
- */
-// biome-ignore lint/suspicious/noExplicitAny: @react-pdf/types not hoisted in pnpm
-type Style = any;
-
-/**
- * Font registration for PDF export with Romanian diacritics.
+ * Font registration for PDF export with full Romanian diacritics support.
  *
- * We use TWO Inter subsets as raw OTF files (decompressed from WOFF to avoid
- * @react-pdf/fontkit WOFF parsing bugs that cause glyph lookup failures):
+ * Uses Noto Sans — a Google-designed sans-serif with complete Latin + Latin-ext
+ * coverage in a SINGLE TTF file. This eliminates the need for dual-font splitting
+ * (InterLatin + InterExt) which was required by the old approach and suffered from
+ * glyph mapping corruption in @react-pdf's fontkit WOFF/OTF parsing.
  *
- * • InterLatin  — Google Fonts "latin" subset (OTF). Covers U+0000-00FF
- *   (basic Latin, â/î), plus U+2000-206F (General Punctuation: „ " — –)
- *   and U+20AC (€). This is the DEFAULT font for all text.
- *
- * • InterExt — Google Fonts "latin-ext" subset (OTF). Covers U+0100-02AF
- *   (Extended Latin A/B) where Romanian ă/ș/ț live.
- *
- * The RoText component splits text into character runs, routing each
- * character to the subset font that contains it. Both are Inter so
- * metrics (ascenders, advance widths, x-height) match perfectly,
- * preventing layout glitches at font boundaries.
- *
- * Why OTF instead of WOFF:
- * @react-pdf v4's fontkit has known issues parsing WOFF files where the
- * zlib-compressed table decompression can corrupt glyph mappings for
- * certain Unicode ranges (especially U+0100-02FF Extended Latin).
- * Converting WOFF → raw OTF (decompressing tables) solves this entirely.
+ * A single font family means:
+ * - No character-by-character font routing (the old RoText splitting)
+ * - No glyph mapping bugs between font boundaries
+ * - Correct rendering of all Romanian diacritics: ă, â, î, ș, ț (and uppercase)
+ * - Correct rendering of typographic punctuation: „ " — – etc.
  */
 const fontsDir = path.join(process.cwd(), "public", "fonts");
 
 Font.register({
-  family: "InterLatin",
+  family: "NotoSans",
   fonts: [
-    { src: path.join(fontsDir, "Inter-Latin-Regular.otf"), fontWeight: 400 },
-    { src: path.join(fontsDir, "Inter-Latin-Bold.otf"), fontWeight: 700 },
-  ],
-});
-
-Font.register({
-  family: "InterExt",
-  fonts: [
-    { src: path.join(fontsDir, "Inter-LatinExt-Regular.otf"), fontWeight: 400 },
-    { src: path.join(fontsDir, "Inter-LatinExt-Bold.otf"), fontWeight: 700 },
+    { src: path.join(fontsDir, "NotoSans-Regular.ttf"), fontWeight: 400 },
+    { src: path.join(fontsDir, "NotoSans-Bold.ttf"), fontWeight: 700 },
   ],
 });
 
 // Allow word-level line breaking but prevent mid-word hyphenation.
-// @react-pdf always breaks at whitespace; this callback controls
-// whether a single word can be split with a hyphen. Returning [word]
-// keeps each word as one unbreakable unit (no hyphens inserted).
 Font.registerHyphenationCallback((word) => [word]);
-
-/**
- * Determine if a character needs the Latin-ext font (InterExt).
- *
- * Only the Extended Latin A/B range (U+0100-02FF) is routed to InterExt.
- * Everything else goes to InterLatin, which covers:
- * - U+0000-00FF (basic Latin + Latin-1 supplement: a-z, â, î, etc.)
- * - U+2000-206F (General Punctuation: „ " – — … etc.)
- * - U+20AC (€), and other scattered code points
- *
- * The old code used `charCode >= 0x100` which incorrectly sent
- * characters like „ (U+201E) and — (U+2014) to InterExt where they
- * don't exist, causing black rectangles in the PDF.
- */
-function needsExtFont(charCode: number): boolean {
-  return charCode >= 0x0100 && charCode <= 0x02ff;
-}
-
-/**
- * Split a string into runs of characters that use the same font.
- * Adjacent characters needing the same font are grouped into one run
- * to minimize the number of <Text> elements.
- */
-function splitTextRuns(text: string): Array<{ text: string; isExt: boolean }> {
-  if (!text) return [];
-
-  const runs: Array<{ text: string; isExt: boolean }> = [];
-  let currentRun = "";
-  let currentIsExt = needsExtFont(text.charCodeAt(0));
-
-  for (let i = 0; i < text.length; i++) {
-    const charIsExt = needsExtFont(text.charCodeAt(i));
-    if (charIsExt === currentIsExt) {
-      currentRun += text[i];
-    } else {
-      runs.push({ text: currentRun, isExt: currentIsExt });
-      currentRun = text[i];
-      currentIsExt = charIsExt;
-    }
-  }
-
-  if (currentRun) {
-    runs.push({ text: currentRun, isExt: currentIsExt });
-  }
-
-  return runs;
-}
-
-/**
- * RoText: Renders Romanian text with proper diacritics in @react-pdf.
- *
- * Splits text into character runs and assigns each run to the correct
- * font family: InterLatin for most characters and InterExt for
- * Extended Latin characters like ă/ș/ț (U+0100-02FF).
- * Both fonts are Inter, so metrics match and line wrapping works correctly.
- */
-function RoText({
-  children,
-  style,
-  bold,
-}: {
-  children: string | number;
-  style?: Style | Style[];
-  bold?: boolean;
-}) {
-  const text = String(children);
-  const runs = splitTextRuns(text);
-  const fontWeight = bold ? 700 : 400;
-
-  const baseStyles: Style[] = Array.isArray(style) ? style : style ? [style] : [];
-
-  // Optimization: if all characters are in the same font, render directly
-  if (runs.length <= 1) {
-    const fontFamily = runs[0]?.isExt ? "InterExt" : "InterLatin";
-    return <Text style={[...baseStyles, { fontFamily, fontWeight }]}>{text}</Text>;
-  }
-
-  return (
-    <Text style={[...baseStyles, { fontWeight }]}>
-      {runs.map((run, i) => (
-        <Text
-          key={`${i}-${run.isExt ? "ext" : "lat"}`}
-          style={{ fontFamily: run.isExt ? "InterExt" : "InterLatin" }}
-        >
-          {run.text}
-        </Text>
-      ))}
-    </Text>
-  );
-}
 
 /**
  * Diff article data passed to the PDF renderer.
@@ -197,7 +79,7 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     paddingRight: 40,
     paddingBottom: 72,
-    fontFamily: "InterLatin",
+    fontFamily: "NotoSans",
     fontSize: 10,
     color: colors.textPrimary,
     backgroundColor: colors.bgPage,
@@ -330,7 +212,6 @@ const styles = StyleSheet.create({
   pageNumber: {
     fontSize: 8,
     color: colors.textMuted,
-    fontFamily: "InterLatin",
   },
 });
 
@@ -343,26 +224,27 @@ const styles = StyleSheet.create({
  */
 const pdfLabels = {
   ro: {
-    statusAdded: "Adăugat",
+    statusAdded: "Ad\u0103ugat",
     statusRemoved: "Eliminat",
     statusModified: "Modificat",
     statusUnchanged: "Neschimbat",
-    summaryAdded: "Adăugate",
+    summaryAdded: "Ad\u0103ugate",
     summaryRemoved: "Eliminate",
     summaryModified: "Modificate",
     summaryUnchanged: "Neschimbate",
     articlePrefix: "Articolul",
-    comparisonTitle: "Comparație Constituție",
-    constitutionOf: "Constituția din",
+    comparisonTitle: "Compara\u021bie Constitu\u021bie",
+    constitutionOf: "Constitu\u021bia din",
     generatedAt: "Generat la",
-    footerLabel: "Constituția României — Comparație",
+    footerLabel: "Constitu\u021bia Rom\u00e2niei \u2014 Compara\u021bie",
     pageLabel: "Pagina",
     pageOf: "/",
-    noChanges: "Nu există diferențe între cele două versiuni.",
-    docTitle: (yearA: number, yearB: number) => `Comparație Constituția ${yearA} vs ${yearB}`,
-    docAuthor: "Constituția României",
+    noChanges: "Nu exist\u0103 diferen\u021be \u00eentre cele dou\u0103 versiuni.",
+    docTitle: (yearA: number, yearB: number) =>
+      `Compara\u021bie Constitu\u021bia ${yearA} vs ${yearB}`,
+    docAuthor: "Constitu\u021bia Rom\u00e2niei",
     docSubject: (yearA: number, yearB: number) =>
-      `Diferențe între versiunile ${yearA} și ${yearB} ale Constituției României`,
+      `Diferen\u021be \u00eentre versiunile ${yearA} \u0219i ${yearB} ale Constitu\u021biei Rom\u00e2niei`,
   },
   en: {
     statusAdded: "Added",
@@ -377,7 +259,7 @@ const pdfLabels = {
     comparisonTitle: "Constitution Comparison",
     constitutionOf: "Constitution of",
     generatedAt: "Generated at",
-    footerLabel: "Romanian Constitution — Comparison",
+    footerLabel: "Romanian Constitution \u2014 Comparison",
     pageLabel: "Page",
     pageOf: "/",
     noChanges: "No differences between the two versions.",
@@ -462,8 +344,8 @@ function SummaryStat({
 }) {
   return (
     <View style={[styles.summaryItem, { backgroundColor: bgColor }]}>
-      <Text style={[styles.summaryNumber, { color, fontFamily: "InterLatin" }]}>{count}</Text>
-      <RoText style={[styles.summaryLabel, { color }]}>{label}</RoText>
+      <Text style={[styles.summaryNumber, { color }]}>{count}</Text>
+      <Text style={[styles.summaryLabel, { color }]}>{label}</Text>
     </View>
   );
 }
@@ -492,51 +374,50 @@ function ArticleCard({
     >
       {/* Article header */}
       <View style={[styles.articleHeader, { borderBottom: `1px solid ${status.border}` }]}>
-        <RoText style={[styles.articleNumber, { color: status.text }]} bold>
+        <Text style={[styles.articleNumber, { color: status.text, fontWeight: 700 }]}>
           {`${labels.articlePrefix} ${article.articleNumber}`}
-        </RoText>
-        {title && <RoText style={styles.articleTitle}>{title}</RoText>}
-        <RoText
+        </Text>
+        {title && <Text style={styles.articleTitle}>{title}</Text>}
+        <Text
           style={[
             styles.statusBadge,
-            { color: status.text, backgroundColor: `${status.border}40` },
+            { color: status.text, backgroundColor: `${status.border}40`, fontWeight: 700 },
           ]}
-          bold
         >
           {status.label}
-        </RoText>
+        </Text>
       </View>
 
       {/* Content */}
       {article.status === "modified" && article.a && article.b && (
         <View style={styles.contentRow}>
           <View style={[styles.contentColumn, { backgroundColor: `${colors.removedBg}` }]}>
-            <Text style={[styles.contentColumnLabel, { fontFamily: "InterLatin" }]}>{yearA}</Text>
-            <RoText style={styles.contentText}>{article.a.content}</RoText>
+            <Text style={styles.contentColumnLabel}>{yearA}</Text>
+            <Text style={styles.contentText}>{article.a.content}</Text>
           </View>
           <View style={styles.divider} />
           <View style={[styles.contentColumn, { backgroundColor: `${colors.addedBg}` }]}>
-            <Text style={[styles.contentColumnLabel, { fontFamily: "InterLatin" }]}>{yearB}</Text>
-            <RoText style={styles.contentText}>{article.b.content}</RoText>
+            <Text style={styles.contentColumnLabel}>{yearB}</Text>
+            <Text style={styles.contentText}>{article.b.content}</Text>
           </View>
         </View>
       )}
 
       {article.status === "added" && article.b && (
         <View style={styles.singleContent}>
-          <RoText style={styles.contentColumnLabel} bold>
+          <Text style={[styles.contentColumnLabel, { fontWeight: 700 }]}>
             {`${yearB} (${labels.statusAdded})`}
-          </RoText>
-          <RoText style={styles.contentText}>{article.b.content}</RoText>
+          </Text>
+          <Text style={styles.contentText}>{article.b.content}</Text>
         </View>
       )}
 
       {article.status === "removed" && article.a && (
         <View style={styles.singleContent}>
-          <RoText style={styles.contentColumnLabel} bold>
+          <Text style={[styles.contentColumnLabel, { fontWeight: 700 }]}>
             {`${yearA} (${labels.statusRemoved})`}
-          </RoText>
-          <RoText style={styles.contentText}>{article.a.content}</RoText>
+          </Text>
+          <Text style={styles.contentText}>{article.a.content}</Text>
         </View>
       )}
     </View>
@@ -550,10 +431,10 @@ function ArticleCard({
  * with color-coded article status (added, removed, modified).
  * Only changed articles are included to keep the PDF focused.
  *
- * Uses InterLatin (Google Fonts "latin" subset) as default font and
- * InterExt (Google Fonts "latin-ext" subset) for Romanian diacritics
- * (ă, ș, ț). Both are Inter so metrics match perfectly, avoiding the
- * black-rectangle and line-break bugs from the old Helvetica+InterExt mix.
+ * Uses Noto Sans (full TTF) as the single font family. Unlike the old
+ * dual-font Inter approach (InterLatin + InterExt subsets), Noto Sans
+ * covers ALL Latin + Latin-ext characters in one file, so no character-
+ * level font splitting is needed and Romanian diacritics render correctly.
  */
 export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro" }: DiffPdfProps) {
   const labels = getLabels(locale);
@@ -578,13 +459,11 @@ export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro"
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <RoText style={styles.title} bold>
-            {labels.comparisonTitle}
-          </RoText>
-          <RoText style={styles.subtitle}>
+          <Text style={styles.title}>{labels.comparisonTitle}</Text>
+          <Text style={styles.subtitle}>
             {`${labels.constitutionOf} ${yearA} vs ${labels.constitutionOf} ${yearB}`}
-          </RoText>
-          <RoText style={styles.dateText}>{`${labels.generatedAt} ${dateStr}`}</RoText>
+          </Text>
+          <Text style={styles.dateText}>{`${labels.generatedAt} ${dateStr}`}</Text>
         </View>
 
         {/* Summary Stats */}
@@ -629,13 +508,13 @@ export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro"
         {/* Empty state */}
         {changedArticles.length === 0 && (
           <View style={{ padding: 20, alignItems: "center" }}>
-            <RoText style={{ color: colors.textMuted, fontSize: 12 }}>{labels.noChanges}</RoText>
+            <Text style={{ color: colors.textMuted, fontSize: 12 }}>{labels.noChanges}</Text>
           </View>
         )}
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <RoText style={styles.footerText}>{`${labels.footerLabel} ${yearA} vs ${yearB}`}</RoText>
+          <Text style={styles.footerText}>{`${labels.footerLabel} ${yearA} vs ${yearB}`}</Text>
           <Text
             style={styles.pageNumber}
             render={({ pageNumber, totalPages }) =>
