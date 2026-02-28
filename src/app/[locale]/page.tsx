@@ -73,7 +73,7 @@ export default async function HomePage() {
                 style={{ animationDelay: "50ms" }}
               >
                 <RomanianFlag
-                  className="w-28 h-[76px] sm:w-36 sm:h-24 md:w-44 md:h-[120px] drop-shadow-md"
+                  className="w-28 h-[76px] sm:w-36 sm:h-24 md:w-44 md:h-[120px]"
                   label={t("common.romanianFlag")}
                 />
                 <div className="flex flex-col items-start">
@@ -118,7 +118,7 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="flex-shrink-0 animate-word-reveal" style={{ animationDelay: "300ms" }}>
-              <IllustrationConstitution className="h-48 w-48 sm:h-64 sm:w-64 md:h-80 md:w-80" />
+              <IllustrationConstitution className="h-48 w-48 sm:h-64 sm:w-64 md:h-80 md:w-80 animate-gentle-float" />
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default async function HomePage() {
             {/* Explore card */}
             <ScrollReveal delay={0}>
               <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-                <IllustrationExplore className="mx-auto h-36 w-36" />
+                <IllustrationExplore className="mx-auto h-36 w-36 illustration-hover-target" />
                 <div className="mt-4 flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.exploreArticles")}</h3>
@@ -165,7 +165,7 @@ export default async function HomePage() {
             {/* Compare card */}
             <ScrollReveal delay={100}>
               <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-                <IllustrationCompare className="mx-auto h-36 w-36" />
+                <IllustrationCompare className="mx-auto h-36 w-36 illustration-hover-target" />
                 <div className="mt-4 flex items-center gap-2">
                   <GitCompareArrows className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.compareVersions")}</h3>
@@ -178,7 +178,7 @@ export default async function HomePage() {
             {/* Graph card */}
             <ScrollReveal delay={200}>
               <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-                <IllustrationGraph className="mx-auto h-36 w-36" />
+                <IllustrationGraph className="mx-auto h-36 w-36 illustration-hover-target" />
                 <div className="mt-4 flex items-center gap-2">
                   <Network className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.graphView")}</h3>
@@ -189,7 +189,7 @@ export default async function HomePage() {
             {/* Search card */}
             <ScrollReveal delay={0}>
               <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-                <IllustrationSearch className="mx-auto h-36 w-36" />
+                <IllustrationSearch className="mx-auto h-36 w-36 illustration-hover-target" />
                 <div className="mt-4 flex items-center gap-2">
                   <Search className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.crossSearch")}</h3>
@@ -202,7 +202,7 @@ export default async function HomePage() {
             {/* Feedback card */}
             <ScrollReveal delay={100}>
               <div className="group h-full rounded-lg border bg-card p-6 transition-shadow hover:shadow-md">
-                <IllustrationFeedback className="mx-auto h-36 w-36" />
+                <IllustrationFeedback className="mx-auto h-36 w-36 illustration-hover-target" />
                 <div className="mt-4 flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.feedback")}</h3>

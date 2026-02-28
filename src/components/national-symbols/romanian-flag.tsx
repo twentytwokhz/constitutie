@@ -1,15 +1,18 @@
 /**
  * Romanian Flag SVG
  *
- * A prominent, visually striking Romanian tricolor flag with subtle wave animation.
+ * A prominent, visually striking Romanian tricolor flag with natural wind animation.
  * Renders as an SVG with the official colors: blue (#002B7F), yellow (#FCD116), red (#CE1126).
- * Includes animated waving effect, sheen, and drop shadow for visual impact.
+ * Includes animated waving effect (wind propagating from pole to free edge), fabric folds,
+ * and a subtle constant drop shadow for visual depth.
  *
- * The wave animation uses SVG `<animate>` to gently undulate the clip path,
- * and CSS `animate-flag-shadow` for a breathing shadow effect.
- * Both respect `prefers-reduced-motion`.
+ * The wind animation uses SVG `<animate>` with asymmetric wave propagation:
+ * - Near the pole (left): minimal movement (flag is attached)
+ * - Toward the free edge (right): larger, flowing undulation
+ * - 7s cycle for calm, natural rhythm (not pulsating)
  *
- * Works in both light and dark mode.
+ * A secondary "fabric fold" overlay adds depth via animated vertical shading.
+ * Respects `prefers-reduced-motion`. Works in both light and dark mode.
  */
 export function RomanianFlag({
   className = "",
@@ -19,57 +22,67 @@ export function RomanianFlag({
   label?: string;
 }) {
   return (
-    <div className={`relative animate-flag-shadow ${className}`} aria-label={label} role="img">
+    <div className={`relative flag-shadow-static ${className}`} aria-label={label} role="img">
       <svg viewBox="0 0 300 200" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
         <title>{label}</title>
         <defs>
-          {/* Animated wave clip path — gentle undulation */}
+          {/*
+           * Wind wave clip path — asymmetric propagation from pole (left) to free edge (right).
+           * Left side barely moves (attached to pole), amplitude increases toward the right.
+           * 5 keyframes over 7s for a slow, natural wind cycle.
+           */}
           <clipPath id="flag-wave">
-            <path d="M0,8 Q50,0 100,8 Q150,16 200,8 Q250,0 300,8 L300,192 Q250,200 200,192 Q150,184 100,192 Q50,200 0,192 Z">
+            <path d="M0,2 Q30,2 75,4 Q150,8 225,14 Q270,4 300,10 L300,198 Q270,196 225,186 Q150,192 75,196 Q30,198 0,198 Z">
               <animate
                 attributeName="d"
                 values="
-                  M0,8 Q50,0 100,8 Q150,16 200,8 Q250,0 300,8 L300,192 Q250,200 200,192 Q150,184 100,192 Q50,200 0,192 Z;
-                  M0,6 Q50,14 100,4 Q150,10 200,6 Q250,12 300,4 L300,194 Q250,186 200,196 Q150,190 100,194 Q50,186 0,196 Z;
-                  M0,10 Q50,2 100,12 Q150,6 200,10 Q250,4 300,12 L300,190 Q250,198 200,188 Q150,194 100,190 Q50,198 0,188 Z;
-                  M0,8 Q50,0 100,8 Q150,16 200,8 Q250,0 300,8 L300,192 Q250,200 200,192 Q150,184 100,192 Q50,200 0,192 Z"
-                dur="4s"
+                  M0,2 Q30,2 75,4 Q150,8 225,14 Q270,4 300,10 L300,198 Q270,196 225,186 Q150,192 75,196 Q30,198 0,198 Z;
+                  M0,2 Q30,3 75,6 Q150,2 225,8 Q270,16 300,6 L300,198 Q270,184 225,192 Q150,198 75,194 Q30,197 0,198 Z;
+                  M0,2 Q30,2 75,3 Q150,10 225,4 Q270,12 300,14 L300,198 Q270,188 225,196 Q150,190 75,197 Q30,198 0,198 Z;
+                  M0,2 Q30,3 75,7 Q150,4 225,12 Q270,6 300,8 L300,198 Q270,194 225,188 Q150,196 75,193 Q30,197 0,198 Z;
+                  M0,2 Q30,2 75,4 Q150,8 225,14 Q270,4 300,10 L300,198 Q270,196 225,186 Q150,192 75,196 Q30,198 0,198 Z"
+                dur="7s"
                 repeatCount="indefinite"
                 calcMode="spline"
-                keySplines="0.45 0.05 0.55 0.95; 0.45 0.05 0.55 0.95; 0.45 0.05 0.55 0.95"
+                keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1"
               />
             </path>
           </clipPath>
-          {/* Animated sheen — light sweeps across the flag surface */}
-          <linearGradient id="flag-sheen" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="white" stopOpacity="0.12">
+          {/*
+           * Fabric fold shading — vertical gradient that shifts position to simulate
+           * light catching different folds as the flag moves. Creates depth without pulsating.
+           */}
+          <linearGradient id="flag-fold" x1="0" y1="0" x2="1" y2="0.15">
+            <stop offset="0%" stopColor="black" stopOpacity="0.06" />
+            <stop offset="25%" stopColor="white" stopOpacity="0.06">
               <animate
-                attributeName="stop-opacity"
-                values="0.12;0.06;0.12"
-                dur="4s"
+                attributeName="offset"
+                values="0.25;0.30;0.20;0.28;0.25"
+                dur="7s"
                 repeatCount="indefinite"
               />
             </stop>
-            <stop offset="50%" stopColor="white" stopOpacity="0">
+            <stop offset="50%" stopColor="black" stopOpacity="0.04">
               <animate
-                attributeName="stop-opacity"
-                values="0;0.05;0"
-                dur="4s"
+                attributeName="offset"
+                values="0.50;0.55;0.45;0.52;0.50"
+                dur="7s"
                 repeatCount="indefinite"
               />
             </stop>
-            <stop offset="100%" stopColor="black" stopOpacity="0.08">
+            <stop offset="75%" stopColor="white" stopOpacity="0.08">
               <animate
-                attributeName="stop-opacity"
-                values="0.08;0.12;0.08"
-                dur="4s"
+                attributeName="offset"
+                values="0.75;0.70;0.80;0.72;0.75"
+                dur="7s"
                 repeatCount="indefinite"
               />
             </stop>
+            <stop offset="100%" stopColor="black" stopOpacity="0.03" />
           </linearGradient>
-          {/* Subtle shadow on the left edge (flagpole side) */}
-          <linearGradient id="flag-shadow" x1="0" y1="0" x2="0.05" y2="0">
-            <stop offset="0%" stopColor="black" stopOpacity="0.15" />
+          {/* Subtle constant shadow near the pole (left edge) */}
+          <linearGradient id="flag-pole-shadow" x1="0" y1="0" x2="0.06" y2="0">
+            <stop offset="0%" stopColor="black" stopOpacity="0.12" />
             <stop offset="100%" stopColor="black" stopOpacity="0" />
           </linearGradient>
         </defs>
@@ -81,10 +94,10 @@ export function RomanianFlag({
           <rect x="100" y="0" width="100" height="200" fill="#FCD116" />
           {/* Red stripe */}
           <rect x="200" y="0" width="100" height="200" fill="#CE1126" />
-          {/* Sheen overlay */}
-          <rect x="0" y="0" width="300" height="200" fill="url(#flag-sheen)" />
+          {/* Fabric fold lighting */}
+          <rect x="0" y="0" width="300" height="200" fill="url(#flag-fold)" />
           {/* Pole shadow */}
-          <rect x="0" y="0" width="300" height="200" fill="url(#flag-shadow)" />
+          <rect x="0" y="0" width="300" height="200" fill="url(#flag-pole-shadow)" />
         </g>
 
         {/* Thin border for definition against backgrounds */}
@@ -96,8 +109,8 @@ export function RomanianFlag({
             height="199"
             fill="none"
             stroke="currentColor"
-            strokeOpacity="0.1"
-            strokeWidth="1"
+            strokeOpacity="0.08"
+            strokeWidth="0.75"
           />
         </g>
       </svg>
