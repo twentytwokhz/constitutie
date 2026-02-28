@@ -1,6 +1,6 @@
 "use client";
 
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { CheckCircle2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 interface VoteButtonsProps {
@@ -43,6 +43,7 @@ export function VoteButtons({
   const [userVote, setUserVote] = useState<"agree" | "disagree" | null>(null);
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Check if user already voted (stored in localStorage)
   useEffect(() => {
@@ -58,6 +59,7 @@ export function VoteButtons({
 
       setIsVoting(true);
       setError(null);
+      setSuccessMsg(null);
 
       try {
         const fingerprint = generateFingerprint();
@@ -75,6 +77,13 @@ export function VoteButtons({
           } else {
             setDisagreeCount((prev) => prev + 1);
           }
+          // Show temporary success feedback that auto-dismisses
+          setSuccessMsg(
+            voteType === "agree"
+              ? "Mulțumim pentru votul tău! 👍"
+              : "Mulțumim pentru votul tău! 👎",
+          );
+          setTimeout(() => setSuccessMsg(null), 3000);
         } else if (response.status === 409) {
           // Already voted from this fingerprint
           setUserVote(voteType);
@@ -98,9 +107,9 @@ export function VoteButtons({
         type="button"
         onClick={() => handleVote("agree")}
         disabled={userVote !== null || isVoting}
-        className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+        className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 ${
           userVote === "agree"
-            ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-700"
+            ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-700 scale-105"
             : userVote !== null
               ? "border-border text-muted-foreground cursor-not-allowed opacity-50"
               : "border-border hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950 dark:hover:text-emerald-400"
@@ -118,9 +127,9 @@ export function VoteButtons({
         type="button"
         onClick={() => handleVote("disagree")}
         disabled={userVote !== null || isVoting}
-        className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+        className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200 ${
           userVote === "disagree"
-            ? "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-700"
+            ? "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-700 scale-105"
             : userVote !== null
               ? "border-border text-muted-foreground cursor-not-allowed opacity-50"
               : "border-border hover:border-rose-500 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950 dark:hover:text-rose-400"
@@ -136,6 +145,12 @@ export function VoteButtons({
 
       {isVoting && (
         <span className="text-xs text-muted-foreground animate-pulse">Se votează...</span>
+      )}
+      {successMsg && (
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 animate-fade-in-out">
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          {successMsg}
+        </span>
       )}
       {error && <span className="text-xs text-destructive">{error}</span>}
     </div>
