@@ -1,5 +1,31 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #104, #105, #106)
+
+### Completed Features
+
+#### Feature #104: Empty search query handled gracefully in API ✅
+- Search API already handles empty/whitespace queries correctly
+- Guard at line 31: if (!query.trim()) catches both empty and whitespace-only
+- No code changes needed
+
+#### Feature #105: Network error during comment submission shows error message ✅
+- CommentsSection catch block shows "Eroare de rețea. Încercați din nou."
+- Error styled with destructive colors + XCircle icon
+- Comment text preserved on error (setNewComment only in success path)
+- No code changes needed
+
+#### Feature #106: Loading states displayed during data fetching ✅
+- Created src/app/statistics/loading.tsx - Skeleton stat cards, charts, top articles
+- Created src/app/[year]/[[...slug]]/loading.tsx - Skeleton TOC, breadcrumb, article, votes, comments
+- Graph page: existing spinner, Compare page: existing Loader2 spinner
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Current Status
+- Features passing: ~121 (was ~118)
+- Total features: 144
+- Percentage: ~84%
+
 ## Session: 2026-02-28 (Agent handling feature #100)
 
 ### Completed Features
