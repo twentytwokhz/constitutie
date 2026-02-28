@@ -190,6 +190,37 @@ export default function HomePage() {
           <StatsSection />
         </Suspense>
       </ScrollReveal>
+
+      {/* Final CTA Section */}
+      <ScrollReveal>
+        <section className="border-t bg-primary/5 py-16 sm:py-24">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Pregătit să explorezi legea fundamentală?
+              </h2>
+              <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+                Navighează prin toate versiunile Constituției României, compară modificările și
+                descoperă evoluția drepturilor tale.
+              </p>
+              <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                <Link
+                  href="/2003"
+                  className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-10 text-base font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90"
+                >
+                  Explorează Constituția
+                </Link>
+                <Link
+                  href="/compare"
+                  className="inline-flex h-12 items-center justify-center rounded-md border border-input bg-background px-10 text-base font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  Compară Versiuni
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
     </main>
   );
 }
