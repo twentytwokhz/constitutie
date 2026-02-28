@@ -1,5 +1,54 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #193)
+
+### Completed Features
+
+#### Feature #193: DB and markdown updates — diacritics audit + English translation verification ✅
+
+**Diacritics Audit (Markdown Files):**
+- Audited all 4 constitution markdown files (1952, 1986, 1991, 2003) for:
+  - Wrong cedilla characters (ş U+015F, ţ U+0163) — NONE found, all use correct comma-below
+  - Hidden/weird Unicode characters — NONE found
+  - Common Romanian words missing diacritics — Found and fixed 2 issues in 1991.md
+- Fixed: "Constitutie" → "Constituție" in Art. 18, line 94 (1991.md)
+- Fixed: "masura" → "măsura" in Art. 150, line 928 (1991.md)
+- Confirmed 4 "asigura" matches were false positives (infinitive form "a asigura" is correct)
+
+**Database Diacritics Update:**
+- Surgically updated only the 2 affected articles in DB (no destructive re-seed)
+- Updated content + regenerated TipTap JSON for Art. 18 and Art. 150 (1991 version)
+- Verified zero cedilla characters across ALL 535 articles in DB
+- Verified zero common missing-diacritics patterns in ALL articles
+
+**English Translation Verification:**
+- All 535 articles have content_en (100%)
+- All 535 articles have content_tiptap_en (100%)
+- All 309 articles with titles have title_en (100%)
+- All 71 structural units have name_en (100%)
+- All 4 versions have name_en and description_en (100%)
+- i18n messages: 303 keys in both ro.json and en.json (perfect match)
+- ro.json uses correct comma-below diacritics
+
+**Additional Fixes:**
+- Fixed @react-pdf/types import (not hoisted in pnpm) → local type alias
+- Auto-fixed import sorting across 37 files (biome organizeImports)
+- Zero Biome errors, zero TypeScript errors
+- Dev server responding 200 on all pages
+
+### Files Modified
+- public/1991.md — 2 diacritics fixes
+- src/components/diff/diff-pdf-document.tsx — Fixed Style type import
+- 37 files — biome import sorting auto-fix
+
+### Files Created
+- scripts/fix-db-diacritics.mjs — Targeted DB article update script
+
+### Current Status
+- Features passing: 190/193
+- Total features: 193
+- Percentage: ~98.4%
+
 ## Session: 2026-02-28 (Agent handling feature #189)
 
 ### Completed Features
