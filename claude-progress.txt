@@ -1,5 +1,47 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #183)
+
+### Completed Features
+
+#### Feature #183: Constitution text translation ✅
+- Added English translation columns (_en) to 3 database tables:
+  - constitution_versions: name_en, description_en
+  - structural_units: name_en
+  - articles: title_en, content_en, content_tiptap_en
+- Updated Drizzle ORM schema (schema.ts) with new nullable columns
+- Updated TypeScript types (index.ts) for ConstitutionVersion, StructuralUnit, Article
+- Ran ALTER TABLE migration via scripts/push-schema.mjs (idempotent with IF NOT EXISTS)
+- Created scripts/translate-content.mjs — translates all content via OpenRouter API:
+  - Uses google/gemini-2.0-flash-001 model for accurate legal text translation
+  - Batches articles by character count (~4000 chars/batch, max 8 articles/batch)
+  - Includes retry logic (3 attempts per batch with exponential backoff)
+  - Resumes from where it left off (only translates rows with NULL _en columns)
+  - Generates TipTap JSON for translated content using JS port of contentToTipTap
+- Translated all content: 535/535 articles, 71/71 structural units, 4/4 versions
+- Sample verification confirmed accurate translations:
+  - "Statul român" → "The Romanian State"
+  - "Suveranitatea" → "Sovereignty"
+  - "Capitol introductiv" → "Introductory Chapter"
+- Fixed biome.json config issues (includes→include, assist→assists)
+- Biome lint: 0 errors on changed files, TypeScript: 0 errors
+- Next.js build succeeds with zero errors
+
+### Files Modified
+- src/lib/db/schema.ts — Added _en columns to 3 tables
+- src/types/index.ts — Added _en fields to 3 interfaces
+- biome.json — Fixed pre-existing config key typos
+
+### Files Created
+- scripts/push-schema.mjs — Database migration script
+- scripts/translate-content.mjs — OpenRouter API translation script
+- scripts/verify-translations.mjs — Translation verification script
+
+### Current Status
+- Features passing: 183/183
+- Total features: 183
+- Percentage: 100.0%
+
 ## Session: 2026-02-28 (Agent handling feature #181)
 
 ### Completed Features
