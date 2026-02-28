@@ -1,5 +1,21 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #153)
+
+### Completed Features
+
+#### Feature #153: Translate all UI strings to English ✅
+- Wired `useTranslations()` / `getTranslations()` into 14 components that had hardcoded Romanian UI strings
+- Added ~30 missing translation keys to both `messages/ro.json` and `messages/en.json`
+- Components updated: theme-toggle, version-selector, mobile-toc, share-button, command-palette, text-selection-feedback, graph-client, force-graph, monaco-diff-viewer, version-bar-chart, romanian-flag, statistics/page, graph/page, compare/page
+- Added `generateMetadata()` with locale-aware SEO to statistics, graph, and compare pages
+- Search terms intentionally remain in Romanian (they query Romanian constitutional content)
+- diff-pdf-document.tsx intentionally skipped (server-rendered PDF outside React i18n context)
+- Root layout.tsx metadata kept as fallback defaults (outside `[locale]` segment)
+- Biome lint ✅, TypeScript type-check ✅, zero hardcoded UI Romanian in components
+
+---
+
 ## Session: 2026-02-28 (Agent handling features #156, #163, #162)
 
 ### Completed Features
