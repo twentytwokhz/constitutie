@@ -1855,3 +1855,35 @@
 - Features passing: 127 (was 126)
 - Total features: 144
 - Percentage: ~88.2%
+
+## Session: 2026-02-28 (Agent handling features #118, #119)
+
+### Completed Features
+
+#### Feature #118: Diff page resets comparison when changing versions ✅
+- Added full state reset in the useEffect that fires on version change
+- Now clears: diffData, selectedArticle, singleDiffData, currentChangeIdx, showUnchanged, forceExpandArticle
+- Previously only cleared selectedArticle and singleDiffData
+- Prevents stale jump-to-change indices, expanded unchanged sections, and ghost article selections
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #119: Search filters and state reset on context change ✅
+- Added setQuery("") and setResults([]) to handleOpenChange when closing
+- Previously only cleared URL ?q= param but not the React state
+- Now all close paths (Escape, backdrop click, programmatic) reset search state
+- Palette opens fresh every time with empty input and no stale results
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Files Modified
+- src/app/compare/page.tsx - Full state reset on version change
+- src/components/search/command-palette.tsx - Clear query+results on close
+
+### Current Status
+- Features passing: 129 (was 127)
+- Total features: 144
+- Percentage: ~89.6%
+
+### Notes
+- Both features were "Default & Reset" category - ensuring clean state transitions
+- Both fixes are minimal (2-7 lines each) but critical for UX correctness
+- Dev server running on port 3000 with turbopack
