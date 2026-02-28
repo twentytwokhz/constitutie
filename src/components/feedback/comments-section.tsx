@@ -90,6 +90,7 @@ export function CommentsSection({ articleId }: { articleId: number }) {
     type: "success" | "rejected" | "error";
     message: string;
   } | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const fetchComments = useCallback(async () => {
@@ -160,8 +161,14 @@ export function CommentsSection({ articleId }: { articleId: number }) {
     e.preventDefault();
     // Synchronous ref check prevents race condition from rapid double-clicks
     // (React state updates are async, so submitting may not reflect yet)
+    if (isSubmittingRef.current) return;
     const trimmedContent = newComment.trim();
-    if (!trimmedContent || isSubmittingRef.current) return;
+    if (!trimmedContent) {
+      setValidationError("Comentariul nu poate fi gol.");
+      textareaRef.current?.focus();
+      return;
+    }
+    setValidationError(null);
 
     // Client-side dedup: prevent resubmission of same content after back/forward nav
     if (isDuplicateSubmission(articleId, trimmedContent)) {
@@ -231,12 +238,27 @@ export function CommentsSection({ articleId }: { articleId: number }) {
         <textarea
           ref={textareaRef}
           value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
+          onChange={(e) => {
+            setNewComment(e.target.value);
+            if (validationError && e.target.value.trim()) {
+              setValidationError(null);
+            }
+          }}
           placeholder="Scrie un comentariu constructiv despre acest articol..."
-          className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[80px]"
+          className={`w-full rounded-lg border bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 resize-y min-h-[80px] ${
+            validationError
+              ? "border-destructive focus:ring-destructive"
+              : "border-border focus:ring-ring"
+          }`}
           rows={3}
           disabled={submitting}
         />
+        {validationError && (
+          <p className="mt-1 text-sm text-destructive flex items-center gap-1.5">
+            <XCircle className="h-3.5 w-3.5 shrink-0" />
+            {validationError}
+          </p>
+        )}
         <div className="mt-2 flex items-center justify-between">
           <p className="text-xs text-muted-foreground">
             Comentariul va fi verificat automat de AI înainte de publicare.
