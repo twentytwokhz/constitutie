@@ -1,5 +1,28 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #142)
+
+### Completed Features
+
+#### Feature #142: Graph loaded only on small size of screen ✅
+- Root cause: ForceGraph2D was initialized with hardcoded 800x600 dimensions before the container had its actual layout size
+- The old resize handler used `window.addEventListener("resize")` which doesn't fire on initial layout
+- `zoomToFit` only ran once on `onEngineStop`, before the container had correct dimensions
+- Fix applied in src/components/graph/force-graph.tsx:
+  - Replaced `window.resize` listener with `ResizeObserver` for accurate container size tracking
+  - Changed initial dimensions from `{width: 800, height: 600}` to `{width: 0, height: 0}`
+  - ForceGraph2D only renders after container dimensions are measured (prevents stale initial sizing)
+  - Added re-fit effect: `zoomToFit` is called again when dimensions change after engine stops
+  - Reset engine stopped flag on data changes for fresh fitting
+  - Used persistent container div across all render states so ResizeObserver always tracks the correct element
+- Biome lint: 0 errors | TypeScript: 0 errors
+- No mock data patterns found
+
+### Current Status
+- Features passing: 56 (was 55)
+- Total features: 143
+- Percentage: ~39.2%
+
 ## Session: 2026-02-28 (Agent handling features #18, #117, #19)
 
 ### Completed Features
