@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { VersionSelector } from "@/components/layout/version-selector";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, Scale, Search, X } from "lucide-react";
@@ -73,8 +74,13 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Right side: Search + Theme Toggle + Mobile Menu */}
+        {/* Right side: Version Selector + Search + Theme Toggle + Mobile Menu */}
         <div className="flex items-center gap-1">
+          {/* Version Selector */}
+          <div className="hidden sm:block">
+            <VersionSelector />
+          </div>
+
           {/* Search trigger */}
           <Button
             variant="ghost"
@@ -115,6 +121,11 @@ export function Header() {
           />
           <nav className="relative z-50 md:hidden border-t border-border/40 bg-background pb-4 animate-slide-down">
             <div className="container mx-auto px-4 pt-2 flex flex-col gap-1">
+              {/* Mobile version selector */}
+              <div className="px-3 py-2 sm:hidden">
+                <p className="text-xs font-medium text-muted-foreground mb-1.5">Versiune</p>
+                <VersionSelector />
+              </div>
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
