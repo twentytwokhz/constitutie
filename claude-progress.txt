@@ -1831,3 +1831,27 @@
 - Deep linking architecture uses last URL segment for article resolution
 - URL sync uses guard refs to prevent infinite re-render loops
 - All changes pass Biome lint and TypeScript type-check with zero errors
+
+## Session: 2026-02-28 (Agent handling feature #114)
+
+### Completed Features
+
+#### Feature #114: Back and resubmit comment does not create duplicate - PASSED
+- Added server-side content deduplication in POST /api/articles/[id]/comments
+- Checks (articleId, fingerprintHash, content) within 5-minute window using Drizzle gt() operator
+- Returns existing comment with 200 status (idempotent) instead of creating duplicate
+- Added client-side sessionStorage tracking (isDuplicateSubmission/recordSubmission helpers)
+- Client catches resubmit before API call, shows "already submitted" message
+- Tested: same content+fingerprint → returns existing (id:8), different fingerprint → new (id:9)
+- Different content+same fingerprint → new (id:10), confirming dedup is correctly scoped
+- Biome lint: 0 errors, tsc: 0 errors
+- No mock data patterns found
+
+### Files Modified
+- src/app/api/articles/[id]/comments/route.ts - Added dedup check before AI moderation
+- src/components/feedback/comments-section.tsx - Added sessionStorage dedup helpers + client-side check
+
+### Current Status
+- Features passing: 127 (was 126)
+- Total features: 144
+- Percentage: ~88.2%
