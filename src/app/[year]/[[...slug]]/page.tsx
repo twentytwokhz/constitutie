@@ -335,7 +335,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             {prevArticle ? (
               <Link
                 href={buildArticlePath(prevArticle)}
-                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
                 <div className="text-left">
@@ -359,7 +359,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             {nextArticle ? (
               <Link
                 href={buildArticlePath(nextArticle)}
-                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <div className="text-right">
                   <span className="block text-xs uppercase tracking-wide text-muted-foreground/70">

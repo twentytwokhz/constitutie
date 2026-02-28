@@ -115,16 +115,51 @@ export function CommentsSection({ articleId }: { articleId: number }) {
     fetchComments();
   }, [fetchComments]);
 
-  /** Format a timestamp to a human-readable Romanian date string */
-  function formatDate(dateStr: string): string {
+  /**
+   * Format a timestamp to a human-readable Romanian date string.
+   * Uses relative time for recent comments (< 7 days) and
+   * absolute date for older comments (≥ 7 days).
+   */
+  function formatDate(dateStr: string): { relative: string; absolute: string } {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("ro-RO", {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHours = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    // Full absolute date in Romanian locale (always available as tooltip)
+    const absolute = date.toLocaleDateString("ro-RO", {
       day: "numeric",
       month: "long",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
+
+    // Relative time for recent comments
+    let relative: string;
+    if (diffSec < 60) {
+      relative = "acum câteva secunde";
+    } else if (diffMin < 60) {
+      relative = diffMin === 1 ? "acum 1 minut" : `acum ${diffMin} minute`;
+    } else if (diffHours < 24) {
+      relative = diffHours === 1 ? "acum 1 oră" : `acum ${diffHours} ore`;
+    } else if (diffDays === 1) {
+      relative = "ieri";
+    } else if (diffDays < 7) {
+      relative = `acum ${diffDays} zile`;
+    } else {
+      // Older than 7 days — use absolute date (without time for cleanliness)
+      relative = date.toLocaleDateString("ro-RO", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    }
+
+    return { relative, absolute };
   }
 
   if (loading) {
@@ -366,9 +401,10 @@ export function CommentsSection({ articleId }: { articleId: number }) {
               <p className="text-sm leading-relaxed">{comment.content}</p>
               <time
                 dateTime={comment.createdAt}
+                title={formatDate(comment.createdAt).absolute}
                 className="mt-2 block text-xs text-muted-foreground"
               >
-                {formatDate(comment.createdAt)}
+                {formatDate(comment.createdAt).relative}
               </time>
             </div>
           ))}

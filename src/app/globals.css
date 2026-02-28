@@ -116,6 +116,20 @@
     color: hsl(var(--foreground));
   }
 
+  /* Keyboard navigation: visible focus ring for all interactive elements.
+   * Applied at @layer base so shadcn utility classes (focus-visible:outline-none
+   * focus-visible:ring-2) override it on components that already handle focus. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remove default focus indicator for mouse/pointer users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
   /* Smooth theme transitions */
   html:not([data-loading]) * {
     transition-property: background-color, border-color, color;

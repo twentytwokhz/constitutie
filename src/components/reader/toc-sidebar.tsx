@@ -70,7 +70,7 @@ function TocNodeItem({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className={`flex items-center gap-1.5 w-full text-left py-1.5 px-2 rounded-md transition-colors hover:bg-accent/50 ${
+        className={`flex items-center gap-1.5 w-full text-left py-1.5 px-2 rounded-md transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
           depth === 0
             ? "font-semibold text-sm text-foreground"
             : depth === 1
