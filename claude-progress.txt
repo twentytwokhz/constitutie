@@ -1,5 +1,47 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #207)
+
+### Completed Features
+
+#### Feature #207: Bug on compare screen — language mismatch for new constitutions ✅
+- **Root cause**: The 5 newly added constitutions (1866, 1923, 1938, 1948, 1965) were
+  added in feature #203 but never run through the translation pipeline. When the compare
+  page was used in EN locale, the `localized()` function in the diff API used
+  `(useEn && art.contentEn) || art.content` — falling back to Romanian when contentEn
+  was NULL. This caused one side of the diff to show Romanian text (untranslated version)
+  and the other to show English text (translated version), making every article appear
+  "modified" even though the comparison was semantically meaningless.
+- **Fix 1 — API guard (safety net)**: Added translation availability check to both
+  `/api/diff` and `/api/diff/article` routes. Before computing the diff, if locale=en,
+  queries both versions for at least one article with non-NULL content_en. If either
+  version lacks translations, forces `useEn = false` so both sides use Romanian.
+  Uses `isNotNull` from drizzle-orm with a LIMIT 1 query (minimal DB overhead).
+- **Fix 2 — Generate translations**: Ran the existing `translate-content.mjs` script
+  (via OpenRouter API with google/gemini-2.0-flash-001 model) to translate all 587
+  missing articles across the 5 new constitutions:
+  - 1866: 127 articles translated
+  - 1923: 137 articles translated
+  - 1938: 98 articles translated
+  - 1948: 104 articles translated
+  - 1965: 121 articles translated
+  Also translated 5 version names/descriptions and associated structural units.
+- **Export**: Ran `export-translations.mjs` to persist all translations to JSON files
+  in public/translations/. Now covers all 9 versions (1122 articles total) so DB resets
+  don't lose translations.
+- Biome lint: 0 errors (98 files), TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Modified
+- src/app/api/diff/route.ts — Added isNotNull import, EN translation availability guard
+- src/app/api/diff/article/route.ts — Same EN translation availability guard
+- public/translations/versions-en.json — Now includes all 9 versions
+- public/translations/units-en.json — Now includes all 132 structural units
+- public/translations/articles-en.json — Now includes all 1122 articles
+
+### Current Status
+- Feature #207 marked as passing
+
 ## Session: 2026-02-28 (Agent handling feature #206)
 
 ### Completed Features
