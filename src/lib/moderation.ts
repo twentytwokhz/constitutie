@@ -7,8 +7,15 @@
  * - Personal attacks
  * - Off-topic content
  *
+ * When the AI API is unavailable (network error, invalid key, bad response),
+ * falls back to a programmatic profanity filter that checks against curated
+ * word lists in Romanian and English. This prevents offensive content from
+ * slipping through during API outages.
+ *
  * Returns an approval/rejection decision with a reason in Romanian.
  */
+
+import { checkProfanity } from "./profanity-filter";
 
 interface ModerationResult {
   approved: boolean;
@@ -40,17 +47,31 @@ sau
 {"approved": false, "reason": "Motivul specific al respingerii în limba română"}`;
 
 /**
+ * Fallback moderation using the programmatic profanity filter.
+ * Called when the OpenRouter AI API is unavailable or returns invalid data.
+ */
+function fallbackModeration(commentContent: string, reason: string): ModerationResult {
+  console.warn(`[moderation] Falling back to profanity filter: ${reason}`);
+  const profanityCheck = checkProfanity(commentContent);
+  if (profanityCheck.flagged) {
+    return { approved: false, reason: profanityCheck.reason };
+  }
+  // No profanity detected — approve the comment
+  return { approved: true, reason: null };
+}
+
+/**
  * Moderate a comment using OpenRouter AI.
- * Falls back to approval if the API is unavailable or returns an error,
- * to avoid blocking legitimate comments.
+ * Falls back to a programmatic profanity word-list filter if the API
+ * is unavailable, returns an error, or produces invalid output.
+ * This ensures offensive content is always caught, even during outages.
  */
 export async function moderateComment(commentContent: string): Promise<ModerationResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey || apiKey.includes("placeholder") || apiKey.includes("xxxx")) {
-    // No valid API key — skip moderation, approve by default
-    console.warn("[moderation] No valid OpenRouter API key configured, skipping moderation");
-    return { approved: true, reason: null };
+    console.warn("[moderation] No valid OpenRouter API key configured, using profanity filter");
+    return fallbackModeration(commentContent, "no API key");
   }
 
   try {
@@ -78,8 +99,7 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
 
     if (!response.ok) {
       console.error(`[moderation] OpenRouter API error: ${response.status} ${response.statusText}`);
-      // Fail open: approve if API is down
-      return { approved: true, reason: null };
+      return fallbackModeration(commentContent, `API returned ${response.status}`);
     }
 
     const data = await response.json();
@@ -87,7 +107,7 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
 
     if (!messageContent) {
       console.error("[moderation] Empty response from OpenRouter");
-      return { approved: true, reason: null };
+      return fallbackModeration(commentContent, "empty API response");
     }
 
     // Parse the JSON response from the AI (handle markdown code blocks)
@@ -99,7 +119,7 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
 
     if (typeof result.approved !== "boolean") {
       console.error("[moderation] Invalid moderation response format:", result);
-      return { approved: true, reason: null };
+      return fallbackModeration(commentContent, "invalid response format");
     }
 
     return {
@@ -110,7 +130,6 @@ export async function moderateComment(commentContent: string): Promise<Moderatio
     };
   } catch (error) {
     console.error("[moderation] Error during comment moderation:", error);
-    // Fail open: approve if moderation crashes
-    return { approved: true, reason: null };
+    return fallbackModeration(commentContent, "exception thrown");
   }
 }
