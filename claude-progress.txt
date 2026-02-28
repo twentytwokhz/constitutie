@@ -1,5 +1,42 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #76, #77, #79)
+
+### Completed Features
+
+#### Feature #76: How it works 3-step section displays
+- Created HowItWorks component (src/components/landing/how-it-works.tsx)
+- 3 visual steps: Alege o versiune, Compara si analizeaza, Exprima-ti opinia
+- Each step has number circle, Lucide icon, title, and description
+- Horizontal connector line on desktop, vertical arrows on mobile
+- Biome lint 0 errors, tsc 0 errors
+
+#### Feature #77: Timeline of constitution versions is interactive
+- Created Timeline component (src/components/landing/timeline.tsx)
+- All 4 years displayed: 1952, 1986, 1991, 2003
+- Desktop horizontal layout with hover/click detail card, mobile vertical expandable
+- Visual connectors between timeline items
+- Biome lint 0 errors, tsc 0 errors
+
+#### Feature #79: FAQ accordion section with questions
+- Created shadcn/ui Accordion component (src/components/ui/accordion.tsx)
+- Created FaqSection component (src/components/landing/faq-section.tsx)
+- 6 FAQ items covering versions, comparison, anonymity, search, graph, PDF export
+- Radix UI Accordion with collapsible behavior
+- Added accordion keyframes to globals.css theme
+- Biome lint 0 errors, tsc 0 errors
+
+### Components Created
+- src/components/landing/how-it-works.tsx
+- src/components/landing/timeline.tsx
+- src/components/landing/faq-section.tsx
+- src/components/ui/accordion.tsx
+
+### Current Status
+- Features passing: ~101 (was ~98)
+- Total features: 144
+- Percentage: ~70.1%
+
 ## Session: 2026-02-28 (Agent handling features #59, #87)
 
 ### Completed Features
