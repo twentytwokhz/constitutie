@@ -2574,3 +2574,35 @@
 - Features passing: 185/186
 - Total features: 186
 - Percentage: ~99.5%
+
+## Session: 2026-02-28 (Agent handling feature #187)
+
+### Completed Features
+
+#### Feature #187: UI issues with shadcn UI dropdown ✅
+- **Doubled CoatOfArms in dropdown trigger**: Removed explicit `<CoatOfArms>` from the
+  `<SelectTrigger>` in version-selector.tsx. Radix UI's `<SelectValue>` already renders the
+  selected `<SelectItem>`'s children (which include CoatOfArms + text label), so having
+  an additional CoatOfArms in the trigger caused duplication.
+- **TricolorStripe stretched outside card**: The component had `w-full` hardcoded via
+  string concatenation (`${baseClass} ${className}`). When the reader page passed `w-16`,
+  both width classes ended up in the DOM, and Tailwind v4 resolved the conflict in favor
+  of `w-full`. Fixed by using `cn()` (tailwind-merge) which properly deduplicates width
+  utilities so the caller's `w-16` overrides the default `w-full`.
+- **Text wrapping in version info card**: Added `whitespace-nowrap` to the subheader
+  `<p>` tag ("152 articole") and `overflow-hidden` to the card container as safety net.
+  The primary cause of wrapping was the TricolorStripe consuming full width, which is
+  now fixed.
+- Updated JSDoc comment on VersionSelector to reflect removal of explicit trigger badge.
+- Biome lint: 0 errors, TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Modified
+- src/components/layout/version-selector.tsx — Removed duplicate CoatOfArms from trigger
+- src/components/national-symbols/tricolor-stripe.tsx — Added cn() import, use tailwind-merge
+- src/app/[locale]/[year]/[[...slug]]/page.tsx — Card overflow-hidden + subheader whitespace-nowrap
+
+### Current Status
+- Features passing: 187/187
+- Total features: 187
+- Percentage: 100.0%
