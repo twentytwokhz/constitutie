@@ -1785,3 +1785,49 @@
 - All 3 features in Double-Action and Idempotency category
 - Key pattern: useRef for synchronous checks, useState for UI rendering
 - Both vote and comment forms now have identical multi-layer protection
+
+## Session: 2026-02-28 (Agent handling features #107, #108, #110)
+
+### Completed Features
+
+#### Feature #107: Direct URL access to specific article works ✅
+- Verified existing deep linking implementation handles all URL patterns correctly
+- /2003/titlul-1/capitolul-1/articolul-1 correctly extracts article number from last slug segment
+- Breadcrumbs built from DB structural_units parent chain (always accurate)
+- TOC auto-expands branch containing current article with bg-primary/10 highlight
+- /1991/titlul-2/articolul-20 resolves correctly via version + article number query
+- No code changes needed — existing implementation met all criteria
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #108: Malformed URL parameters handled gracefully ✅
+- /api/versions/not-a-year returns 400 "Invalid year parameter" (NaN check)
+- /2003/titlul-999 now correctly returns 404 instead of silently falling back to first article
+- FIX: Added guard that returns notFound() when slug is present but doesn't resolve
+- Bare version URLs (/2003) still correctly fall back to first article
+- /api/diff?a=invalid&b=2003 returns 400 "Invalid year parameters" (NaN check)
+- Biome lint: 0 errors, tsc: 0 errors
+
+#### Feature #110: Search URL with query parameter works ✅
+- Added URL ↔ search bidirectional sync to CommandPalette
+- ?q=drepturile auto-opens palette with search term populated
+- Typing updates URL via router.replace (no history pollution)
+- Closing palette removes ?q= from URL
+- Guard ref pattern prevents circular URL→state→URL updates
+- Added Suspense boundary around CommandPalette in root layout (Next.js requirement)
+- Biome lint: 0 errors, tsc: 0 errors
+
+### Files Modified
+- src/app/[year]/[[...slug]]/page.tsx - Added 404 for unresolved slug paths
+- src/components/search/command-palette.tsx - Added URL search param integration
+- src/app/layout.tsx - Added Suspense boundary around CommandPalette
+
+### Current Status
+- Features passing: 127 (was 118)
+- Total features: 144
+- Percentage: 88.2%
+
+### Notes
+- 9 features advanced (3 by this agent, 6 by parallel agents)
+- Deep linking architecture uses last URL segment for article resolution
+- URL sync uses guard refs to prevent infinite re-render loops
+- All changes pass Biome lint and TypeScript type-check with zero errors
