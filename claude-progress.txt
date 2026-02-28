@@ -1,5 +1,51 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #47, #48, #49)
+
+### Completed Features
+
+#### Feature #47: Unified diff layout toggle works ✅
+- Toggle buttons already existed (Side-by-side / Inline) in segmented control
+- sideBySide state defaults to true (side-by-side is default)
+- Columns2 icon for Side-by-side, Rows2 icon for Inline view
+- Active button uses variant="secondary", inactive uses variant="ghost"
+- Monaco DiffEditor's renderSideBySide option maps directly to state
+- Header labels adapt: 2-column headers in side-by-side, "yearA → yearB" in inline
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #48: Diff color coding (green/red/yellow) ✅
+- Article cards use three-level color scheme:
+  - Added: bg-emerald-500/10 border-emerald-500/30 (green)
+  - Removed: bg-rose-500/10 border-rose-500/30 (red)
+  - Modified: bg-amber-500/10 border-amber-500/30 (yellow/amber)
+- Summary badges match same colors with icons (Plus, Minus, FileText)
+- Monaco's built-in diff engine handles inline text-level green/red highlighting
+- Status labels in Romanian: Adăugat, Eliminat, Modificat
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #49: Unchanged sections collapsed by default ✅
+- showUnchanged defaults to false (entire unchanged section hidden)
+- "Arată X articole neschimbate" button with ChevronDown indicator
+- NEW: UnchangedArticleCard component replaces simple divs
+- Each unchanged article is individually expandable (click to show full content)
+- Full article content shown in whitespace-pre-wrap with relaxed leading
+- Articles can be collapsed again (ChevronUp/ChevronDown toggle)
+- Zero mock data patterns in compare page
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Components Modified
+- src/app/compare/page.tsx - Added UnchangedArticleCard component, enhanced collapsed section
+
+### Current Status
+- Features passing: 82 (was 79)
+- Total features: 144
+- Percentage: ~56.9%
+
+### Notes
+- Compare page auto-committed by autoforge hook during biome format
+- Monaco DiffEditor handles both side-by-side and unified layouts natively
+- UnchangedArticleCard provides two-level collapse: group → individual article
+
 ## Session: 2026-02-28 (Agent handling features #38, #39, #40)
 
 ### Completed Features
