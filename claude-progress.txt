@@ -2780,3 +2780,37 @@
 - Features passing: 192/192
 - Total features: 192
 - Percentage: 100.0%
+
+## Session: 2026-02-28 (Agent handling feature #194)
+
+### Completed Features
+
+#### Feature #194: Flag animation and favicon and title logo ✅
+- **Flag wave animation**: Enhanced RomanianFlag SVG component with animated clip-path
+  (`<animate>` on the `d` attribute) that gently undulates the wave shape through 3
+  intermediate states over 4s cycle. Uses `calcMode="spline"` with ease-in-out beziers
+  for smooth fabric-like motion. Also added animated sheen gradient that subtly shifts
+  light/shadow across the flag surface.
+- **Flag shadow animation**: Added CSS `animate-flag-shadow` keyframes — a breathing
+  drop-shadow effect that expands/contracts in sync with the wave. Separate dark mode
+  variant (`flag-shadow-dark`) with stronger shadows for visibility on dark backgrounds.
+- **Favicon**: Added `icons` to root layout metadata pointing to `/images/logo2003.webp`
+  (primary) and `/images/logo2003.png` (fallback + apple-touch-icon). Replaces the
+  previous star/sparkle favicon.svg with the Romanian coat of arms (stema).
+- **Header logo**: Replaced `<Scale>` lucide icon with `<CoatOfArms year={2003} size={22}>`
+  component. Uses the 2003 coat of arms image via Next.js Image for the header branding.
+  Removed unused Scale import.
+- **Accessibility**: All new animations respect `prefers-reduced-motion` via the existing
+  reduced-motion CSS media query. Added `animate-flag-shadow` to the disable list and
+  added a rule to suppress SVG `<animate>` elements.
+- Biome lint: 0 errors (1 pre-existing warning), TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Modified
+- src/components/national-symbols/romanian-flag.tsx — SVG animate elements + CSS animation class
+- src/app/globals.css — Flag shadow keyframes (light + dark) + reduced-motion updates
+- src/app/layout.tsx — Added icons metadata for favicon
+- src/components/layout/header.tsx — Replaced Scale icon with CoatOfArms component
+
+### Current Status
+- Feature #194 marked as passing
