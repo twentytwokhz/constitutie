@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface TocArticle {
   id: number;
@@ -106,24 +106,29 @@ function TocNodeItem({
           ))}
 
           {/* Articles under this unit */}
-          {node.articles.map((art) => (
-            <li key={art.id}>
-              <Link
-                href={`/${year}/${art.slug}`}
-                className={`flex items-center gap-1.5 py-1 px-2 ml-1 rounded-md text-xs transition-colors ${
-                  currentArticleNumber === art.number
-                    ? "bg-primary/10 text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                }`}
-              >
-                <FileText className="h-3 w-3 shrink-0" />
-                <span className="truncate">
-                  Art. {art.number}
-                  {art.title ? ` — ${art.title}` : ""}
-                </span>
-              </Link>
-            </li>
-          ))}
+          {node.articles.map((art) => {
+            const isActive = currentArticleNumber === art.number;
+            return (
+              <li key={art.id}>
+                <Link
+                  href={`/${year}/${art.slug}`}
+                  data-toc-article={art.number}
+                  data-toc-active={isActive || undefined}
+                  className={`flex items-center gap-1.5 py-1 px-2 ml-1 rounded-md text-xs transition-colors ${
+                    isActive
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  }`}
+                >
+                  <FileText className="h-3 w-3 shrink-0" />
+                  <span className="truncate">
+                    Art. {art.number}
+                    {art.title ? ` — ${art.title}` : ""}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </li>
@@ -139,6 +144,7 @@ function checkContainsCurrent(node: TocNode, articleNumber: number | null): bool
 export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
   const [tree, setTree] = useState<TocNode[]>([]);
   const [loading, setLoading] = useState(true);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     async function fetchStructure() {
@@ -155,6 +161,24 @@ export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
     }
     fetchStructure();
   }, [year]);
+
+  /** Scroll the active TOC item into view when article changes or tree loads */
+  const scrollActiveIntoView = useCallback(() => {
+    if (!navRef.current || currentArticleNumber === null) return;
+    const activeEl = navRef.current.querySelector("[data-toc-active]");
+    if (activeEl) {
+      activeEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [currentArticleNumber]);
+
+  // Scroll active item into view when tree loads or article changes
+  useEffect(() => {
+    if (!loading && tree.length > 0) {
+      // Small delay to let the DOM render expanded sections first
+      const timer = setTimeout(scrollActiveIntoView, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, tree, scrollActiveIntoView]);
 
   if (loading) {
     return (
@@ -177,7 +201,7 @@ export function TocSidebar({ year, currentArticleNumber }: TocSidebarProps) {
   }
 
   return (
-    <nav className="w-full overflow-y-auto overflow-x-hidden">
+    <nav ref={navRef} className="w-full overflow-y-auto overflow-x-hidden">
       <div className="px-3 py-2">
         <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
           Cuprins
