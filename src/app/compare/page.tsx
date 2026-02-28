@@ -16,10 +16,12 @@ import {
   ChevronUp,
   Columns2,
   FileText,
+  Filter,
   Loader2,
   Minus,
   Plus,
   Rows2,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -52,6 +54,16 @@ interface DiffResponse {
   diff: DiffArticle[];
 }
 
+/** Single article diff API response from /api/diff/article */
+interface SingleArticleDiffResponse {
+  a: number;
+  b: number;
+  articleNumber: number;
+  articleA: { title: string | null; content: string } | null;
+  articleB: { title: string | null; content: string } | null;
+  exists: { inA: boolean; inB: boolean };
+}
+
 /**
  * Version Comparison (Diff) Page
  *
@@ -77,6 +89,12 @@ export default function ComparePage() {
   const [currentChangeIdx, setCurrentChangeIdx] = useState(-1);
   /** Force-expand a card from parent when jumping to it */
   const [forceExpandArticle, setForceExpandArticle] = useState<number | null>(null);
+  /** Selected article number for single-article diff mode */
+  const [selectedArticle, setSelectedArticle] = useState<number | null>(null);
+  /** Single-article diff data */
+  const [singleDiffData, setSingleDiffData] = useState<SingleArticleDiffResponse | null>(null);
+  /** Loading state for single-article diff */
+  const [singleDiffLoading, setSingleDiffLoading] = useState(false);
 
   // Fetch available versions on mount
   useEffect(() => {
@@ -127,8 +145,56 @@ export default function ComparePage() {
   useEffect(() => {
     if (versionA && versionB && versionA !== versionB) {
       fetchDiff(versionA, versionB);
+      // Clear single-article selection when versions change
+      setSelectedArticle(null);
+      setSingleDiffData(null);
     }
   }, [versionA, versionB, fetchDiff]);
+
+  /** Fetch diff for a specific article via /api/diff/article */
+  const fetchSingleArticleDiff = useCallback(
+    async (articleNum: number) => {
+      if (!versionA || !versionB || versionA === versionB) return;
+      setSingleDiffLoading(true);
+      try {
+        const res = await fetch(
+          `/api/diff/article?a=${versionA}&b=${versionB}&article=${articleNum}`,
+        );
+        if (!res.ok) throw new Error("Failed to fetch article diff");
+        const data: SingleArticleDiffResponse = await res.json();
+        setSingleDiffData(data);
+      } catch {
+        setSingleDiffData(null);
+      } finally {
+        setSingleDiffLoading(false);
+      }
+    },
+    [versionA, versionB],
+  );
+
+  // Fetch single article diff when selection changes
+  useEffect(() => {
+    if (selectedArticle !== null) {
+      fetchSingleArticleDiff(selectedArticle);
+    } else {
+      setSingleDiffData(null);
+    }
+  }, [selectedArticle, fetchSingleArticleDiff]);
+
+  /** Handle selecting an article for individual diff */
+  const handleArticleSelect = (articleNum: string) => {
+    if (articleNum === "all") {
+      setSelectedArticle(null);
+    } else {
+      setSelectedArticle(Number(articleNum));
+    }
+  };
+
+  /** Clear article selection */
+  const clearArticleSelection = () => {
+    setSelectedArticle(null);
+    setSingleDiffData(null);
+  };
 
   /** Swap the two version selections */
   const handleSwap = () => {
@@ -292,73 +358,113 @@ export default function ComparePage() {
 
       {/* View Mode Toggle + Summary */}
       {diffData && !loading && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-2">
-            <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400">
-              <Plus className="mr-1 h-3 w-3" />
-              {diffData.summary.added} adăugate
-            </Badge>
-            <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400">
-              <Minus className="mr-1 h-3 w-3" />
-              {diffData.summary.removed} eliminate
-            </Badge>
-            <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400">
-              <FileText className="mr-1 h-3 w-3" />
-              {diffData.summary.modified} modificate
-            </Badge>
-            <Badge variant="secondary">{diffData.summary.unchanged} neschimbate</Badge>
-          </div>
-          {/* Jump to change navigation */}
-          {changedArticles.length > 0 && (
-            <div className="flex items-center gap-1.5">
+        <div className="mb-6 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-2">
+              <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/30 dark:text-emerald-400">
+                <Plus className="mr-1 h-3 w-3" />
+                {diffData.summary.added} adăugate
+              </Badge>
+              <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-400">
+                <Minus className="mr-1 h-3 w-3" />
+                {diffData.summary.removed} eliminate
+              </Badge>
+              <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-400">
+                <FileText className="mr-1 h-3 w-3" />
+                {diffData.summary.modified} modificate
+              </Badge>
+              <Badge variant="secondary">{diffData.summary.unchanged} neschimbate</Badge>
+            </div>
+            {/* Jump to change navigation */}
+            {changedArticles.length > 0 && !selectedArticle && (
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={jumpToPrevChange}
+                  className="h-7 gap-1 px-2.5 text-xs"
+                  title="Modificarea anterioară (Alt+↑)"
+                  aria-label="Modificarea anterioară"
+                >
+                  <ChevronUp className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Anterioară</span>
+                </Button>
+                <span className="min-w-[3.5rem] text-center text-xs tabular-nums text-muted-foreground">
+                  {currentChangeIdx >= 0
+                    ? `${currentChangeIdx + 1} / ${changedArticles.length}`
+                    : `${changedArticles.length} mod.`}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={jumpToNextChange}
+                  className="h-7 gap-1 px-2.5 text-xs"
+                  title="Modificarea următoare (Alt+↓)"
+                  aria-label="Modificarea următoare"
+                >
+                  <span className="hidden sm:inline">Următoare</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            )}
+            <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
               <Button
-                variant="outline"
+                variant={sideBySide ? "secondary" : "ghost"}
                 size="sm"
-                onClick={jumpToPrevChange}
-                className="h-7 gap-1 px-2.5 text-xs"
-                title="Modificarea anterioară (Alt+↑)"
-                aria-label="Modificarea anterioară"
+                onClick={() => setSideBySide(true)}
+                className="h-7 gap-1.5 px-2.5 text-xs"
               >
-                <ChevronUp className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Anterioară</span>
+                <Columns2 className="h-3.5 w-3.5" />
+                Side-by-side
               </Button>
-              <span className="min-w-[3.5rem] text-center text-xs tabular-nums text-muted-foreground">
-                {currentChangeIdx >= 0
-                  ? `${currentChangeIdx + 1} / ${changedArticles.length}`
-                  : `${changedArticles.length} mod.`}
-              </span>
               <Button
-                variant="outline"
+                variant={!sideBySide ? "secondary" : "ghost"}
                 size="sm"
-                onClick={jumpToNextChange}
-                className="h-7 gap-1 px-2.5 text-xs"
-                title="Modificarea următoare (Alt+↓)"
-                aria-label="Modificarea următoare"
+                onClick={() => setSideBySide(false)}
+                className="h-7 gap-1.5 px-2.5 text-xs"
               >
-                <span className="hidden sm:inline">Următoare</span>
-                <ChevronDown className="h-3.5 w-3.5" />
+                <Rows2 className="h-3.5 w-3.5" />
+                Inline
               </Button>
             </div>
-          )}
-          <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
-            <Button
-              variant={sideBySide ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setSideBySide(true)}
-              className="h-7 gap-1.5 px-2.5 text-xs"
+          </div>
+
+          {/* Article-level navigation: filter to a specific article */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Articol specific:</span>
+            <Select
+              value={selectedArticle !== null ? String(selectedArticle) : "all"}
+              onValueChange={handleArticleSelect}
             >
-              <Columns2 className="h-3.5 w-3.5" />
-              Side-by-side
-            </Button>
-            <Button
-              variant={!sideBySide ? "secondary" : "ghost"}
-              size="sm"
-              onClick={() => setSideBySide(false)}
-              className="h-7 gap-1.5 px-2.5 text-xs"
-            >
-              <Rows2 className="h-3.5 w-3.5" />
-              Inline
-            </Button>
+              <SelectTrigger className="h-8 w-[240px] text-sm">
+                <SelectValue placeholder="Toate articolele" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                <SelectItem value="all">Toate articolele</SelectItem>
+                {diffData.diff.map((article) => (
+                  <SelectItem key={article.articleNumber} value={String(article.articleNumber)}>
+                    Art. {article.articleNumber}
+                    {article.a?.title || article.b?.title
+                      ? ` — ${article.a?.title || article.b?.title}`
+                      : ""}
+                    {article.status !== "unchanged" ? ` (${statusLabel(article.status)})` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedArticle !== null && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearArticleSelection}
+                className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+                title="Arată toate articolele"
+              >
+                <X className="h-3.5 w-3.5" />
+                Resetează
+              </Button>
+            )}
           </div>
         </div>
       )}
@@ -378,8 +484,81 @@ export default function ComparePage() {
         </div>
       )}
 
-      {/* Diff Results */}
-      {diffData && !loading && (
+      {/* Single article diff loading */}
+      {singleDiffLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="ml-3 text-muted-foreground">Se încarcă diff-ul articolului...</span>
+        </div>
+      )}
+
+      {/* Single article diff mode */}
+      {selectedArticle !== null && singleDiffData && !singleDiffLoading && diffData && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">
+            Articolul {singleDiffData.articleNumber}
+            {(singleDiffData.articleA?.title || singleDiffData.articleB?.title) && (
+              <span className="ml-2 text-base font-normal text-muted-foreground">
+                {singleDiffData.articleA?.title || singleDiffData.articleB?.title}
+              </span>
+            )}
+          </h2>
+
+          {/* Show presence info */}
+          <div className="flex gap-2 text-sm">
+            <Badge
+              variant={singleDiffData.exists.inA ? "default" : "secondary"}
+              className={singleDiffData.exists.inA ? "" : "opacity-50"}
+            >
+              {versionA}: {singleDiffData.exists.inA ? "Există" : "Nu există"}
+            </Badge>
+            <Badge
+              variant={singleDiffData.exists.inB ? "default" : "secondary"}
+              className={singleDiffData.exists.inB ? "" : "opacity-50"}
+            >
+              {versionB}: {singleDiffData.exists.inB ? "Există" : "Nu există"}
+            </Badge>
+          </div>
+
+          {/* Diff content */}
+          {singleDiffData.exists.inA && singleDiffData.exists.inB ? (
+            <div className="rounded-lg border overflow-hidden">
+              {sideBySide && (
+                <div className="grid grid-cols-2 border-b text-xs font-semibold uppercase tracking-wider opacity-60">
+                  <div className="px-4 py-1.5 border-r">{versionA}</div>
+                  <div className="px-4 py-1.5">{versionB}</div>
+                </div>
+              )}
+              {!sideBySide && (
+                <div className="border-b text-xs font-semibold uppercase tracking-wider opacity-60 px-4 py-1.5">
+                  {versionA} → {versionB}
+                </div>
+              )}
+              <MonacoDiffViewer
+                original={singleDiffData.articleA?.content || ""}
+                modified={singleDiffData.articleB?.content || ""}
+                sideBySide={sideBySide}
+              />
+            </div>
+          ) : (
+            <div className="rounded-lg border p-4">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
+                {singleDiffData.exists.inA
+                  ? `${versionA} (Eliminat în ${versionB})`
+                  : `${versionB} (Adăugat)`}
+              </div>
+              <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-background/50 rounded p-3 border">
+                {singleDiffData.exists.inA
+                  ? singleDiffData.articleA?.content
+                  : singleDiffData.articleB?.content}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Full diff results (all articles) - shown when no single article selected */}
+      {diffData && !loading && selectedArticle === null && (
         <div className="space-y-3">
           {/* Changed articles */}
           {changedArticles.length > 0 && (
