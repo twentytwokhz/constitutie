@@ -1,0 +1,79 @@
+import { PostHogAnalyticsProvider } from "@/components/analytics/posthog-provider";
+import { Header } from "@/components/layout/header";
+import { ThemeProvider } from "@/components/layout/theme-provider";
+import { CommandPalette } from "@/components/search/command-palette";
+import { routing } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+
+type Props = {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+};
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://constitutia-romaniei.ro";
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "common" });
+
+  const title = t("metaTitle");
+  const description = t("metaDescription");
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${BASE_URL}/${locale}`,
+      languages: {
+        ro: `${BASE_URL}/ro`,
+        en: `${BASE_URL}/en`,
+        "x-default": `${BASE_URL}/ro`,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: locale === "ro" ? "ro_RO" : "en_US",
+      alternateLocale: locale === "ro" ? "en_US" : "ro_RO",
+      siteName: t("appName"),
+    },
+  };
+}
+
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
+  return (
+    <NextIntlClientProvider>
+      <PostHogAnalyticsProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <Header />
+          <Suspense fallback={null}>
+            <CommandPalette />
+          </Suspense>
+          {children}
+        </ThemeProvider>
+      </PostHogAnalyticsProvider>
+    </NextIntlClientProvider>
+  );
+}

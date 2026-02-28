@@ -1,0 +1,626 @@
+<project_specification>
+  <project_name>Constituția României</project_name>
+
+  <overview>
+    Platformă web interactivă și modernă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003). Oferă navigare articol cu articol, vizualizare graph a structurii constituționale, comparare side-by-side între versiuni cu diff viewer modern, căutare instantanee cross-versiune, și feedback anonim moderat prin AI. Proiectul este complet în limba română, cu design bold civic-modern, fully responsive, dark/light mode.
+  </overview>
+
+  <language>ro</language>
+
+  <technology_stack>
+    <frontend>
+      <framework>Next.js 16 (App Router, React 19, Server Components)</framework>
+      <styling>Tailwind CSS 4 + shadcn/ui (Vega style, Stone base, Indigo theme, Lucide icons, Inter font)</styling>
+      <ui_components>shadcn/ui pentru toate componentele uzuale (buttons, cards, dialogs, command, accordion, charts, tables, etc.)</ui_components>
+      <landing_components>MagicUI + Aceternity UI pentru impact vizual pe landing page (hero animations, text effects, background effects)</landing_components>
+      <illustrations>unDraw vectori SVG, adaptați pentru cazuri specifice, cu animații subtile, funcționali în light și dark mode</illustrations>
+      <rich_text>TipTap (read-only mode) cu extensii custom pentru referințe inter-articol și selecție feedback</rich_text>
+      <diff_viewer>react-diff-viewer-continued cu skinning custom pe design system, plus librăria diff pentru calcul diferențe semantice la nivel de articol</diff_viewer>
+      <graph>react-force-graph-2d pentru vizualizare graf interactiv (performant pentru 150+ noduri)</graph>
+      <charts>shadcn/ui Charts (Recharts) pentru statistici și dashboard cards</charts>
+      <search>shadcn/ui Command component (cmdk) pentru command palette (Ctrl+K / ⌘K)</search>
+      <pdf_export>@react-pdf/renderer pentru export PDF comparații diff</pdf_export>
+      <linting>Biome (lint + format, înlocuiește ESLint + Prettier)</linting>
+      <font>Inter (via shadcn preset)</font>
+      <icons>Lucide React</icons>
+    </frontend>
+    <backend>
+      <runtime>Next.js 16 API Routes (Route Handlers)</runtime>
+      <database>Neon (Serverless PostgreSQL)</database>
+      <orm>Drizzle ORM</orm>
+      <ai_moderation>OpenRouter API pentru moderare comentarii (filtrare limbaj obscen, verificare calitate)</ai_moderation>
+      <security>Arcjet pentru rate limiting, bot protection, input validation pe API routes</security>
+    </backend>
+    <communication>
+      <api>REST API via Next.js Route Handlers</api>
+      <data_fetching>Server Components + React Server Actions pentru mutations</data_fetching>
+    </communication>
+    <deployment>
+      <hosting>Vercel</hosting>
+      <database_hosting>Neon serverless</database_hosting>
+    </deployment>
+  </technology_stack>
+
+  <prerequisites>
+    <environment_setup>
+      - Node.js 22+ LTS
+      - pnpm sau npm
+      - Neon database URL (DATABASE_URL)
+      - OpenRouter API key (OPENROUTER_API_KEY)
+      - Arcjet API key (ARCJET_KEY)
+      - Biome configurare (biome.json)
+    </environment_setup>
+  </prerequisites>
+
+  <feature_count>137</feature_count>
+
+  <content_sources>
+    <constitution_versions>
+      <version year="1952" file="public/1952.md" articles="105" structure="Capitol introductiv + Capitole numerotate, Articole fără titlu" />
+      <version year="1986" file="public/1986.md" articles="121" structure="Titluri numerotate, Articole fără titlu" />
+      <version year="1991" file="public/1991.md" articles="152" structure="Titluri + Capitole + Secțiuni, Articole cu titlu" />
+      <version year="2003" file="public/2003.md" articles="157" structure="Titluri + Capitole + Secțiuni, Articole cu titlu (revizia 2003)" />
+    </constitution_versions>
+    <total_articles>535</total_articles>
+    <markdown_format>
+      - Titluri: ## Titlul N. Nume
+      - Capitole: ### Capitolul N. Nume (sau ## Capitolul N.)
+      - Secțiuni: ### Secțiunea N. Nume (doar 1991, 2003)
+      - Articole: ##### Articolul N. Titlu (1991/2003) sau ### Articolul N. (1952/1986)
+      - Alineate: liste numerotate (1. 2. 3.)
+    </markdown_format>
+  </content_sources>
+
+  <security_and_access_control>
+    <authentication>none - platformă publică fără conturi de utilizator</authentication>
+    <user_roles>
+      <role name="visitor">
+        <permissions>
+          - Poate vizualiza orice articol din orice versiune
+          - Poate căuta articole cross-versiune
+          - Poate vizualiza graph-ul per versiune
+          - Poate compara orice două versiuni (diff)
+          - Poate exporta comparații PDF
+          - Poate vota de acord/dezacord pe articole
+          - Poate posta comentarii anonime (moderate de AI)
+          - Poate vizualiza comentariile aprobate
+        </permissions>
+      </role>
+    </user_roles>
+    <abuse_prevention>
+      <rate_limiting>Arcjet rate limiting pe API routes (comentarii, voturi)</rate_limiting>
+      <bot_protection>Arcjet bot detection și shield</bot_protection>
+      <content_moderation>OpenRouter AI moderare automată - filtrare limbaj obscen, atacuri, spam</content_moderation>
+      <fingerprinting>Browser fingerprint pentru prevenirea abuzurilor repetate (voturi multiple, spam comentarii)</fingerprinting>
+    </abuse_prevention>
+  </security_and_access_control>
+
+  <core_features>
+    <infrastructure>
+      - Database connection established (Neon PostgreSQL via Drizzle)
+      - Database schema applied correctly (all tables created)
+      - Data persists across server restart
+      - No mock data patterns in codebase
+      - Backend API queries real database
+    </infrastructure>
+
+    <data_seeding_and_parsing>
+      - Markdown parser extrage Titluri corect din toate versiunile
+      - Markdown parser extrage Capitole corect din toate versiunile
+      - Markdown parser extrage Secțiuni corect (1991, 2003)
+      - Markdown parser extrage Articole cu conținut și alineate
+      - Toate cele 4 versiuni de constituție sunt seed-uite în baza de date
+      - Alineatele articolelor sunt parsate corect (liste numerotate)
+      - Referințele inter-articol sunt detectate și stocate
+      - Titlurile articolelor sunt extrase (unde există - 1991, 2003)
+    </data_seeding_and_parsing>
+
+    <landing_page>
+      - Hero section cu headline animat (MagicUI text animation)
+      - Hero mockup/browser preview al aplicației
+      - Două butoane CTA (Explorează Constituția / Compară Versiuni)
+      - Feature highlight cards (4-5 carduri: Explorare, Comparare, Graph, Căutare, Feedback)
+      - Secțiune "Cum funcționează" cu 3 pași vizuali
+      - Timeline versiuni constituție (1952 → 1986 → 1991 → 2003) cu design interactiv
+      - Secțiune statistici cu stat cards (shadcn charts style - total articole, versiuni, referințe)
+      - FAQ accordion section cu întrebări frecvente
+      - Secțiune CTA final ("Explorează Constituția")
+      - Footer cu linkuri și credite
+      - Ilustrații vectoriale unDraw afișate corect
+      - Ilustrații adaptate pentru dark mode (vizibilitate și contrast)
+      - Componente animate MagicUI/Aceternity (background effects, shine borders, etc.)
+      - Smooth scroll între secțiuni
+      - Responsive hero layout pe mobile
+      - Responsive features section pe mobile
+      - Responsive timeline pe mobile
+      - Progressive loading și performanță optimă
+    </landing_page>
+
+    <header_and_navigation>
+      - Header cu logo "Constituția României" și navigație principală
+      - Version selector dropdown în header
+      - Dark/light mode toggle button
+      - Command palette trigger (Ctrl+K / ⌘K) cu iconul de search
+      - Mobile hamburger menu
+      - Mobile responsive header complet
+      - Breadcrumb navigation pe paginile interioare (ex: 2003 > Titlul 2 > Capitolul 1 > Art. 15)
+      - Active page indicator în navigație
+      - Smooth page transitions între rute
+      - Pagină 404 stilizată
+    </header_and_navigation>
+
+    <constitution_reader>
+      - Conținut articol afișat via TipTap editor (read-only mode)
+      - Table of contents sidebar ierarhic (Titlu → Capitol → Secțiune → Articol)
+      - TOC highlight pe articolul curent la scroll (scroll spy)
+      - Version selector dropdown pentru schimbare rapidă
+      - Navigare articol-cu-articol (butoane Anterior / Următor)
+      - Breadcrumb articol (Titlu > Capitol > Secțiune > Articol)
+      - Deep linking URL per articol (ex: /2003/titlul-2/capitolul-1/articolul-15)
+      - Smooth scroll la articol din TOC click
+      - Alineate articol numerotate corect și stilizate
+      - Heading Titlu stilizat distinct (dimensiune mare, border)
+      - Heading Capitol stilizat distinct (dimensiune medie)
+      - Heading Secțiune stilizat distinct (dimensiune mică, italic)
+      - Indicator progres lectură (progress bar sau procent)
+      - Buton share link articol (copy to clipboard)
+      - Navigare cu tastatura (↑↓ între articole)
+      - Mobile responsive reader (single column)
+      - Mobile TOC (bottom sheet slide-in)
+      - Mobile feedback panel (tab sau accordion sub articol)
+      - Progressive content loading (lazy load articole)
+      - Empty state pentru secțiuni fără sub-conținut
+      - Print-friendly view pentru articol
+      - Text selection pentru feedback inline (selectează text → buton feedback apare)
+    </constitution_reader>
+
+    <search>
+      - Command palette se deschide cu ⌘K / Ctrl+K (shadcn Command)
+      - Căutare după număr articol (ex: "Art. 15")
+      - Căutare după titlu/nume articol (ex: "Universalitatea")
+      - Full-text search în conținutul articolelor
+      - Rezultate grupate per versiune de constituție
+      - Preview snippet cu highlight pe termenul căutat
+      - Click pe rezultat navighează direct la articol
+      - Căutare cross-versiune (găsește articolul în toate versiunile unde apare)
+      - Căutări recente afișate
+      - Navigare cu tastatura în lista de rezultate
+      - Search accesibil pe mobile (icon în header)
+      - Empty state / no results cu sugestii
+    </search>
+
+    <graph_view>
+      - Graph force-directed se randează corect pentru versiunea selectată
+      - Version selector pentru alegerea versiunii de vizualizat
+      - Noduri Titlu afișate (dimensiune mare, culoare indigo puternic)
+      - Noduri Capitol afișate (dimensiune medie, culoare indigo mediu)
+      - Noduri Secțiune afișate unde există (dimensiune mică-medie)
+      - Noduri Articol afișate (dimensiune mică, culoare stone/gri)
+      - Edges ierarhice afișate (Titlu→Capitol→Secțiune→Articol, linie solidă gri)
+      - Edges referințe inter-articol afișate (linie dashed indigo)
+      - Click pe nod deschide panel preview cu titlu + fragment text
+      - Link "Deschide articolul →" din preview panel
+      - Zoom controls (zoom in, zoom out, fit to screen)
+      - Pan/drag pe canvas
+      - Hover pe nod highlight conexiuni asociate
+      - Graph legend (tipuri noduri + tipuri edges)
+      - Mobile responsive (touch zoom, touch pan)
+      - Search/filter nod în graph (highlight rezultat)
+    </graph_view>
+
+    <diff_comparison>
+      - Dropdown selector versiune A (stânga)
+      - Dropdown selector versiune B (dreapta)
+      - Side-by-side diff layout (default)
+      - Unified diff layout (toggle)
+      - Text adăugat highlighted verde
+      - Text eliminat highlighted roșu
+      - Text modificat highlighted galben cu inline diff
+      - Secțiuni neschimbate collapsed by default
+      - Expand secțiuni neschimbate on click
+      - Jump to next change (buton + keyboard shortcut)
+      - Jump to previous change
+      - Scroll sincronizat între cele două panouri
+      - Bară sumar (X articole modificate, Y adăugate, Z eliminate)
+      - Navigare la nivel de articol în diff
+      - Diff pe articol individual (selectează un articol specific)
+      - Buton export PDF
+      - PDF generat cu diff stilizat (culori adaptate pentru print)
+      - Mobile responsive diff (stacked vertical cu toggle A/B)
+    </diff_comparison>
+
+    <feedback_and_comments>
+      - Buton "De acord" (👍) pe fiecare articol
+      - Buton "Dezacord" (👎) pe fiecare articol
+      - Număr voturi afișat lângă butoane
+      - Input text comentariu
+      - Buton submit comentariu
+      - Moderare AI automată via OpenRouter API (verificare limbaj, calitate)
+      - Comentariu aprobat afișat sub articol
+      - Comentariu respins cu mesaj explicativ ("Comentariul nu poate fi adăugat: [motiv specific]")
+      - Lista comentarii sub articol (sortate descrescător după dată)
+      - Feedback pe text selectat (inline comment pe selecție specifică din articol)
+      - Loading state vizual în timpul moderării AI
+      - Rate limiting via Arcjet (max X comentarii per IP/fingerprint per oră)
+      - Bot protection via Arcjet shield
+      - Fingerprint-based abuse prevention pentru voturi/comentarii
+      - Mobile comment form optimizat
+      - Empty state pentru articole fără comentarii
+    </feedback_and_comments>
+
+    <dark_light_mode>
+      - Toggle button în header (icon soare/lună)
+      - Auto-detectare preferință sistem (prefers-color-scheme)
+      - Dark mode aplicat consistent pe toate componentele
+      - Light mode aplicat consistent pe toate componentele
+      - Preferința salvată în localStorage
+      - Tranziție smooth între moduri (fără flash)
+    </dark_light_mode>
+
+    <statistics>
+      - Stat cards stil shadcn dashboard (total articole, total versiuni, total referințe, total comentarii)
+      - Chart articole per versiune (bar chart - Recharts via shadcn)
+      - Chart modificări între versiuni consecutive
+      - Top articole cu cele mai multe referințe
+      - Responsive stat cards pe mobile
+      - Statistici calculate din date reale din baza de date
+    </statistics>
+  </core_features>
+
+  <database_schema>
+    <tables>
+      <constitution_versions>
+        - id (serial, PK)
+        - year (integer, unique) — 1952, 1986, 1991, 2003
+        - name (text) — "Constituția din 1952", etc.
+        - description (text) — context istoric
+        - source_file (text) — calea fișierului markdown sursă
+        - total_articles (integer)
+        - created_at (timestamp)
+      </constitution_versions>
+
+      <structural_units>
+        - id (serial, PK)
+        - version_id (FK → constitution_versions.id)
+        - type (enum: 'titlu', 'capitol', 'sectiune')
+        - number (integer) — numărul titlului/capitolului/secțiunii
+        - name (text) — denumirea
+        - parent_id (FK → structural_units.id, nullable) — pentru ierarhie (capitol → titlu)
+        - order_index (integer) — ordinea în document
+        - slug (text) — pentru URL-uri
+      </structural_units>
+
+      <articles>
+        - id (serial, PK)
+        - version_id (FK → constitution_versions.id)
+        - structural_unit_id (FK → structural_units.id)
+        - number (integer) — numărul articolului
+        - title (text, nullable) — titlul articolului (doar 1991/2003)
+        - content (text) — conținutul complet markdown
+        - content_tiptap (jsonb) — conținut TipTap JSON
+        - order_index (integer) — ordinea globală în document
+        - slug (text) — pentru deep linking
+        - agree_count (integer, default 0)
+        - disagree_count (integer, default 0)
+      </articles>
+
+      <article_references>
+        - id (serial, PK)
+        - source_article_id (FK → articles.id)
+        - target_article_id (FK → articles.id)
+        - reference_text (text) — textul din sursă care face referirea
+      </article_references>
+
+      <comments>
+        - id (serial, PK)
+        - article_id (FK → articles.id)
+        - content (text) — textul comentariului
+        - selected_text (text, nullable) — textul selectat pentru inline comment
+        - status (enum: 'pending', 'approved', 'rejected')
+        - rejection_reason (text, nullable) — motivul respingerii de AI
+        - fingerprint_hash (text) — hash browser fingerprint
+        - ip_hash (text) — hash IP pentru rate limiting
+        - created_at (timestamp)
+      </comments>
+
+      <votes>
+        - id (serial, PK)
+        - article_id (FK → articles.id)
+        - vote_type (enum: 'agree', 'disagree')
+        - fingerprint_hash (text) — prevenire voturi multiple
+        - created_at (timestamp)
+        - UNIQUE constraint pe (article_id, fingerprint_hash)
+      </votes>
+    </tables>
+  </database_schema>
+
+  <api_endpoints_summary>
+    <versions>
+      - GET /api/versions — lista tuturor versiunilor
+      - GET /api/versions/[year] — detalii versiune cu structura completă
+    </versions>
+    <articles>
+      - GET /api/versions/[year]/articles — toate articolele unei versiuni
+      - GET /api/versions/[year]/articles/[number] — articol specific cu conținut TipTap
+      - GET /api/articles/search?q=term — căutare full-text cross-versiune
+      - GET /api/articles/[id]/cross-versions — același articol în toate versiunile
+    </articles>
+    <structure>
+      - GET /api/versions/[year]/structure — ierarhia completă (titluri, capitole, secțiuni)
+      - GET /api/versions/[year]/graph — date pentru graph view (noduri + edges)
+    </structure>
+    <diff>
+      - GET /api/diff?a=[year]&b=[year] — diff complet între două versiuni
+      - GET /api/diff/article?a=[year]&b=[year]&article=[number] — diff pe articol specific
+      - POST /api/diff/export-pdf — generare PDF cu diff-ul stilizat
+    </diff>
+    <feedback>
+      - POST /api/articles/[id]/vote — votare de acord/dezacord
+      - GET /api/articles/[id]/comments — comentarii aprobate pentru articol
+      - POST /api/articles/[id]/comments — adaugă comentariu (trece prin AI moderation)
+    </feedback>
+    <stats>
+      - GET /api/stats — statistici agregate (total articole, voturi, comentarii, referințe)
+    </stats>
+  </api_endpoints_summary>
+
+  <ui_layout>
+    <main_structure>
+      Header global persistent (logo, nav links, version selector, search trigger, dark/light toggle)
+      Layout responsive cu breakpoints: mobile (< 768px), tablet (768-1024px), desktop (> 1024px)
+    </main_structure>
+
+    <landing_page>
+      Full-width layout fără sidebar. Secțiuni stacked vertical:
+      Hero (full viewport height) → Feature Cards → Cum Funcționează → Timeline Versiuni → Statistici → FAQ → CTA Final → Footer
+      Background effects MagicUI (grid pattern, particles subtile)
+      Progressive information disclosure pe scroll
+    </landing_page>
+
+    <reader_page>
+      Desktop: 3 coloane (TOC sidebar 250px | Content area flex | Feedback panel 300px)
+      Tablet: 2 coloane (TOC overlay slide-in | Content + Feedback stacked)
+      Mobile: 1 coloană (TOC = bottom sheet, Content, Feedback = collapsible section below)
+      TOC sidebar sticky cu scroll spy
+      Gestalt: proximity grouping articole sub capitole, similarity styling per nivel ierarhic
+    </reader_page>
+
+    <diff_page>
+      Desktop: Split view 50/50 cu toolbar top (version selectors, toggle unified/split, export PDF)
+      Sync scroll între panouri
+      Summary bar bottom fixed (stats modificări)
+      Mobile: Single column cu tabs A/B sau stacked cu color coding
+    </diff_page>
+
+    <graph_page>
+      Full-width canvas cu overlay controls (zoom, fit, legend)
+      Version selector în toolbar
+      Preview panel slide-in din dreapta la click nod
+      Mobile: Full screen canvas cu touch controls
+    </graph_page>
+
+    <search>
+      Command palette modal centered (shadcn Command component)
+      Overlay backdrop blur
+      Results cu grupare per versiune, snippet preview
+      Keyboard navigable
+    </search>
+  </ui_layout>
+
+  <design_system>
+    <style>Bold civic-modern — vizual incitant dar autoritar, nu instituțional-plictisitor</style>
+    <shadcn_preset>Vega style, Stone base color, Indigo theme, default radius</shadcn_preset>
+
+    <color_palette>
+      <primary>Indigo (shadcn theme) — accentul principal, linkuri, butoane CTA</primary>
+      <base>Stone — tonuri neutre pentru text, borduri, backgrounds</base>
+      <success>Green (emerald) — text adăugat în diff, succes feedback</success>
+      <danger>Red (rose) — text eliminat în diff, erori</danger>
+      <warning>Yellow/Amber — text modificat în diff</warning>
+      <dark_mode>Dark backgrounds stone-950, text stone-50, indigo accent adaptat</dark_mode>
+      <light_mode>Light backgrounds white/stone-50, text stone-900, indigo accent</light_mode>
+    </color_palette>
+
+    <typography>
+      <font_family>Inter (via shadcn preset)</font_family>
+      <headings>Inter bold/semibold, tracking tight</headings>
+      <body>Inter regular, leading relaxed pentru lizibilitate texte constituționale lungi</body>
+      <article_numbers>Mono-style sau tabular nums pentru numerotare articole</article_numbers>
+    </typography>
+
+    <illustrations>
+      unDraw SVG vectors adaptate tematic:
+      - Justiție / dreptate pentru secțiunea de drepturi
+      - Colaborare / comunitate pentru feedback
+      - Explorare / căutare pentru search
+      - Comparație / evoluție pentru diff
+      Toate ilustrațiile cu:
+      - Culori adaptate la tema indigo
+      - Vizibilitate asigurată în dark mode (contrast verificat)
+      - Animații subtile (fade-in, hover scale, float)
+    </illustrations>
+
+    <animations>
+      - Landing: MagicUI text animations, Aceternity background grids, shine borders
+      - Tranziții pagini: fade + slide subtil
+      - Micro-interacțiuni: hover pe carduri, butoane, noduri graf
+      - Scroll-triggered: blur-fade pe secțiuni landing
+      - Loading states: skeleton shimmer (shadcn Skeleton)
+      - Toate animațiile respectă prefers-reduced-motion
+    </animations>
+
+    <gestalt_principles>
+      - Proximity: articole grupate vizual sub capitole/secțiuni
+      - Similarity: styling consistent per nivel ierarhic
+      - Continuity: linii vizuale în TOC și timeline
+      - Closure: carduri cu borduri subtile pentru grupare
+      - Figure-ground: contrast puternic pentru conținut activ vs background
+    </gestalt_principles>
+
+    <progressive_information_load>
+      - Landing: secțiuni apar la scroll
+      - Reader: TOC collapsed by default, expand on interaction
+      - Diff: unchanged sections collapsed
+      - Graph: detalii nod la hover/click, nu toate vizibile simultan
+      - Comments: lazy load, paginare
+    </progressive_information_load>
+  </design_system>
+
+  <implementation_steps>
+    <step number="1">
+      <title>Fundament: Setup proiect și infrastructură</title>
+      <tasks>
+        - Inițializare Next.js 16 cu shadcn/ui preset Vega
+        - Configurare Biome (lint + format)
+        - Setup Drizzle ORM + Neon PostgreSQL
+        - Definire schema database completă
+        - Migrări database
+        - Seed script: parsare markdown → populate database
+        - Verificare persistență date
+      </tasks>
+    </step>
+
+    <step number="2">
+      <title>Layout global și navigație</title>
+      <tasks>
+        - Header component cu logo, nav, version selector
+        - Dark/light mode toggle cu persistență
+        - Mobile responsive header + hamburger menu
+        - Layout wrapper cu slot-uri pentru sidebar/content/panel
+        - Breadcrumb component
+        - 404 page
+        - Page transition animations
+      </tasks>
+    </step>
+
+    <step number="3">
+      <title>Constitution Reader (core experience)</title>
+      <tasks>
+        - TipTap editor setup read-only cu extensii custom
+        - Table of Contents sidebar cu scroll spy
+        - Pagina reader cu layout 3 coloane
+        - Navigare articol-cu-articol (prev/next)
+        - Deep linking per articol
+        - Progress indicator
+        - Mobile responsive reader
+        - Print-friendly view
+      </tasks>
+    </step>
+
+    <step number="4">
+      <title>Căutare cross-versiune</title>
+      <tasks>
+        - Command palette (shadcn Command)
+        - API endpoint search full-text
+        - Rezultate grupate per versiune
+        - Preview snippet cu highlight
+        - Căutare cross-versiune (articol în toate versiunile)
+        - Recent searches
+        - Mobile search
+      </tasks>
+    </step>
+
+    <step number="5">
+      <title>Diff / Comparare versiuni</title>
+      <tasks>
+        - API diff computation între două versiuni
+        - react-diff-viewer-continued integration cu custom theme
+        - Side-by-side și unified toggle
+        - Sync scroll
+        - Navigation between changes
+        - Summary bar cu statistici
+        - PDF export cu @react-pdf/renderer
+        - Mobile responsive diff
+      </tasks>
+    </step>
+
+    <step number="6">
+      <title>Graph View</title>
+      <tasks>
+        - react-force-graph-2d setup
+        - API endpoint graph data (noduri + edges)
+        - Color coding per tip nod
+        - Edges ierarhice + referințe
+        - Click nod → preview panel
+        - Zoom/pan controls
+        - Legend
+        - Mobile touch support
+      </tasks>
+    </step>
+
+    <step number="7">
+      <title>Feedback și comentarii</title>
+      <tasks>
+        - Butoane vot de acord/dezacord pe articol
+        - Fingerprint generation pentru unicitate vot
+        - Formular comentariu anonim
+        - Integrare OpenRouter API pentru AI moderation
+        - Arcjet rate limiting și bot protection
+        - Inline feedback pe text selectat
+        - Afișare comentarii aprobate
+        - Mesaj respingere cu motiv
+      </tasks>
+    </step>
+
+    <step number="8">
+      <title>Landing Page</title>
+      <tasks>
+        - Hero section cu MagicUI text animations
+        - Feature cards section
+        - "Cum funcționează" 3-step section
+        - Timeline versiuni interactivă
+        - Statistici cu shadcn chart cards (Recharts)
+        - FAQ accordion
+        - CTA final
+        - Footer
+        - unDraw illustrations cu dark/light adaptation
+        - Aceternity background effects
+      </tasks>
+    </step>
+
+    <step number="9">
+      <title>Statistici și polish final</title>
+      <tasks>
+        - Dashboard stat cards
+        - Charts cu Recharts via shadcn
+        - SEO meta tags
+        - Performance optimization (lazy loading, image optimization)
+        - Accessibility audit (ARIA labels, keyboard nav)
+        - Cross-browser testing
+        - Final responsive polish
+      </tasks>
+    </step>
+  </implementation_steps>
+
+  <success_criteria>
+    <functionality>
+      - Toate cele 535 articole din 4 versiuni sunt navigabile și afișate corect
+      - Căutarea returnează rezultate relevante cross-versiune în sub 500ms
+      - Diff-ul arată corect diferențele între orice combinație de 2 versiuni
+      - Graph-ul renderează corect structura ierarhică + referințe per versiune
+      - Comentariile trec prin AI moderation și sunt afișate/respinse corespunzător
+      - PDF export generează document lizibil și corect
+    </functionality>
+    <user_experience>
+      - Navigarea e intuitivă — utilizatorul ajunge la orice articol în max 3 click-uri
+      - Command palette oferă acces instant la orice conținut
+      - Mobile experience completă — toate funcționalitățile accesibile pe telefon
+      - Feedback-ul anonim e simplu de postat (sub 10 secunde)
+      - Progressive disclosure — informația apare gradual, fără a copleși
+    </user_experience>
+    <technical_quality>
+      - Time to First Contentful Paint sub 1.5s
+      - Lighthouse score 90+ pe toate categoriile
+      - Zero erori Biome în codebase
+      - API response times sub 200ms (excepție: AI moderation, PDF export)
+      - Database queries optimizate cu indexuri corespunzătoare
+    </technical_quality>
+    <design_polish>
+      - Dark/light mode funcționează impecabil pe toate paginile
+      - Animații subtile, nu distrag — respectă prefers-reduced-motion
+      - Ilustrații vizibile și lizibile în ambele teme
+      - Consistență vizuală între toate paginile
+      - Design bold civic-modern — impactant dar profesional
+    </design_polish>
+  </success_criteria>
+</project_specification>
