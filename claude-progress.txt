@@ -1,5 +1,42 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #141)
+
+### Completed Features
+
+#### Feature #141: Update DB entries to use Romanian diacritics ✅
+- Diagnosed diacritics issues across all 4 constitution versions:
+  - 1952.md: had ZERO diacritics (all text without ă, â, î, ș, ț)
+  - 1986.md: had near-ZERO diacritics (only 16 total characters)
+  - 1991.md & 2003.md: had cedilla forms (ş/ţ) instead of comma-below (ș/ț) in the DB
+    (markdown files had been fixed locally but DB wasn't re-seeded)
+- Ran existing add-diacritics.mjs script (OpenRouter/Gemini AI) to fix 1952.md and 1986.md
+- Confirmed 1991.md and 2003.md already had correct comma-below forms in files
+- Re-seeded entire database using `npm run db:seed` (535 articles, 71 structural units, 55 references)
+- Verification results:
+  - 1952: 1,912 diacritics, 0 cedilla → ✅
+  - 1986: 2,681 diacritics, 0 cedilla → ✅
+  - 1991: 3,597 diacritics, 0 cedilla → ✅
+  - 2003: 4,617 diacritics, 0 cedilla → ✅
+- Structural unit names verified: "Orînduirea socială", "Instanțele judecătorești" etc.
+- Article titles verified (1991/2003): "Statul român", "Suveranitatea" etc.
+- TipTap JSON content verified: correct diacritics in JSON too
+- Zero mock data patterns in codebase
+- Biome lint: 0 errors | TypeScript: 0 errors
+- Server returns correct diacritics via API endpoints
+
+### Current Status
+- Features passing: 50 (was 49)
+- Total features: 141
+- Percentage: ~35.5%
+
+### Notes
+- The add-diacritics.mjs script uses google/gemini-2.0-flash-001 via OpenRouter for AI diacritization
+- 1952/1986 texts use period orthography: "î" in word interiors (sînt, cînd, pămînt)
+- The fix-diacritics.mjs script handles cedilla→comma-below conversion for 1991/2003
+- Re-seeding clears all data (votes, comments) but this is acceptable for data integrity
+- Database schema didn't change; only content was updated
+
 ## Session: 2026-02-28 (Agent handling feature #144)
 
 ### Completed Features
