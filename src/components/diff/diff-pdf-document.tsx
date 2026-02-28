@@ -160,6 +160,7 @@ export interface DiffPdfProps {
     unchanged: number;
   };
   articles: PdfDiffArticle[];
+  locale?: string;
 }
 
 // Print-friendly color palette (lighter backgrounds, strong text)
@@ -456,16 +457,18 @@ function ArticleCard({
  * (ă, ș, ț). Both are Inter so metrics match perfectly, avoiding the
  * black-rectangle and line-break bugs from the old Helvetica+InterExt mix.
  */
-export function DiffPdfDocument({ yearA, yearB, summary, articles }: DiffPdfProps) {
+export function DiffPdfDocument({ yearA, yearB, summary, articles, locale = "ro" }: DiffPdfProps) {
   const changedArticles = articles.filter((a) => a.status !== "unchanged");
   const now = new Date();
-  const dateStr = now.toLocaleDateString("ro-RO", {
+  // Use Intl.DateTimeFormat directly (equivalent to next-intl's format.dateTime)
+  // since @react-pdf/renderer components cannot use React hooks
+  const dateStr = new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  });
+  }).format(now);
 
   return (
     <Document
