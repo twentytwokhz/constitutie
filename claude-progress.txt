@@ -1,5 +1,44 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #206)
+
+### Completed Features
+
+#### Feature #206: Export PDF issues on Romanian diacritics ✅
+- **Root cause**: @react-pdf v4's fontkit corrupts glyph mappings when parsing
+  Inter WOFF/OTF subset fonts. The dual-font approach (InterLatin + InterExt subsets)
+  produced incorrect character rendering: ț→° (degree sign), ă→8 (digit eight).
+  Tested both WOFF and OTF formats — both produce identical corruption. The issue is
+  NOT in the custom WOFF→OTF conversion script but in @react-pdf's fontkit itself
+  when handling subset fonts with Extended Latin A/B range (U+0100-02FF).
+- **Fix**: Replaced the entire dual-font system with NotoSans TTF — a single font
+  family that covers ALL Latin + Latin-ext characters in one file. This eliminates:
+  - The `needsExtFont()` character range detector
+  - The `splitTextRuns()` per-character font router
+  - The `RoText` component (character-level font splitting)
+  - All `InterLatin`/`InterExt` font registrations
+  Net result: ~80 lines of font-splitting code removed, replaced with a simple single
+  `Font.register()` call and plain `<Text>` elements.
+- **Verification**:
+  - ToUnicode CMap confirmed correct for ALL Romanian diacritics:
+    ă(0103), â(00E2), î(00EE), ș(0219), ț(021B), Ă(0102), Ț(021A), Ș(0218)
+  - Em-dash(2014), Romanian quotes(201E/201D) also correctly mapped
+  - Full diff PDF (1866 vs 1952, 132 articles, 197KB) generates HTTP 200
+  - Small test PDF with targeted diacritics text verified
+  - Biome lint: 0 errors, TypeScript tsc: 0 errors
+  - No mock data patterns in codebase
+
+### Files Added
+- public/fonts/NotoSans-Regular.ttf — Noto Sans regular weight (629KB, full Unicode)
+- public/fonts/NotoSans-Bold.ttf — Noto Sans bold weight (631KB, full Unicode)
+
+### Files Modified
+- src/components/diff/diff-pdf-document.tsx — Complete font system rewrite: NotoSans TTF
+  replaces InterLatin/InterExt OTF, removed RoText/splitTextRuns/needsExtFont
+
+### Current Status
+- Feature #206 marked as passing
+
 ## Session: 2026-02-28 (Agent handling feature #205)
 
 ### Completed Features
