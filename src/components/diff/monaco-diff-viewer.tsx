@@ -1,6 +1,7 @@
 "use client";
 
 import { DiffEditor, type DiffOnMount } from "@monaco-editor/react";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
@@ -29,6 +30,7 @@ export function MonacoDiffViewer({
   sideBySide = true,
 }: MonacoDiffViewerProps) {
   const { resolvedTheme } = useTheme();
+  const t = useTranslations();
   const [mounted, setMounted] = useState(false);
   const editorRef = useRef<Parameters<DiffOnMount>[0] | null>(null);
 
@@ -71,7 +73,7 @@ export function MonacoDiffViewer({
         className="flex items-center justify-center bg-muted/30 rounded-md border animate-pulse"
         style={{ height: typeof height === "number" ? `${height}px` : height || "300px" }}
       >
-        <span className="text-sm text-muted-foreground">Se încarcă editorul diff...</span>
+        <span className="text-sm text-muted-foreground">{t("compare.loadingDiffEditor")}</span>
       </div>
     );
   }
@@ -114,7 +116,7 @@ export function MonacoDiffViewer({
         }}
         loading={
           <div className="flex items-center justify-center h-full bg-muted/30">
-            <span className="text-sm text-muted-foreground">Se încarcă...</span>
+            <span className="text-sm text-muted-foreground">{t("common.loading")}</span>
           </div>
         }
       />

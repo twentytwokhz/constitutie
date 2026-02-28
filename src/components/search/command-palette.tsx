@@ -1,5 +1,9 @@
 "use client";
 
+import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import {
   CommandDialog,
   CommandGroup,
@@ -7,25 +11,29 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Clock, FileText, Lightbulb, Loader2, Search, X } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 const RECENT_SEARCHES_KEY = "constitution-recent-searches";
 const MAX_RECENT_SEARCHES = 5;
 
-/** Curated search suggestions relevant to the Romanian Constitution */
-const SUGGESTED_SEARCHES = [
-  { term: "drepturi fundamentale", label: "Drepturi fundamentale" },
-  { term: "proprietate", label: "Proprietate" },
-  { term: "Art. 1", label: "Articolul 1" },
-  { term: "cetățeni", label: "Cetățeni" },
-  { term: "libertate", label: "Libertate" },
-  { term: "president", label: "Președinte" },
-  { term: "parlament", label: "Parlament" },
-  { term: "justiție", label: "Justiție" },
-];
+/**
+ * Build suggestion objects from translation keys.
+ * Search terms stay in Romanian (they search Romanian content).
+ * Labels are translated for the current locale.
+ */
+function useSuggestedSearches() {
+  const t = useTranslations("search");
+  return [
+    { term: "drepturi fundamentale", label: t("sugFundamentalRights") },
+    { term: "proprietate", label: t("sugProperty") },
+    { term: "Art. 1", label: t("sugArticle1") },
+    { term: "cetățeni", label: t("sugCitizens") },
+    { term: "libertate", label: t("sugFreedom") },
+    { term: "president", label: t("sugPresident") },
+    { term: "parlament", label: t("sugParliament") },
+    { term: "justiție", label: t("sugJustice") },
+  ];
+}
 
 interface SearchResult {
   id: number;
@@ -87,6 +95,8 @@ export function CommandPalette() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations();
+  const suggestedSearches = useSuggestedSearches();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -278,31 +288,27 @@ export function CommandPalette() {
 
   return (
     <CommandDialog open={open} onOpenChange={handleOpenChange}>
-      <CommandInput
-        placeholder="Caută articole... (ex: Art. 15, drepturi, proprietate)"
-        value={query}
-        onValueChange={setQuery}
-      />
+      <CommandInput placeholder={t("search.placeholder")} value={query} onValueChange={setQuery} />
       <CommandList>
         {loading && (
           <div className="py-6 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span>Se caută...</span>
+            <span>{t("search.searching")}</span>
           </div>
         )}
         {!loading && query.length >= 2 && results.length === 0 && (
           <div className="py-4 px-3">
             <div className="text-center text-sm text-muted-foreground mb-4">
               <Search className="mx-auto mb-2 h-8 w-8 text-muted-foreground/70" />
-              Niciun rezultat pentru „{query}".
+              {t("search.noResults")} &ldquo;{query}&rdquo;.
             </div>
             <div className="space-y-1">
               <p className="text-xs font-medium text-muted-foreground px-2 mb-2 flex items-center gap-1.5">
                 <Lightbulb className="h-3.5 w-3.5" />
-                Încearcă una din sugestiile de mai jos:
+                {t("search.noResultsSuggestion")}
               </p>
               <div className="flex flex-wrap gap-1.5 px-2">
-                {SUGGESTED_SEARCHES.slice(0, 6).map((s) => (
+                {suggestedSearches.slice(0, 6).map((s) => (
                   <button
                     key={s.term}
                     type="button"
@@ -319,10 +325,10 @@ export function CommandPalette() {
         {!loading && query.length < 2 && recentSearches.length === 0 && (
           <div className="py-4">
             <div className="text-center text-sm text-muted-foreground mb-3">
-              Scrie cel puțin 2 caractere pentru a căuta
+              {t("search.minChars")}
             </div>
-            <CommandGroup heading="Sugestii populare">
-              {SUGGESTED_SEARCHES.map((s) => (
+            <CommandGroup heading={t("search.popularSuggestions")}>
+              {suggestedSearches.map((s) => (
                 <CommandItem
                   key={`suggestion-${s.term}`}
                   value={`suggestion-${s.term}`}
@@ -337,7 +343,7 @@ export function CommandPalette() {
         )}
         {!loading && query.length < 2 && recentSearches.length > 0 && (
           <>
-            <CommandGroup heading="Căutări recente">
+            <CommandGroup heading={t("search.recentSearches")}>
               {recentSearches.map((term) => (
                 <CommandItem
                   key={`recent-${term}`}
@@ -350,15 +356,15 @@ export function CommandPalette() {
                     type="button"
                     className="ml-auto p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                     onClick={(e) => handleRemoveRecent(term, e)}
-                    aria-label={`Șterge „${term}" din căutări recente`}
+                    aria-label={`${t("search.removeRecent")} "${term}"`}
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </CommandItem>
               ))}
             </CommandGroup>
-            <CommandGroup heading="Sugestii populare">
-              {SUGGESTED_SEARCHES.slice(0, 5).map((s) => (
+            <CommandGroup heading={t("search.popularSuggestions")}>
+              {suggestedSearches.slice(0, 5).map((s) => (
                 <CommandItem
                   key={`suggestion-${s.term}`}
                   value={`suggestion-${s.term}`}
@@ -374,7 +380,7 @@ export function CommandPalette() {
         {Object.entries(grouped)
           .sort(([a], [b]) => Number(b) - Number(a))
           .map(([year, items]) => (
-            <CommandGroup key={year} heading={`Constituția ${year}`}>
+            <CommandGroup key={year} heading={`${t("common.constitutionOf")} ${year}`}>
               {items.map((result) => (
                 <CommandItem
                   key={`${result.versionYear}-${result.id}`}
@@ -384,7 +390,7 @@ export function CommandPalette() {
                   <FileText className="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex flex-col gap-0.5 min-w-0">
                     <span className="font-medium text-sm">
-                      Art. {result.number}
+                      {t("common.art")} {result.number}
                       {result.title && (
                         <span className="text-muted-foreground font-normal"> — {result.title}</span>
                       )}

@@ -1,3 +1,6 @@
+import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import {
   IllustrationCompare,
   IllustrationConstitution,
@@ -17,9 +20,6 @@ import { Timeline } from "@/components/landing/timeline";
 import { Footer } from "@/components/layout/footer";
 import { RomanianFlag, TricolorDivider } from "@/components/national-symbols";
 import { Link } from "@/i18n/navigation";
-import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 
 /**
  * Landing Page - Constituția României
@@ -80,7 +80,10 @@ export default async function HomePage() {
                 className="mb-6 flex items-center justify-center gap-4 md:justify-start animate-word-reveal"
                 style={{ animationDelay: "50ms" }}
               >
-                <RomanianFlag className="w-28 h-[76px] sm:w-36 sm:h-24 md:w-44 md:h-[120px] drop-shadow-md" />
+                <RomanianFlag
+                  className="w-28 h-[76px] sm:w-36 sm:h-24 md:w-44 md:h-[120px] drop-shadow-md"
+                  label={t("common.romanianFlag")}
+                />
                 <div className="flex flex-col items-start">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                     {t("hero.romania")}
@@ -188,9 +191,7 @@ export default async function HomePage() {
                   <Network className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.graphView")}</h3>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("features.graphViewDesc")}
-                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{t("features.graphViewDesc")}</p>
               </div>
             </ScrollReveal>
             {/* Search card */}
@@ -214,9 +215,7 @@ export default async function HomePage() {
                   <MessageSquare className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">{t("features.feedback")}</h3>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("features.feedbackDesc")}
-                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{t("features.feedbackDesc")}</p>
               </div>
             </ScrollReveal>
           </div>
@@ -287,9 +286,7 @@ export default async function HomePage() {
         <section className="border-t bg-primary/5 py-16 sm:py-24">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                {t("cta.title")}
-              </h2>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t("cta.title")}</h2>
               <p className="mt-4 text-base text-muted-foreground sm:text-lg">
                 {t("cta.description")}
               </p>

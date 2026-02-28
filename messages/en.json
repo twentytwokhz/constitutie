@@ -30,8 +30,11 @@
     "exists": "Exists",
     "doesNotExist": "Does not exist",
     "constitutionOf": "Constitution of",
+    "romanianFlag": "Romanian Flag",
     "art": "Art.",
-    "articlePrefix": "Article"
+    "articlePrefix": "Article",
+    "metaTitle": "Romanian Constitution - Interactive Explorer",
+    "metaDescription": "Interactive platform for exploring the Romanian Constitution through all its historical versions (1952, 1986, 1991, 2003)."
   },
   "nav": {
     "explore": "Explore",
@@ -171,6 +174,11 @@
   "compare": {
     "title": "Compare Versions",
     "subtitle": "Select two versions of the Constitution to see article-by-article differences.",
+    "metaTitle": "Compare Versions — Romanian Constitution",
+    "metaDescription": "Compare any two versions of the Romanian Constitution article by article.",
+    "metaTitleWithYears": "Comparison: Constitution {a} vs {b}",
+    "metaDescriptionWithYears": "Compare the Constitution of {a} with {b}: article-by-article differences, showing additions, deletions, and modifications.",
+    "loadingDiffEditor": "Loading diff editor...",
     "selectVersionA": "Version A (left)",
     "selectVersionB": "Version B (right)",
     "placeholderA": "Choose version A",
@@ -207,6 +215,8 @@
   },
   "graph": {
     "title": "Graph Visualization",
+    "metaTitle": "Structural Visualization — Romanian Constitution",
+    "metaDescription": "Visualize the hierarchical structure and inter-article references of the Romanian Constitution through an interactive graph.",
     "selectVersion": "Select version",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
@@ -220,10 +230,14 @@
     "hierarchyEdge": "Hierarchy",
     "referenceEdge": "Reference",
     "openArticle": "Open article",
-    "closePreview": "Close preview"
+    "closePreview": "Close preview",
+    "noData": "No data available for this version.",
+    "loadingGraph": "Loading graph…"
   },
   "statistics": {
     "title": "Statistics",
+    "metaTitle": "Statistics — Romanian Constitution",
+    "metaDescription": "Dashboard with real statistics: articles, versions, inter-article references, comments and citizen votes.",
     "subtitle": "Dashboard with real data from the Romanian Constitution database.",
     "totalArticles": "Total Articles",
     "totalArticlesDesc": "From all 4 versions",
@@ -294,7 +308,15 @@
     "minChars": "Type at least 2 characters to search",
     "removeRecent": "Remove from recent searches",
     "article": "Article",
-    "inVersion": "in version"
+    "inVersion": "in version",
+    "sugFundamentalRights": "Fundamental rights",
+    "sugProperty": "Property",
+    "sugArticle1": "Article 1",
+    "sugCitizens": "Citizens",
+    "sugFreedom": "Freedom",
+    "sugPresident": "President",
+    "sugParliament": "Parliament",
+    "sugJustice": "Justice"
   },
   "theme": {
     "toggle": "Toggle theme",

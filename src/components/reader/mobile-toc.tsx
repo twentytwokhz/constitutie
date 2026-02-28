@@ -1,8 +1,9 @@
 "use client";
 
-import { TocSidebar } from "@/components/reader/toc-sidebar";
 import { List, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { TocSidebar } from "@/components/reader/toc-sidebar";
 
 interface MobileTocProps {
   year: number;
@@ -12,12 +13,13 @@ interface MobileTocProps {
 /**
  * Mobile Table of Contents — bottom sheet overlay
  *
- * Renders a floating "Cuprins" button on mobile (below lg breakpoint)
+ * Renders a floating "TOC" button on mobile (below lg breakpoint)
  * that opens a bottom sheet containing the full TocSidebar.
  * The sheet slides up from the bottom with backdrop blur overlay.
  */
 export function MobileToc({ year, currentArticleNumber }: MobileTocProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("reader");
 
   // Close on Escape key
   const handleKeyDown = useCallback(
@@ -53,17 +55,21 @@ export function MobileToc({ year, currentArticleNumber }: MobileTocProps) {
         type="button"
         onClick={() => setOpen(true)}
         className="lg:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-primary text-primary-foreground shadow-lg px-4 py-3 text-sm font-medium hover:bg-primary/90 transition-colors active:scale-95"
-        aria-label="Deschide cuprinsul"
+        aria-label={t("openToc")}
       >
         <List className="h-4 w-4" />
-        <span>Cuprins</span>
+        <span>{t("tableOfContents")}</span>
       </button>
 
       {/* Bottom sheet overlay */}
       {open && (
         <div className="lg:hidden fixed inset-0 z-50">
           {/* Backdrop */}
+          {/* biome-ignore lint/a11y/useSemanticElements: backdrop overlay needs div for full-screen positioning */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Close table of contents"
             className="absolute inset-0 bg-background/80 backdrop-blur-sm animate-fade-in"
             onClick={() => setOpen(false)}
             onKeyDown={(e) => {
@@ -76,13 +82,13 @@ export function MobileToc({ year, currentArticleNumber }: MobileTocProps) {
             {/* Sheet header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 shrink-0">
               <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                Cuprins
+                {t("tableOfContents")}
               </h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
-                aria-label="Închide cuprinsul"
+                aria-label={t("closeToc")}
               >
                 <X className="h-5 w-5" />
               </button>

@@ -1,5 +1,7 @@
 "use client";
 
+import { BookOpen } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { CoatOfArms } from "@/components/national-symbols";
 import {
   Select,
@@ -9,14 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { BookOpen } from "lucide-react";
 
-const VERSIONS = [
-  { year: "2003", label: "Constituția 2003" },
-  { year: "1991", label: "Constituția 1991" },
-  { year: "1986", label: "Constituția 1986" },
-  { year: "1952", label: "Constituția 1952" },
-] as const;
+const VERSION_YEARS = ["2003", "1991", "1986", "1952"] as const;
 
 /**
  * Version selector dropdown for the header.
@@ -27,6 +23,7 @@ const VERSIONS = [
 export function VersionSelector() {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations("versionSelector");
 
   // Extract current year from pathname (e.g., /2003/... → "2003")
   const yearMatch = pathname.match(/^\/(\d{4})(\/|$)/);
@@ -40,17 +37,17 @@ export function VersionSelector() {
     <Select value={currentYear} onValueChange={handleVersionChange}>
       <SelectTrigger
         className="h-8 w-auto gap-1.5 border-border/60 bg-transparent px-2.5 text-xs font-medium focus:ring-1"
-        aria-label="Selectează versiunea constituției"
+        aria-label={t("label")}
       >
         <BookOpen className="h-3.5 w-3.5 text-primary shrink-0" />
-        <SelectValue placeholder="Versiune" />
+        <SelectValue placeholder={t("placeholder")} />
       </SelectTrigger>
       <SelectContent>
-        {VERSIONS.map((v) => (
-          <SelectItem key={v.year} value={v.year}>
+        {VERSION_YEARS.map((year) => (
+          <SelectItem key={year} value={year}>
             <span className="inline-flex items-center gap-2">
-              <CoatOfArms year={Number(v.year)} size={20} className="shrink-0" />
-              {v.label}
+              <CoatOfArms year={Number(year)} size={20} className="shrink-0" />
+              {t(`constitution${year}`)}
             </span>
           </SelectItem>
         ))}

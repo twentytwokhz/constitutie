@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { ComparePageClient } from "./compare-client";
 
 /**
@@ -12,14 +13,11 @@ export async function generateMetadata({
   searchParams: Promise<{ a?: string; b?: string }>;
 }): Promise<Metadata> {
   const { a, b } = await searchParams;
+  const t = await getTranslations("compare");
 
   const hasYears = a && b;
-  const ogTitle = hasYears
-    ? `Comparație: Constituția ${a} vs ${b}`
-    : "Comparație versiuni — Constituția României";
-  const ogDescription = hasYears
-    ? `Compară Constituția din ${a} cu cea din ${b}: diferențe articol cu articol, vizualizare adăugări, eliminări și modificări.`
-    : "Compară orice două versiuni ale Constituției României articol cu articol.";
+  const ogTitle = hasYears ? t("metaTitleWithYears", { a, b }) : t("metaTitle");
+  const ogDescription = hasYears ? t("metaDescriptionWithYears", { a, b }) : t("metaDescription");
 
   return {
     title: ogTitle,
@@ -28,7 +26,6 @@ export async function generateMetadata({
       title: ogTitle,
       description: ogDescription,
       type: "website",
-      locale: "ro_RO",
     },
     twitter: {
       card: "summary",

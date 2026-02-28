@@ -30,8 +30,11 @@
     "exists": "Există",
     "doesNotExist": "Nu există",
     "constitutionOf": "Constituția din",
+    "romanianFlag": "Drapelul României",
     "art": "Art.",
-    "articlePrefix": "Articolul"
+    "articlePrefix": "Articolul",
+    "metaTitle": "Constituția României - Explorare Interactivă",
+    "metaDescription": "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003)."
   },
   "nav": {
     "explore": "Explorare",
@@ -171,6 +174,11 @@
   "compare": {
     "title": "Compară Versiuni",
     "subtitle": "Selectează două versiuni ale Constituției pentru a vedea diferențele articol cu articol.",
+    "metaTitle": "Comparație versiuni — Constituția României",
+    "metaDescription": "Compară orice două versiuni ale Constituției României articol cu articol.",
+    "metaTitleWithYears": "Comparație: Constituția {a} vs {b}",
+    "metaDescriptionWithYears": "Compară Constituția din {a} cu cea din {b}: diferențe articol cu articol, vizualizare adăugări, eliminări și modificări.",
+    "loadingDiffEditor": "Se încarcă editorul diff...",
     "selectVersionA": "Versiunea A (stânga)",
     "selectVersionB": "Versiunea B (dreapta)",
     "placeholderA": "Alege versiunea A",
@@ -207,6 +215,8 @@
   },
   "graph": {
     "title": "Vizualizare Graf",
+    "metaTitle": "Vizualizare structurală — Constituția României",
+    "metaDescription": "Vizualizează structura ierarhică și referințele inter-articol ale Constituției României printr-un graf interactiv.",
     "selectVersion": "Selectează versiunea",
     "zoomIn": "Mărește",
     "zoomOut": "Micșorează",
@@ -220,10 +230,14 @@
     "hierarchyEdge": "Ierarhie",
     "referenceEdge": "Referință",
     "openArticle": "Deschide articolul",
-    "closePreview": "Închide previzualizarea"
+    "closePreview": "Închide previzualizarea",
+    "noData": "Nu există date pentru această versiune.",
+    "loadingGraph": "Se încarcă graful…"
   },
   "statistics": {
     "title": "Statistici",
+    "metaTitle": "Statistici — Constituția României",
+    "metaDescription": "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
     "subtitle": "Dashboard cu date reale din baza de date a Constituției României.",
     "totalArticles": "Total Articole",
     "totalArticlesDesc": "Din toate cele 4 versiuni",
@@ -294,7 +308,15 @@
     "minChars": "Scrie cel puțin 2 caractere pentru a căuta",
     "removeRecent": "Șterge din căutări recente",
     "article": "Articolul",
-    "inVersion": "în versiunea"
+    "inVersion": "în versiunea",
+    "sugFundamentalRights": "Drepturi fundamentale",
+    "sugProperty": "Proprietate",
+    "sugArticle1": "Articolul 1",
+    "sugCitizens": "Cetățeni",
+    "sugFreedom": "Libertate",
+    "sugPresident": "Președinte",
+    "sugParliament": "Parlament",
+    "sugJustice": "Justiție"
   },
   "theme": {
     "toggle": "Schimbă tema",

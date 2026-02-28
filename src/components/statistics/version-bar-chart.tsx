@@ -1,12 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 interface VersionData {
   year: number;
@@ -18,17 +19,21 @@ interface VersionBarChartProps {
   data: VersionData[];
 }
 
-const chartConfig: ChartConfig = {
-  totalArticles: {
-    label: "Articole",
-    color: "hsl(var(--primary))",
-  },
-};
-
 export function VersionBarChart({ data }: VersionBarChartProps) {
+  const t = useTranslations();
+
+  const articlesLabel = t("stats.articles");
+
+  const chartConfig: ChartConfig = {
+    totalArticles: {
+      label: articlesLabel,
+      color: "hsl(var(--primary))",
+    },
+  };
+
   const chartData = data.map((v) => ({
     year: String(v.year),
-    name: v.name ?? `Constituția din ${v.year}`,
+    name: v.name ?? `${t("common.constitutionOf")} ${v.year}`,
     totalArticles: v.totalArticles ?? 0,
   }));
 
@@ -61,7 +66,7 @@ export function VersionBarChart({ data }: VersionBarChartProps) {
         />
         <Bar
           dataKey="totalArticles"
-          name="Articole"
+          name={articlesLabel}
           fill="var(--color-totalArticles)"
           radius={[6, 6, 0, 0]}
           maxBarSize={80}

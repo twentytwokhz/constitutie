@@ -1,5 +1,8 @@
 "use client";
 
+import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ForceGraphCanvas, { type ForceGraphHandle } from "@/components/graph/force-graph";
 import {
   Select,
@@ -8,9 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GraphNode {
   id: string;
@@ -41,19 +42,8 @@ interface VersionInfo {
   name: string;
 }
 
-const NODE_LEGEND = [
-  { type: "titlu", label: "Titlu", color: "bg-indigo-500", size: "h-4 w-4" },
-  { type: "capitol", label: "Capitol", color: "bg-violet-500", size: "h-3 w-3" },
-  { type: "sectiune", label: "Secțiune", color: "bg-purple-500", size: "h-2.5 w-2.5" },
-  { type: "articol", label: "Articol", color: "bg-stone-500", size: "h-2 w-2" },
-];
-
-const EDGE_LEGEND = [
-  { type: "hierarchy", label: "Ierarhie", style: "border-t-2 border-stone-400" },
-  { type: "reference", label: "Referință", style: "border-t-2 border-dashed border-indigo-400" },
-];
-
 export function GraphPageClient() {
+  const t = useTranslations();
   const [versions, setVersions] = useState<VersionInfo[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("2003");
   const [graphData, setGraphData] = useState<GraphData | null>(null);
@@ -62,6 +52,27 @@ export function GraphPageClient() {
   const [showLegend, setShowLegend] = useState(true);
   const graphContainerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<ForceGraphHandle>(null);
+
+  const nodeLegend = [
+    { type: "titlu", label: t("graph.titleNode"), color: "bg-indigo-500", size: "h-4 w-4" },
+    { type: "capitol", label: t("graph.chapterNode"), color: "bg-violet-500", size: "h-3 w-3" },
+    {
+      type: "sectiune",
+      label: t("graph.sectionNode"),
+      color: "bg-purple-500",
+      size: "h-2.5 w-2.5",
+    },
+    { type: "articol", label: t("graph.articleNode"), color: "bg-stone-500", size: "h-2 w-2" },
+  ];
+
+  const edgeLegend = [
+    { type: "hierarchy", label: t("graph.hierarchyEdge"), style: "border-t-2 border-stone-400" },
+    {
+      type: "reference",
+      label: t("graph.referenceEdge"),
+      style: "border-t-2 border-dashed border-indigo-400",
+    },
+  ];
 
   // Fetch available versions
   useEffect(() => {
@@ -110,18 +121,48 @@ export function GraphPageClient() {
     return `/${selectedYear}`;
   };
 
+  /** Translate the node type */
+  const getNodeTypeLabel = (type: string) => {
+    switch (type) {
+      case "titlu":
+        return t("graph.titleNode");
+      case "capitol":
+        return t("graph.chapterNode");
+      case "sectiune":
+        return t("graph.sectionNode");
+      case "articol":
+        return t("graph.articleNode");
+      default:
+        return type;
+    }
+  };
+
+  /** Translate the node description fallback */
+  const getNodeDescription = (type: string) => {
+    switch (type) {
+      case "titlu":
+        return t("reader.titleMain");
+      case "capitol":
+        return t("reader.chapterInTitle");
+      case "sectiune":
+        return t("reader.sectionInChapter");
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="relative flex h-[calc(100vh-4rem)] flex-col">
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b bg-background/95 px-4 py-2 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Network className="h-5 w-5 text-primary" />
-          <h1 className="text-lg font-semibold">Vizualizare Graf</h1>
+          <h1 className="text-lg font-semibold">{t("graph.title")}</h1>
         </div>
         <div className="flex items-center gap-3">
           <Select value={selectedYear} onValueChange={setSelectedYear}>
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Selectează versiunea" />
+              <SelectValue placeholder={t("graph.selectVersion")} />
             </SelectTrigger>
             <SelectContent>
               {versions.length > 0
@@ -132,7 +173,7 @@ export function GraphPageClient() {
                   ))
                 : [1952, 1986, 1991, 2003].map((y) => (
                     <SelectItem key={y} value={String(y)}>
-                      Constituția din {y}
+                      {t("common.constitutionOf")} {y}
                     </SelectItem>
                   ))}
             </SelectContent>
@@ -152,8 +193,10 @@ export function GraphPageClient() {
         {/* Stats overlay */}
         {graphData && !loading && (
           <div className="absolute left-4 top-4 rounded-lg border bg-background/90 px-3 py-2 text-xs text-muted-foreground backdrop-blur-sm">
-            <span className="font-medium text-foreground">{graphData.nodes.length}</span> noduri ·{" "}
-            <span className="font-medium text-foreground">{graphData.edges.length}</span> conexiuni
+            <span className="font-medium text-foreground">{graphData.nodes.length}</span>{" "}
+            {t("common.nodes")} ·{" "}
+            <span className="font-medium text-foreground">{graphData.edges.length}</span>{" "}
+            {t("common.connections")}
           </div>
         )}
 
@@ -164,8 +207,8 @@ export function GraphPageClient() {
               type="button"
               onClick={() => graphRef.current?.zoomIn()}
               className="rounded-lg border bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground"
-              title="Zoom in"
-              aria-label="Zoom in"
+              title={t("graph.zoomIn")}
+              aria-label={t("graph.zoomIn")}
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -173,8 +216,8 @@ export function GraphPageClient() {
               type="button"
               onClick={() => graphRef.current?.zoomOut()}
               className="rounded-lg border bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground"
-              title="Zoom out"
-              aria-label="Zoom out"
+              title={t("graph.zoomOut")}
+              aria-label={t("graph.zoomOut")}
             >
               <Minus className="h-4 w-4" />
             </button>
@@ -182,8 +225,8 @@ export function GraphPageClient() {
               type="button"
               onClick={() => graphRef.current?.fitToScreen()}
               className="rounded-lg border bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground"
-              title="Încadrare în ecran"
-              aria-label="Fit to screen"
+              title={t("graph.fitToScreen")}
+              aria-label={t("graph.fitToScreen")}
             >
               <Maximize2 className="h-4 w-4" />
             </button>
@@ -194,25 +237,25 @@ export function GraphPageClient() {
         {showLegend && (
           <div className="absolute bottom-4 left-4 rounded-lg border bg-background/90 p-3 backdrop-blur-sm">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-semibold text-foreground">Legendă</span>
+              <span className="text-xs font-semibold text-foreground">{t("graph.legend")}</span>
               <button
                 type="button"
                 onClick={() => setShowLegend(false)}
-                aria-label="Ascunde legenda"
+                aria-label={t("graph.hideLegend")}
                 className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
             <div className="space-y-1.5">
-              {NODE_LEGEND.map((item) => (
+              {nodeLegend.map((item) => (
                 <div key={item.type} className="flex items-center gap-2">
                   <div className={`${item.color} ${item.size} rounded-full`} />
                   <span className="text-xs text-muted-foreground">{item.label}</span>
                 </div>
               ))}
               <div className="my-1.5 border-t" />
-              {EDGE_LEGEND.map((item) => (
+              {edgeLegend.map((item) => (
                 <div key={item.type} className="flex items-center gap-2">
                   <div className={`w-5 ${item.style}`} />
                   <span className="text-xs text-muted-foreground">{item.label}</span>
@@ -229,7 +272,7 @@ export function GraphPageClient() {
             onClick={() => setShowLegend(true)}
             className="absolute bottom-4 left-4 rounded-lg border bg-background/90 px-3 py-2 text-xs text-muted-foreground backdrop-blur-sm hover:bg-background"
           >
-            Legendă
+            {t("graph.legend")}
           </button>
         )}
 
@@ -249,20 +292,14 @@ export function GraphPageClient() {
                           : "bg-stone-500"
                   }`}
                 >
-                  {selectedNode.type === "titlu"
-                    ? "Titlu"
-                    : selectedNode.type === "capitol"
-                      ? "Capitol"
-                      : selectedNode.type === "sectiune"
-                        ? "Secțiune"
-                        : "Articol"}
+                  {getNodeTypeLabel(selectedNode.type)}
                 </span>
                 <h3 className="mt-1 text-sm font-semibold leading-tight">{selectedNode.label}</h3>
               </div>
               <button
                 type="button"
                 onClick={closePreview}
-                aria-label="Închide previzualizarea"
+                aria-label={t("graph.closePreview")}
                 className="ml-2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="h-4 w-4" />
@@ -273,24 +310,20 @@ export function GraphPageClient() {
               {selectedNode.contentSnippet && (
                 <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-4">
                   {selectedNode.contentSnippet}
-                  {selectedNode.contentSnippet.length >= 200 && "…"}
+                  {selectedNode.contentSnippet.length >= 200 && "\u2026"}
                 </p>
               )}
               {/* Fallback for non-article nodes with no snippet */}
               {!selectedNode.contentSnippet && selectedNode.type !== "articol" && (
                 <p className="mb-3 text-xs text-muted-foreground">
-                  {selectedNode.type === "titlu"
-                    ? "Titlu principal al constituției"
-                    : selectedNode.type === "capitol"
-                      ? "Capitol în cadrul titlului"
-                      : "Secțiune în cadrul capitolului"}
+                  {getNodeDescription(selectedNode.type)}
                 </p>
               )}
               <Link
                 href={getNodeUrl(selectedNode)}
                 className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
               >
-                Deschide articolul →
+                {t("graph.openArticle")} →
               </Link>
             </div>
           </div>

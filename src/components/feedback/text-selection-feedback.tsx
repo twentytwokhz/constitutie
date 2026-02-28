@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, MessageSquarePlus, Send, Share2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Generate a simple browser fingerprint hash for abuse prevention */
@@ -38,7 +39,7 @@ interface TextSelectionFeedbackProps {
  *
  * Flow:
  * 1. User selects text inside the children container
- * 2. A floating "Comentează selecția" button appears near the selection
+ * 2. A floating "Comment on selection" button appears near the selection
  * 3. Clicking it opens an inline comment form with the selected text quoted
  * 4. Submitting sends the comment with `selectedText` to the API
  */
@@ -60,6 +61,7 @@ export function TextSelectionFeedback({
     message: string;
   } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations();
 
   /** Check if the current selection is within our container */
   const isSelectionInContainer = useCallback((): boolean => {
@@ -113,6 +115,19 @@ export function TextSelectionFeedback({
     };
   }, [handleSelectionChange]);
 
+  const [showShareMenu, setShowShareMenu] = useState(false);
+
+  const closeForm = useCallback(() => {
+    setShowForm(false);
+    setSelectedText("");
+    setButtonPos(null);
+    setSubmitResult(null);
+    setCommentText("");
+    setShowShareMenu(false);
+    // Clear the browser selection
+    window.getSelection()?.removeAllRanges();
+  }, []);
+
   /** Close the floating button when clicking outside */
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
@@ -123,42 +138,16 @@ export function TextSelectionFeedback({
 
     document.addEventListener("mousedown", handleMouseDown);
     return () => document.removeEventListener("mousedown", handleMouseDown);
-  }, [showForm]);
-
-  /** Share the selected quote via native share or fallback share URLs */
-  const handleShareQuote = useCallback(async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
-    const artLabel = articleNumber != null ? `Art. ${articleNumber}` : "Articol";
-    const yearSuffix = year ? ` (${year})` : "";
-    const shareText = `\u201E${selectedText}\u201D \u2014 ${artLabel}, Constitu\u021bia Rom\u00e2niei${yearSuffix}\n${url}`;
-
-    // Try native share (mobile)
-    if (typeof navigator !== "undefined" && "share" in navigator) {
-      try {
-        await navigator.share({
-          title: `${artLabel} \u2014 Constitu\u021bia Rom\u00e2niei${yearSuffix}`,
-          text: shareText,
-          url,
-        });
-        return;
-      } catch {
-        // User cancelled or share failed — fall through to fallback
-      }
-    }
-
-    // Desktop fallback: open WhatsApp, LinkedIn, or X in a small popup menu
-    // For simplicity, open WhatsApp as the default desktop fallback
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-  }, [selectedText, articleNumber, year]);
+  }, [showForm, closeForm]);
 
   /** Share quote to a specific platform */
   const handleShareToPlatform = useCallback(
     (platform: "whatsapp" | "linkedin" | "x") => {
       const url = typeof window !== "undefined" ? window.location.href : "";
-      const artLabel = articleNumber != null ? `Art. ${articleNumber}` : "Articol";
+      const artLabel =
+        articleNumber != null ? `${t("common.art")} ${articleNumber}` : t("common.articlePrefix");
       const yearSuffix = year ? ` (${year})` : "";
-      const shareText = `\u201E${selectedText}\u201D \u2014 ${artLabel}, Constitu\u021bia Rom\u00e2niei${yearSuffix}\n${url}`;
+      const shareText = `\u201E${selectedText}\u201D \u2014 ${artLabel}, ${t("common.appName")}${yearSuffix}\n${url}`;
 
       let shareUrl: string;
       switch (platform) {
@@ -174,10 +163,8 @@ export function TextSelectionFeedback({
       }
       window.open(shareUrl, "_blank", "noopener,noreferrer");
     },
-    [selectedText, articleNumber, year],
+    [selectedText, articleNumber, year, t],
   );
-
-  const [showShareMenu, setShowShareMenu] = useState(false);
 
   function openForm() {
     setShowForm(true);
@@ -185,17 +172,6 @@ export function TextSelectionFeedback({
     setSubmitResult(null);
     setCommentText("");
     setShowShareMenu(false);
-  }
-
-  function closeForm() {
-    setShowForm(false);
-    setSelectedText("");
-    setButtonPos(null);
-    setSubmitResult(null);
-    setCommentText("");
-    setShowShareMenu(false);
-    // Clear the browser selection
-    window.getSelection()?.removeAllRanges();
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -220,23 +196,23 @@ export function TextSelectionFeedback({
       const data = await res.json();
 
       if (!res.ok) {
-        setSubmitResult({ type: "error", message: data.error || "Eroare la trimitere" });
+        setSubmitResult({ type: "error", message: data.error || t("feedback.submitError") });
         return;
       }
 
       if (data.status === "rejected") {
         setSubmitResult({
           type: "rejected",
-          message: data.rejectionReason || "Comentariul nu respectă regulile platformei.",
+          message: data.rejectionReason || t("feedback.platformRules"),
         });
       } else {
-        setSubmitResult({ type: "success", message: "Comentariul a fost adăugat cu succes!" });
+        setSubmitResult({ type: "success", message: t("feedback.approved") });
         onCommentSubmitted?.();
         // Auto-close after success
         setTimeout(() => closeForm(), 2000);
       }
     } catch {
-      setSubmitResult({ type: "error", message: "Eroare de rețea. Încercați din nou." });
+      setSubmitResult({ type: "error", message: t("feedback.networkRetry") });
     } finally {
       setSubmitting(false);
     }
@@ -263,7 +239,7 @@ export function TextSelectionFeedback({
               className="inline-flex items-center gap-1.5 rounded-l-full pl-3 pr-2 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
             >
               <MessageSquarePlus className="h-3.5 w-3.5" />
-              Comentează selecția
+              {t("feedback.commentOnSelection")}
             </button>
             <div className="w-px h-4 bg-primary-foreground/30" />
             {!showShareMenu ? (
@@ -271,11 +247,11 @@ export function TextSelectionFeedback({
                 type="button"
                 onClick={() => setShowShareMenu(true)}
                 className="inline-flex items-center gap-1.5 rounded-r-full pl-2 pr-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition-colors whitespace-nowrap"
-                title="Distribuie citatul"
-                aria-label="Distribuie citatul"
+                title={t("common.shareQuote")}
+                aria-label={t("common.shareQuote")}
               >
                 <Share2 className="h-3.5 w-3.5" />
-                Distribuie
+                {t("common.share")}
               </button>
             ) : (
               <div className="flex items-center gap-0.5 pr-1.5">
@@ -319,13 +295,13 @@ export function TextSelectionFeedback({
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-semibold flex items-center gap-2">
               <MessageSquarePlus className="h-4 w-4 text-primary" />
-              Comentariu pe text selectat
+              {t("feedback.commentOnSelectedText")}
             </h4>
             <button
               type="button"
               onClick={closeForm}
               className="rounded-full p-1 hover:bg-muted transition-colors"
-              aria-label="Închide"
+              aria-label={t("common.close")}
             >
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
@@ -341,8 +317,8 @@ export function TextSelectionFeedback({
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              aria-label="Comentariu pe text selectat"
-              placeholder="Scrie un comentariu despre acest text..."
+              aria-label={t("feedback.selectedTextLabel")}
+              placeholder={t("feedback.selectedTextPlaceholder")}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y min-h-[60px]"
               rows={2}
               disabled={submitting}
@@ -351,31 +327,31 @@ export function TextSelectionFeedback({
             />
 
             <div className="mt-2 flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">Verificat automat de AI.</p>
+              <p className="text-xs text-muted-foreground">{t("feedback.aiCheck")}</p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={closeForm}
-                  aria-label="Anulează comentariul"
+                  aria-label={t("common.cancel")}
                   className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Anulează
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !commentText.trim()}
-                  aria-label="Trimite comentariul pe selecție"
+                  aria-label={t("feedback.submitSelectionComment")}
                   className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   {submitting ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Se verifică...
+                      {t("feedback.moderating")}
                     </>
                   ) : (
                     <>
                       <Send className="h-3.5 w-3.5" />
-                      Trimite
+                      {t("feedback.submit")}
                     </>
                   )}
                 </button>
@@ -392,7 +368,7 @@ export function TextSelectionFeedback({
                       : "bg-destructive/10 text-destructive"
                 }`}
               >
-                {submitResult.type === "rejected" && <strong>Respins: </strong>}
+                {submitResult.type === "rejected" && <strong>{t("feedback.rejectedLabel")}</strong>}
                 {submitResult.message}
               </div>
             )}

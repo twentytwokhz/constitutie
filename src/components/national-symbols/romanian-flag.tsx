@@ -7,14 +7,21 @@
  *
  * Works in both light and dark mode.
  */
-export function RomanianFlag({ className = "" }: { className?: string }) {
+export function RomanianFlag({
+  className = "",
+  label = "Romanian Flag",
+}: {
+  className?: string;
+  label?: string;
+}) {
   return (
-    <div className={`relative ${className}`} aria-label="Drapelul Rom\u00e2niei" role="img">
+    <div className={`relative ${className}`} aria-label={label} role="img">
       <svg
         viewBox="0 0 300 200"
         className="w-full h-full drop-shadow-lg dark:drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
         xmlns="http://www.w3.org/2000/svg"
       >
+        <title>{label}</title>
         <defs>
           {/* Subtle wave distortion */}
           <clipPath id="flag-wave">

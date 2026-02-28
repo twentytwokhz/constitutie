@@ -1,14 +1,4 @@
-import { VersionBarChart } from "@/components/statistics/version-bar-chart";
-import { db } from "@/lib/db";
-import {
-  articleReferences,
-  articles,
-  comments,
-  constitutionVersions,
-  votes,
-} from "@/lib/db/schema";
 import { count, eq, inArray, sql } from "drizzle-orm";
-import type { Metadata } from "next";
 import {
   ArrowRight,
   BookOpen,
@@ -19,8 +9,18 @@ import {
   ThumbsUp,
   TrendingUp,
 } from "lucide-react";
+import type { Metadata } from "next";
+import { getFormatter, getTranslations } from "next-intl/server";
+import { VersionBarChart } from "@/components/statistics/version-bar-chart";
 import { Link } from "@/i18n/navigation";
-import { getLocale } from "next-intl/server";
+import { db } from "@/lib/db";
+import {
+  articleReferences,
+  articles,
+  comments,
+  constitutionVersions,
+  votes,
+} from "@/lib/db/schema";
 
 /**
  * Statistics Dashboard Page
@@ -31,35 +31,33 @@ import { getLocale } from "next-intl/server";
  * plus per-version article counts and voting statistics.
  */
 
-export const metadata: Metadata = {
-  title: "Statistici — Constituția României",
-  description:
-    "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
-  openGraph: {
-    title: "Statistici — Constituția României",
-    description:
-      "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
-    type: "website",
-    locale: "ro_RO",
-  },
-  twitter: {
-    card: "summary",
-    title: "Statistici — Constituția României",
-    description:
-      "Dashboard cu statistici reale: articole, versiuni, referințe inter-articol, comentarii și voturi cetățenești.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("statistics");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    openGraph: {
+      title: t("metaTitle"),
+      description: t("metaDescription"),
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: t("metaTitle"),
+      description: t("metaDescription"),
+    },
+  };
+}
 
 interface StatCardProps {
   icon: React.ReactNode;
-  value: number;
+  formattedValue: string;
   label: string;
   description: string;
   trend?: string;
-  locale: string;
 }
 
-function StatCard({ icon, value, label, description, trend, locale }: StatCardProps) {
+function StatCard({ icon, formattedValue, label, description, trend }: StatCardProps) {
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between">
@@ -68,9 +66,7 @@ function StatCard({ icon, value, label, description, trend, locale }: StatCardPr
           {icon}
         </div>
       </div>
-      <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums">
-        {value.toLocaleString(locale === "ro" ? "ro-RO" : "en-US")}
-      </p>
+      <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums">{formattedValue}</p>
       <div className="mt-1 flex items-center gap-1">
         {trend && <TrendingUp className="h-3 w-3 text-emerald-500" />}
         <p className="text-xs text-muted-foreground">{description}</p>
@@ -161,47 +157,46 @@ async function getStatistics() {
 }
 
 export default async function StatisticsPage() {
-  const [stats, locale] = await Promise.all([getStatistics(), getLocale()]);
+  const [stats, format, t, tCommon] = await Promise.all([
+    getStatistics(),
+    getFormatter(),
+    getTranslations("statistics"),
+    getTranslations("common"),
+  ]);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Statistici</h1>
-        <p className="mt-2 text-muted-foreground">
-          Dashboard cu date reale din baza de date a Constituției României.
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       {/* Main stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={<BookOpen className="h-5 w-5" />}
-          value={stats.totalArticles}
-          label="Total Articole"
-          description="Din toate cele 4 versiuni"
+          formattedValue={format.number(stats.totalArticles)}
+          label={t("totalArticles")}
+          description={t("totalArticlesDesc")}
           trend="active"
-          locale={locale}
         />
         <StatCard
           icon={<GitCompareArrows className="h-5 w-5" />}
-          value={stats.totalVersions}
-          label="Versiuni"
-          description="1952, 1986, 1991, 2003"
-          locale={locale}
+          formattedValue={format.number(stats.totalVersions)}
+          label={t("totalVersions")}
+          description={t("totalVersionsDesc")}
         />
         <StatCard
           icon={<Link2 className="h-5 w-5" />}
-          value={stats.totalReferences}
-          label="Referințe inter-articol"
-          description="Legături între articole"
-          locale={locale}
+          formattedValue={format.number(stats.totalReferences)}
+          label={t("totalReferences")}
+          description={t("totalReferencesDesc")}
         />
         <StatCard
           icon={<MessageSquare className="h-5 w-5" />}
-          value={stats.totalComments}
-          label="Comentarii"
-          description="Aprobate de moderare AI"
-          locale={locale}
+          formattedValue={format.number(stats.totalComments)}
+          label={t("totalComments")}
+          description={t("totalCommentsDesc")}
         />
       </div>
 
@@ -209,24 +204,21 @@ export default async function StatisticsPage() {
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
         <StatCard
           icon={<ThumbsUp className="h-5 w-5" />}
-          value={stats.agreeVotes}
-          label="Voturi De Acord"
-          description="Pe toate articolele"
-          locale={locale}
+          formattedValue={format.number(stats.agreeVotes)}
+          label={t("agreeVotes")}
+          description={t("agreeVotesDesc")}
         />
         <StatCard
           icon={<ThumbsDown className="h-5 w-5" />}
-          value={stats.disagreeVotes}
-          label="Voturi Dezacord"
-          description="Pe toate articolele"
-          locale={locale}
+          formattedValue={format.number(stats.disagreeVotes)}
+          label={t("disagreeVotes")}
+          description={t("disagreeVotesDesc")}
         />
         <StatCard
           icon={<TrendingUp className="h-5 w-5" />}
-          value={stats.totalVotes}
-          label="Total Voturi"
-          description="Participare cetățeni"
-          locale={locale}
+          formattedValue={format.number(stats.totalVotes)}
+          label={t("totalVotes")}
+          description={t("totalVotesDesc")}
         />
       </div>
 
@@ -234,10 +226,8 @@ export default async function StatisticsPage() {
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {/* Articles per version - Recharts bar chart */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Articole per versiune</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Numărul de articole din fiecare versiune a constituției
-          </p>
+          <h2 className="text-lg font-semibold">{t("articlesPerVersion")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("articlesPerVersionDesc")}</p>
           <div className="mt-4">
             <VersionBarChart data={stats.versionStats} />
           </div>
@@ -245,10 +235,8 @@ export default async function StatisticsPage() {
 
         {/* Top referenced articles */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Top articole referențiate</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Articolele cu cele mai multe referințe din alte articole
-          </p>
+          <h2 className="text-lg font-semibold">{t("topReferenced")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("topReferencedDesc")}</p>
           <div className="mt-6">
             {stats.topArticles.length > 0 ? (
               <div className="space-y-3">
@@ -260,11 +248,11 @@ export default async function StatisticsPage() {
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium group-hover:text-primary">
-                        Art. {article.number}
+                        {tCommon("art")} {article.number}
                         {article.title ? ` — ${article.title}` : ""}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Constituția din {article.year}
+                        {tCommon("constitutionOf")} {article.year}
                       </p>
                     </div>
                     <div className="ml-4 flex shrink-0 items-center gap-2">
@@ -280,9 +268,7 @@ export default async function StatisticsPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                Nu au fost detectate referințe inter-articol.
-              </p>
+              <p className="text-sm text-muted-foreground">{t("noReferences")}</p>
             )}
           </div>
         </div>

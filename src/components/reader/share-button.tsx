@@ -1,5 +1,8 @@
 "use client";
 
+import { Check, Link2, Linkedin, Share2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Check, Link2, Linkedin, Share2 } from "lucide-react";
-import { useCallback, useState } from "react";
 
 /** WhatsApp SVG icon (simple monochrome, designed to match Lucide style) */
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -80,21 +81,22 @@ export function ShareButton({
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
+  const t = useTranslations();
 
   /** Build the share text that is pre-filled into share intents */
   const buildShareText = useCallback(() => {
     const url = typeof window !== "undefined" ? window.location.href : "";
     const parts: string[] = [];
     if (articleNumber != null) {
-      parts.push(`Art. ${articleNumber}`);
+      parts.push(`${t("common.art")} ${articleNumber}`);
     }
     if (articleTitle) {
       parts.push(`\u2014 ${articleTitle}`);
     }
     const prefix = parts.length > 0 ? `${parts.join(" ")} | ` : "";
     const yearSuffix = year ? ` (${year})` : "";
-    return `${prefix}Constitu\u021bia Rom\u00e2niei${yearSuffix}\n${url}`;
-  }, [articleNumber, articleTitle, year]);
+    return `${prefix}${t("common.appName")}${yearSuffix}\n${url}`;
+  }, [articleNumber, articleTitle, year, t]);
 
   /** Get the current page URL */
   const getUrl = useCallback(() => {
@@ -127,8 +129,8 @@ export function ShareButton({
 
     const titleText =
       articleNumber != null
-        ? `Art. ${articleNumber}${articleTitle ? ` \u2014 ${articleTitle}` : ""}`
-        : "Constitu\u021bia Rom\u00e2niei";
+        ? `${t("common.art")} ${articleNumber}${articleTitle ? ` \u2014 ${articleTitle}` : ""}`
+        : t("common.appName");
 
     try {
       await navigator.share({
@@ -141,7 +143,7 @@ export function ShareButton({
       // User cancelled or share failed — fall through to dropdown
       return false;
     }
-  }, [articleNumber, articleTitle, buildShareText, getUrl]);
+  }, [articleNumber, articleTitle, buildShareText, getUrl, t]);
 
   /** Open a share URL in a new window/tab and close the dropdown */
   const openShareUrl = useCallback((url: string) => {
@@ -163,7 +165,7 @@ export function ShareButton({
     const url = getUrl();
     const parts: string[] = [];
     if (articleNumber != null) {
-      parts.push(`Art. ${articleNumber}`);
+      parts.push(`${t("common.art")} ${articleNumber}`);
     }
     if (articleTitle) {
       parts.push(`\u2014 ${articleTitle}`);
@@ -171,12 +173,12 @@ export function ShareButton({
     const yearSuffix = year ? ` (${year})` : "";
     const tweetText =
       parts.length > 0
-        ? `${parts.join(" ")} | Constitu\u021bia Rom\u00e2niei${yearSuffix}`
-        : `Constitu\u021bia Rom\u00e2niei${yearSuffix}`;
+        ? `${parts.join(" ")} | ${t("common.appName")}${yearSuffix}`
+        : `${t("common.appName")}${yearSuffix}`;
     openShareUrl(
       `https://x.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`,
     );
-  }, [articleNumber, articleTitle, year, getUrl, openShareUrl]);
+  }, [articleNumber, articleTitle, year, getUrl, openShareUrl, t]);
 
   /** Handle the trigger click: try native share first, fall back to dropdown */
   const handleTriggerClick = useCallback(
@@ -204,16 +206,16 @@ export function ShareButton({
               ? "inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               : "inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           }
-          title="Distribuie articolul"
-          aria-label="Distribuie articolul"
+          title={t("reader.shareArticle")}
+          aria-label={t("reader.shareArticle")}
         >
           <Share2 className={isFooter ? "h-4 w-4" : "h-3.5 w-3.5"} />
-          <span>Distribuie</span>
+          <span>{t("common.share")}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-52">
         <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-          Distribuie pe...
+          {t("reader.shareOn")}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleWhatsApp} className="cursor-pointer gap-3 py-2">
@@ -233,12 +235,12 @@ export function ShareButton({
           {copied ? (
             <>
               <Check className="h-4 w-4 text-emerald-500" />
-              <span className="text-emerald-600 dark:text-emerald-400">Copiat!</span>
+              <span className="text-emerald-600 dark:text-emerald-400">{t("common.copied")}</span>
             </>
           ) : (
             <>
               <Link2 className="h-4 w-4" />
-              <span>Copiaz&#259; link</span>
+              <span>{t("common.copyLink")}</span>
             </>
           )}
         </DropdownMenuItem>

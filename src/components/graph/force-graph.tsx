@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   forwardRef,
   useCallback,
@@ -60,6 +61,7 @@ const ForceGraphCanvas = forwardRef<ForceGraphHandle, ForceGraphProps>(function 
   { data, loading, onNodeClick },
   ref,
 ) {
+  const t = useTranslations("graph");
   const containerRef = useRef<HTMLDivElement>(null);
   // biome-ignore lint/suspicious/noExplicitAny: react-force-graph-2d doesn't export proper ref type
   const graphRef = useRef<any>(null);
@@ -295,13 +297,13 @@ const ForceGraphCanvas = forwardRef<ForceGraphHandle, ForceGraphProps>(function 
         />
       ) : showEmpty ? (
         <div className="flex h-full items-center justify-center">
-          <p className="text-muted-foreground">Nu există date pentru această versiune.</p>
+          <p className="text-muted-foreground">{t("noData")}</p>
         </div>
       ) : (
         <div className="flex h-full items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="text-sm text-muted-foreground">Se încarcă graful…</p>
+            <p className="text-sm text-muted-foreground">{t("loadingGraph")}</p>
           </div>
         </div>
       )}

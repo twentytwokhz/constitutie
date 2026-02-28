@@ -1,24 +1,28 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { GraphPageClient } from "./graph-client";
 
-export const metadata: Metadata = {
-  title: "Vizualizare structurală — Constituția României",
-  description:
-    "Vizualizează structura ierarhică și referințele inter-articol ale Constituției României printr-un graf interactiv.",
-  openGraph: {
-    title: "Vizualizare structurală — Constituția României",
-    description:
-      "Vizualizează structura ierarhică și referințele inter-articol ale Constituției României printr-un graf interactiv.",
-    type: "website",
-    locale: "ro_RO",
-  },
-  twitter: {
-    card: "summary",
-    title: "Vizualizare structurală — Constituția României",
-    description:
-      "Vizualizează structura ierarhică și referințele inter-articol ale Constituției României printr-un graf interactiv.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("graph");
+
+  const title = t("metaTitle");
+  const description = t("metaDescription");
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
+}
 
 export default function GraphPage() {
   return <GraphPageClient />;
