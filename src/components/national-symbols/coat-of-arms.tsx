@@ -2,12 +2,19 @@ import Image from "next/image";
 
 /**
  * Map of constitution years to their corresponding coat of arms image paths.
+ * Each year uses its historically-accurate coat of arms (stema):
+ * - 1866, 1923, 1938: Kingdom of Romania (various royal emblems)
+ * - 1948, 1952: People's Republic of Romania (Soviet-influenced emblem)
+ * - 1965: Socialist Republic of Romania (updated socialist emblem)
+ * - 1986, 1991, 2003: Post-socialist Romania (modern coat of arms)
  */
 const COAT_OF_ARMS_MAP: Record<number, string> = {
-  // Kingdom-era constitutions (1866, 1923, 1938) have no coat of arms images yet
-  1948: "/images/logo1952.webp", // People's Republic era — same emblem as 1952
-  1952: "/images/logo1952.webp",
-  1965: "/images/logo1986.webp", // Socialist Republic era — same emblem as 1986
+  1866: "/images/stema-1866.webp",
+  1923: "/images/stema-1923.webp",
+  1938: "/images/stema-1938.webp",
+  1948: "/images/stema-1948.webp",
+  1952: "/images/stema-1952.webp",
+  1965: "/images/stema-1965.webp",
   1986: "/images/logo1986.webp",
   1991: "/images/logo1991.webp",
   2003: "/images/logo2003.webp",
