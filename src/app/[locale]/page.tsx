@@ -1,6 +1,3 @@
-import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import {
   IllustrationCompare,
   IllustrationConstitution,
@@ -20,6 +17,9 @@ import { Timeline } from "@/components/landing/timeline";
 import { Footer } from "@/components/layout/footer";
 import { RomanianFlag, TricolorDivider } from "@/components/national-symbols";
 import { Link } from "@/i18n/navigation";
+import { BookOpen, GitCompareArrows, MessageSquare, Network, Search } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 /**
  * Landing Page - Constituția României
@@ -125,7 +125,7 @@ export default async function HomePage() {
 
         {/* Tricolor bottom bar accent — mirrors the top bar to frame the hero */}
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-1 opacity-60 dark:opacity-40"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-1"
           aria-hidden="true"
           style={{
             background:
