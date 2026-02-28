@@ -44,9 +44,10 @@ export default function ForceGraphCanvas({ data, loading, onNodeClick }: ForceGr
   const containerRef = useRef<HTMLDivElement>(null);
   // biome-ignore lint/suspicious/noExplicitAny: react-force-graph-2d doesn't export proper ref type
   const graphRef = useRef<any>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isDark, setIsDark] = useState(false);
   const [ForceGraph2D, setForceGraph2D] = useState<typeof ForceGraph2DType | null>(null);
+  const engineStoppedRef = useRef(false);
 
   // Dynamically import react-force-graph-2d (it requires window)
   useEffect(() => {
@@ -66,17 +67,30 @@ export default function ForceGraphCanvas({ data, loading, onNodeClick }: ForceGr
     return () => observer.disconnect();
   }, []);
 
-  // Resize handler
+  // Resize handler using ResizeObserver for accurate container size tracking
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
     const updateSize = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
+      const rect = container.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
         setDimensions({ width: rect.width, height: rect.height });
       }
     };
+
+    // Use ResizeObserver to detect container size changes (including initial layout)
+    const resizeObserver = new ResizeObserver(() => {
+      updateSize();
+    });
+    resizeObserver.observe(container);
+
+    // Also measure immediately in case the container already has its size
     updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, []);
 
   // Prepare graph data for the force-graph library
@@ -173,51 +187,79 @@ export default function ForceGraphCanvas({ data, loading, onNodeClick }: ForceGr
 
   // Fit to screen on data load
   const handleEngineStop = useCallback(() => {
+    engineStoppedRef.current = true;
     if (graphRef.current) {
       // biome-ignore lint/suspicious/noExplicitAny: react-force-graph typing
       (graphRef.current as any).zoomToFit?.(400, 60);
     }
   }, []);
 
-  if (loading || !ForceGraph2D) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Se încarcă graful…</p>
-        </div>
-      </div>
-    );
-  }
+  // Re-fit when dimensions change after engine has stopped (fixes stale initial sizing)
+  useEffect(() => {
+    if (
+      engineStoppedRef.current &&
+      graphRef.current &&
+      dimensions.width > 0 &&
+      dimensions.height > 0
+    ) {
+      // Small delay to let the canvas update its internal dimensions first
+      const timer = setTimeout(() => {
+        // biome-ignore lint/suspicious/noExplicitAny: react-force-graph typing
+        (graphRef.current as any)?.zoomToFit?.(300, 60);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [dimensions.width, dimensions.height]);
 
-  if (!data || data.nodes.length === 0) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground">Nu există date pentru această versiune.</p>
-      </div>
-    );
-  }
+  // Reset engine stopped flag when data changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: data is intentionally tracked to reset on new graph load
+  useEffect(() => {
+    engineStoppedRef.current = false;
+  }, [data]);
+
+  // Determine what to render inside the persistent container
+  const showGraph =
+    !loading &&
+    ForceGraph2D &&
+    data &&
+    data.nodes.length > 0 &&
+    dimensions.width > 0 &&
+    dimensions.height > 0;
+  const showEmpty = !loading && data && data.nodes.length === 0;
 
   return (
     <div ref={containerRef} className="h-full w-full">
-      <ForceGraph2D
-        ref={graphRef}
-        width={dimensions.width}
-        height={dimensions.height}
-        graphData={graphData}
-        nodeCanvasObject={paintNode as never}
-        linkCanvasObject={paintLink as never}
-        nodeRelSize={6}
-        onNodeClick={handleNodeClick as never}
-        onEngineStop={handleEngineStop}
-        enableNodeDrag={true}
-        enableZoomInteraction={true}
-        enablePanInteraction={true}
-        cooldownTicks={100}
-        d3AlphaDecay={0.02}
-        d3VelocityDecay={0.3}
-        backgroundColor="rgba(0,0,0,0)"
-      />
+      {showGraph ? (
+        <ForceGraph2D
+          ref={graphRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          graphData={graphData}
+          nodeCanvasObject={paintNode as never}
+          linkCanvasObject={paintLink as never}
+          nodeRelSize={6}
+          onNodeClick={handleNodeClick as never}
+          onEngineStop={handleEngineStop}
+          enableNodeDrag={true}
+          enableZoomInteraction={true}
+          enablePanInteraction={true}
+          cooldownTicks={100}
+          d3AlphaDecay={0.02}
+          d3VelocityDecay={0.3}
+          backgroundColor="rgba(0,0,0,0)"
+        />
+      ) : showEmpty ? (
+        <div className="flex h-full items-center justify-center">
+          <p className="text-muted-foreground">Nu există date pentru această versiune.</p>
+        </div>
+      ) : (
+        <div className="flex h-full items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Se încarcă graful…</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
