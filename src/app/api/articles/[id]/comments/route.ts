@@ -44,6 +44,28 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Content is required" }, { status: 400 });
     }
 
+    // Max length validation — prevent abuse via excessively long payloads
+    const MAX_COMMENT_LENGTH = 10000;
+    if (content.length > MAX_COMMENT_LENGTH) {
+      return NextResponse.json(
+        {
+          error: `Comentariul este prea lung. Limita este de ${MAX_COMMENT_LENGTH} caractere.`,
+          maxLength: MAX_COMMENT_LENGTH,
+          actualLength: content.length,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Sanitize HTML/script tags — strip all HTML to prevent stored XSS
+    const sanitizedContent = content.replace(/<[^>]*>/g, "").trim();
+    if (sanitizedContent.length === 0) {
+      return NextResponse.json(
+        { error: "Comentariul nu poate conține doar etichete HTML." },
+        { status: 400 },
+      );
+    }
+
     if (!fingerprintHash || typeof fingerprintHash !== "string") {
       return NextResponse.json({ error: "Fingerprint hash is required" }, { status: 400 });
     }
@@ -80,8 +102,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // AI moderation via OpenRouter
-    const moderation = await moderateComment(content.trim());
+    // AI moderation via OpenRouter (uses sanitized content)
+    const moderation = await moderateComment(sanitizedContent);
 
     const status = moderation.approved ? "approved" : "rejected";
 
@@ -89,7 +111,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .insert(comments)
       .values({
         articleId,
-        content: content.trim(),
+        content: sanitizedContent,
         selectedText: selectedText || null,
         status,
         rejectionReason: moderation.reason,
