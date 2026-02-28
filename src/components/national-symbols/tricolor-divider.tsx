@@ -1,22 +1,23 @@
 /**
  * Tricolor Divider
  *
- * A decorative section divider with the Romanian tricolor accent.
+ * A decorative full-width section divider with the Romanian tricolor.
  * Used between landing page sections for visual continuity.
  *
- * Renders as a centered short tricolor bar with rounded ends at full opacity.
+ * Renders as a full-width horizontal bar with three equal-width color
+ * segments (blue, yellow, red) at 100% opacity.
  * Tricolor national symbols should never be faded or have less than 100% opacity.
  */
 export function TricolorDivider({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`flex items-center justify-center py-1 ${className}`}
+      className={`w-full h-[3px] ${className}`}
       role="presentation"
       aria-hidden="true"
-    >
-      <div className="h-[3px] w-20 rounded-l-full" style={{ backgroundColor: "#002B7F" }} />
-      <div className="h-[3px] w-12" style={{ backgroundColor: "#FCD116" }} />
-      <div className="h-[3px] w-20 rounded-r-full" style={{ backgroundColor: "#CE1126" }} />
-    </div>
+      style={{
+        background:
+          "linear-gradient(to right, #002B7F 0%, #002B7F 33.33%, #FCD116 33.33%, #FCD116 66.66%, #CE1126 66.66%, #CE1126 100%)",
+      }}
+    />
   );
 }
