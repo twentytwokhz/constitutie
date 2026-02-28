@@ -3043,3 +3043,61 @@
 
 ### Current Status
 - Feature #197 marked as passing
+
+## Session: 2026-02-28 (Agent handling feature #199)
+
+### Completed Features
+
+#### Feature #199: SEO and Analytics ✅
+- **robots.ts**: Dynamic robots.txt generation via Next.js App Router special file
+  - Allows all crawlers (`*`) to index `/`
+  - Disallows `/api/` routes (data endpoints, not pages)
+  - Points to sitemap.xml URL
+- **sitemap.ts**: Dynamic sitemap.xml with comprehensive URL coverage
+  - Static pages: landing, compare, graph, statistics (× 2 locales)
+  - Version pages: /ro/2003, /en/2003, etc. (4 versions × 2 locales)
+  - Article pages: /ro/2003/articolul-15, etc. (535+ articles × 2 locales = 1,070+ URLs)
+  - hreflang alternates for each URL (ro ↔ en)
+  - Proper changeFrequency and priority values per page type
+- **Root layout metadata improvements**:
+  - Added description (was missing)
+  - Added OpenGraph defaults (type, locale, siteName, images)
+  - Added Twitter card defaults (summary card with image)
+  - Added robots directives (index, follow, max-image-preview: large)
+  - Added creator/publisher metadata
+  - Added extra keywords ("articole constituție", "comparație versiuni constituție")
+- **JSON-LD Structured Data** (schema.org):
+  - WebSiteJsonLd on landing page — enables Google sitelinks searchbox
+  - ArticleJsonLd (Legislation type) on article pages — legislative article schema
+  - BreadcrumbJsonLd on article pages — breadcrumb trail rich snippets
+  - All components accept locale prop for bilingual support
+- **PostHog Analytics**:
+  - Installed posthog-js npm package
+  - Created PostHogAnalyticsProvider client component
+  - SPA-aware pageview tracking via usePathname + useSearchParams
+  - Disabled automatic pageview capture to prevent double-counting
+  - Uses localStorage persistence (no cookies) for privacy
+  - Respects Do Not Track browser setting
+  - Gracefully disabled when NEXT_PUBLIC_POSTHOG_KEY not set
+  - Wrapped in Suspense boundary for SSR compatibility
+  - EU cloud host default (GDPR compliance)
+- Updated .env.example with PostHog and base URL env vars
+- Biome lint: 0 errors (98 files), TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Created
+- src/app/robots.ts — Dynamic robots.txt
+- src/app/sitemap.ts — Dynamic sitemap.xml with all pages
+- src/components/seo/json-ld.tsx — JSON-LD structured data components
+- src/components/analytics/posthog-provider.tsx — PostHog provider + pageview tracker
+
+### Files Modified
+- src/app/layout.tsx — Enhanced root metadata (description, OG, Twitter, robots)
+- src/app/[locale]/layout.tsx — Wrapped children with PostHogAnalyticsProvider
+- src/app/[locale]/page.tsx — Added WebSiteJsonLd to landing page
+- src/app/[locale]/[year]/[[...slug]]/page.tsx — Added ArticleJsonLd + BreadcrumbJsonLd
+- .env.example — Added PostHog and base URL env vars
+- package.json — Added posthog-js dependency
+
+### Current Status
+- Feature #199 marked as passing
