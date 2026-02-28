@@ -1,9 +1,5 @@
-import { Header } from "@/components/layout/header";
-import { ThemeProvider } from "@/components/layout/theme-provider";
-import { CommandPalette } from "@/components/search/command-palette";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Suspense } from "react";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,12 +7,17 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://constitutia-romaniei.ro";
+
 export const metadata: Metadata = {
-  title: "Constituția României - Explorare Interactivă",
-  description:
-    "Platformă interactivă pentru explorarea Constituției României prin toate versiunile sale istorice (1952, 1986, 1991, 2003). Navigare articol cu articol, comparare versiuni, vizualizare graf, căutare cross-versiune.",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "Constituția României - Explorare Interactivă",
+    template: "%s | Constituția României",
+  },
   keywords: [
     "Constituția României",
+    "Romanian Constitution",
     "constituție",
     "lege fundamentală",
     "drept constituțional",
@@ -26,12 +27,6 @@ export const metadata: Metadata = {
     "2003",
   ],
   authors: [{ name: "Constituția României Project" }],
-  openGraph: {
-    title: "Constituția României - Explorare Interactivă",
-    description: "Explorează Constituția României prin toate versiunile sale istorice.",
-    type: "website",
-    locale: "ro_RO",
-  },
 };
 
 export default function RootLayout({
@@ -40,20 +35,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ro" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
-          <Header />
-          <Suspense fallback={null}>
-            <CommandPalette />
-          </Suspense>
-          {children}
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );
