@@ -2015,3 +2015,30 @@
 - Feature #120 adds client-side UX feedback for empty comment submission
 - Feature #121 enforces a 5000 char limit with progressive color warnings
 - Feature #123 was already fully implemented (verification only)
+
+## Session: 2026-02-28 (Agent handling feature #145)
+
+### Completed Features
+
+#### Feature #145: Compare page bug - Monaco DiffEditor disposal race condition ✅
+- Bug: Selecting an article then clicking "Resetează" caused runtime error:
+  "TextModel got disposed before DiffEditorWidget model got reset"
+- Root cause: When React unmounts MonacoDiffViewer, @monaco-editor/react's
+  useEffect cleanup disposed TextModels before DiffEditorWidget released its
+  model references. The widget's event listener fired on disposed models.
+- Fix: Added useLayoutEffect cleanup in MonacoDiffViewer that calls
+  editor.dispose() synchronously during commitDeletionEffects, BEFORE
+  @monaco-editor/react's useEffect cleanup runs in commitPassiveUnmountEffects.
+  This ensures DiffEditorWidget releases model references first.
+- The fix covers ALL unmount paths: clearArticleSelection, collapsing
+  DiffArticleCard, and version changes.
+- Biome lint: 0 errors, tsc: 0 errors
+- Zero mock data patterns in source
+
+### Files Modified
+- src/components/diff/monaco-diff-viewer.tsx - Added useLayoutEffect disposal cleanup
+
+### Current Status
+- Features passing: 137 (was 136)
+- Total features: 145
+- Percentage: ~94.5%
