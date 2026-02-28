@@ -1,5 +1,40 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling features #23, #109, #21)
+
+### Completed Features
+
+#### Feature #23: 404 page displays for invalid routes ✅
+- Updated reader page to call `notFound()` from `next/navigation` instead of inline error messages
+- Invalid years (NaN or non-digit), missing versions, and missing articles all trigger styled 404 page
+- Verified: /nonexistent-page → 404, /2003/articolul-99999 → 404
+- Both show styled page with illustration, "Pagină negăsită" heading, and home link
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+#### Feature #109: Deep link to non-existent article shows 404 ✅
+- Covered by #23 implementation — deep links like /2003/titlul-1/articolul-99999 trigger notFound()
+- Verified: HTTP 404 response with styled 404 page content
+- No server errors or crashes
+
+#### Feature #21: Breadcrumb navigation on inner pages ✅
+- Made breadcrumb structural parts (Titlul, Capitolul, Secțiunea) into clickable Link components
+- Built cumulative paths: "Titlul 2" → /2003/titlul-2, "Capitolul 1" → /2003/titlul-2/capitolul-1
+- Added structural unit path resolution: navigating to /2003/titlul-2 shows first article within Titlul 2
+- Added getDescendantUnitIds() helper for finding articles in nested structural units
+- Added unitBySlug lookup map for efficient slug-to-unit resolution
+- Verified breadcrumb at /2003/titlul-2/capitolul-1/articolul-15 shows correct hierarchy
+- Biome lint: 0 errors | TypeScript: 0 errors
+
+### Current Status
+- Features passing: 52 (was 49)
+- Total features: 141
+- Percentage: ~36.9%
+
+### Notes
+- The [year]/[[...slug]] route now handles three types of slugs: article paths, structural unit paths, and invalid paths
+- notFound() integrates with Next.js's not-found.tsx boundary for consistent 404 styling
+- Breadcrumb links use cumulative slug paths for proper hierarchical navigation
+
 ## Session: 2026-02-28 (Agent handling features #15, #88, #10)
 
 ### Completed Features
