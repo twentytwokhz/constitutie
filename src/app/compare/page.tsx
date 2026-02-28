@@ -141,13 +141,17 @@ export default function ComparePage() {
     }
   }, []);
 
-  // Re-fetch diff when selections change
+  // Re-fetch diff when selections change — reset ALL comparison state
   useEffect(() => {
     if (versionA && versionB && versionA !== versionB) {
-      fetchDiff(versionA, versionB);
-      // Clear single-article selection when versions change
+      // Clear stale data immediately before fetching new comparison
+      setDiffData(null);
       setSelectedArticle(null);
       setSingleDiffData(null);
+      setCurrentChangeIdx(-1);
+      setShowUnchanged(false);
+      setForceExpandArticle(null);
+      fetchDiff(versionA, versionB);
     }
   }, [versionA, versionB, fetchDiff]);
 
