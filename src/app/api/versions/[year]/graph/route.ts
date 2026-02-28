@@ -57,6 +57,8 @@ export async function GET(
         type: "articol" as const,
         label: `Art. ${article.number}${article.title ? `. ${article.title}` : ""}`,
         parentId: `unit-${article.structuralUnitId}`,
+        articleNumber: article.number,
+        contentSnippet: article.content ? article.content.slice(0, 200) : null,
       })),
     ];
 

@@ -17,6 +17,8 @@ interface GraphNode {
   type: "titlu" | "capitol" | "sectiune" | "articol";
   label: string;
   parentId: string | null;
+  articleNumber?: number;
+  contentSnippet?: string | null;
   // Force-graph adds these at runtime
   x?: number;
   y?: number;

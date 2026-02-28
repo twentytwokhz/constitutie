@@ -17,6 +17,8 @@ interface GraphNode {
   type: "titlu" | "capitol" | "sectiune" | "articol";
   label: string;
   parentId: string | null;
+  articleNumber?: number;
+  contentSnippet?: string | null;
   x?: number;
   y?: number;
 }
@@ -232,7 +234,7 @@ export default function GraphPage() {
 
         {/* Node Preview Panel */}
         {selectedNode && (
-          <div className="absolute right-4 top-4 w-72 rounded-lg border bg-background/95 shadow-lg backdrop-blur-sm">
+          <div className="absolute right-4 top-4 w-80 rounded-lg border bg-background/95 shadow-lg backdrop-blur-sm animate-in slide-in-from-right-4 fade-in duration-200">
             <div className="flex items-start justify-between border-b p-3">
               <div className="flex-1">
                 <span
@@ -265,10 +267,26 @@ export default function GraphPage() {
               </button>
             </div>
             <div className="p-3">
-              <p className="text-xs text-muted-foreground">ID: {selectedNode.id}</p>
+              {/* Text fragment for article nodes */}
+              {selectedNode.contentSnippet && (
+                <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-4">
+                  {selectedNode.contentSnippet}
+                  {selectedNode.contentSnippet.length >= 200 && "…"}
+                </p>
+              )}
+              {/* Fallback for non-article nodes with no snippet */}
+              {!selectedNode.contentSnippet && selectedNode.type !== "articol" && (
+                <p className="mb-3 text-xs text-muted-foreground">
+                  {selectedNode.type === "titlu"
+                    ? "Titlu principal al constituției"
+                    : selectedNode.type === "capitol"
+                      ? "Capitol în cadrul titlului"
+                      : "Secțiune în cadrul capitolului"}
+                </p>
+              )}
               <Link
                 href={getNodeUrl(selectedNode)}
-                className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
               >
                 Deschide articolul →
               </Link>
