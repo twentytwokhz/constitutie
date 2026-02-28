@@ -3382,3 +3382,47 @@
 
 ### Current Status
 - Feature #208 marked as passing
+
+## Session: 2026-02-28 (Agent handling feature #209)
+
+### Completed Features
+
+#### Feature #209: transformare steme (Transform coat of arms images) ✅
+- **Problem**: The 6 new coat of arms images (stema-1866 through stema-1965) downloaded
+  in feature #208 had white backgrounds (800x600, 3ch no-alpha), while the existing
+  reference images (logo1991, logo2003) had transparent backgrounds (~300-360px, 4ch alpha).
+- **Solution**: Created `scripts/transform-steme.mjs` that:
+  1. Reads each WebP image and adds an alpha channel
+  2. Makes white/near-white pixels (R,G,B ≥ 245) transparent via raw pixel manipulation
+  3. Uses sharp's `trim()` to crop excess transparent borders
+  4. Resizes to fit within 360×450 bounding box (matching existing reference sizes)
+  5. Outputs high-quality WebP with alpha channel
+- **Results** (before → after):
+  - 1866: 800×600 no-alpha → 360×426 alpha (61.8KB)
+  - 1923: 800×600 no-alpha → 360×381 alpha (57.2KB)
+  - 1938: 800×600 no-alpha → 234×450 alpha (34.0KB) — narrower emblem
+  - 1948: 800×600 no-alpha → 360×384 alpha (57.1KB)
+  - 1952: 800×600 no-alpha → 360×427 alpha (49.4KB)
+  - 1965: 800×600 no-alpha → 360×431 alpha (49.8KB)
+- **No code changes needed**: CoatOfArms component already referenced correct paths
+- **Verification**:
+  - Biome lint: 0 errors (98 files)
+  - TypeScript tsc: 0 errors
+  - All images verified with alpha channel and correct dimensions
+  - Zero mock data patterns in codebase
+
+### Files Modified (replaced in-place)
+- public/images/stema-1866.webp — Now transparent background, 360×426
+- public/images/stema-1923.webp — Now transparent background, 360×381
+- public/images/stema-1938.webp — Now transparent background, 234×450
+- public/images/stema-1948.webp — Now transparent background, 360×384
+- public/images/stema-1952.webp — Now transparent background, 360×427
+- public/images/stema-1965.webp — Now transparent background, 360×431
+
+### Files Added
+- scripts/transform-steme.mjs — White-bg removal, trim, resize script
+- scripts/check-steme-info.mjs — Image metadata inspection utility
+
+### Current Status
+- Feature #209 marked as passing
+- Features passing: 208/209 (99.5%)
