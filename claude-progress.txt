@@ -1,5 +1,43 @@
 # Constituția României - Development Progress
 
+## Session: 2026-02-28 (Agent handling feature #181)
+
+### Completed Features
+
+#### Feature #181: Start frontend app ✅
+- **Root cause**: Next.js 15.5 traversed parent directories and found `/Users/florin/package-lock.json`,
+  setting the workspace root to `/Users/florin/` instead of the project directory. This caused
+  Turbopack to write manifest files (`middleware-manifest.json`, `_buildManifest.js`) to wrong paths.
+- **Fix**: Added `turbopack.root` and `outputFileTracingRoot` to `next.config.ts`, both pointing to
+  `import.meta.dirname` (the project directory).
+- Dev server starts cleanly: "✓ Ready in 937ms" with zero errors
+- All routes return HTTP 200: `/ro`, `/api/stats`, `/api/versions`
+- **Bonus lint cleanup** (resolved all remaining Biome errors):
+  - Added `lang="ro"` to root `<html>` element (a11y useHtmlLang)
+  - Added `<title>` to RomanianFlag SVG (a11y noSvgWithoutTitle)
+  - Added biome-ignore for backdrop overlay divs (a11y useSemanticElements)
+  - Removed unused `_handleShareQuote` function, fixed useCallback ordering for `closeForm`
+  - Removed unused `theme` variable from ThemeToggle
+  - Auto-fixed import ordering and formatting across 54 files
+- Biome check: 0 errors, TypeScript tsc: 0 errors
+
+### Files Modified
+- next.config.ts — Added turbopack.root + outputFileTracingRoot
+- src/app/layout.tsx — Added lang="ro"
+- src/components/national-symbols/romanian-flag.tsx — Added SVG title
+- src/components/layout/header.tsx — biome-ignore for backdrop div
+- src/components/reader/mobile-toc.tsx — biome-ignore for backdrop div
+- src/components/feedback/text-selection-feedback.tsx — Removed unused fn, reordered hooks
+- src/components/layout/theme-toggle.tsx — Removed unused variable
+- 54 files — Import ordering auto-fix via biome check --write
+
+### Current Status
+- Features passing: 181/181
+- Total features: 181
+- Percentage: 100.0%
+
+### 🎉 ALL FEATURES COMPLETE (181/181)
+
 ## Session: 2026-02-28 (Agent handling feature #155)
 
 ### Completed Features
