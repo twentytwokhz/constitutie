@@ -108,6 +108,7 @@ export interface AppStats {
   total_versions: number;
   total_references: number;
   total_comments: number;
+  total_votes: number;
 }
 
 // Search result
