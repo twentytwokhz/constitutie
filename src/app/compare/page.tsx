@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
   Columns2,
+  Download,
   FileText,
   Filter,
   Loader2,
@@ -23,7 +24,7 @@ import {
   Rows2,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Constitution version metadata from the API */
 interface Version {
@@ -95,6 +96,10 @@ export default function ComparePage() {
   const [singleDiffData, setSingleDiffData] = useState<SingleArticleDiffResponse | null>(null);
   /** Loading state for single-article diff */
   const [singleDiffLoading, setSingleDiffLoading] = useState(false);
+  /** PDF export loading state */
+  const [exportingPdf, setExportingPdf] = useState(false);
+  /** Guard ref for preventing double export clicks */
+  const isExportingRef = useRef(false);
 
   // Fetch available versions on mount
   useEffect(() => {
@@ -267,6 +272,45 @@ export default function ComparePage() {
     jumpToChange(prev);
   }, [currentChangeIdx, changedArticles.length, jumpToChange]);
 
+  /** Export diff as PDF via /api/diff/export-pdf */
+  const handleExportPdf = useCallback(async () => {
+    if (isExportingRef.current || !diffData) return;
+    isExportingRef.current = true;
+    setExportingPdf(true);
+    try {
+      const res = await fetch("/api/diff/export-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          yearA: Number(versionA),
+          yearB: Number(versionB),
+          summary: diffData.summary,
+          articles: diffData.diff,
+        }),
+      });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        throw new Error(errBody?.error || "Eroare la generarea PDF-ului");
+      }
+      // Create blob and trigger download
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `constitutia-comparatie-${versionA}-vs-${versionB}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("[PDF Export]", err);
+      setError(err instanceof Error ? err.message : "Eroare la generarea PDF-ului");
+    } finally {
+      setExportingPdf(false);
+      isExportingRef.current = false;
+    }
+  }, [diffData, versionA, versionB]);
+
   /** Keyboard shortcuts: Alt+↓ next change, Alt+↑ previous change */
   useEffect(() => {
     if (changedArticles.length === 0) return;
@@ -411,24 +455,41 @@ export default function ComparePage() {
                 </Button>
               </div>
             )}
-            <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
+                <Button
+                  variant={sideBySide ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setSideBySide(true)}
+                  className="h-7 gap-1.5 px-2.5 text-xs"
+                >
+                  <Columns2 className="h-3.5 w-3.5" />
+                  Side-by-side
+                </Button>
+                <Button
+                  variant={!sideBySide ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setSideBySide(false)}
+                  className="h-7 gap-1.5 px-2.5 text-xs"
+                >
+                  <Rows2 className="h-3.5 w-3.5" />
+                  Inline
+                </Button>
+              </div>
               <Button
-                variant={sideBySide ? "secondary" : "ghost"}
+                variant="outline"
                 size="sm"
-                onClick={() => setSideBySide(true)}
-                className="h-7 gap-1.5 px-2.5 text-xs"
+                onClick={handleExportPdf}
+                disabled={exportingPdf || !diffData}
+                className="h-7 gap-1.5 px-3 text-xs"
+                title="Exportă comparația ca PDF"
               >
-                <Columns2 className="h-3.5 w-3.5" />
-                Side-by-side
-              </Button>
-              <Button
-                variant={!sideBySide ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setSideBySide(false)}
-                className="h-7 gap-1.5 px-2.5 text-xs"
-              >
-                <Rows2 className="h-3.5 w-3.5" />
-                Inline
+                {exportingPdf ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Download className="h-3.5 w-3.5" />
+                )}
+                {exportingPdf ? "Se generează..." : "Export PDF"}
               </Button>
             </div>
           </div>
