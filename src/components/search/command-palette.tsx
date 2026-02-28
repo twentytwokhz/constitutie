@@ -154,6 +154,9 @@ export function CommandPalette() {
     (nextOpen: boolean) => {
       setOpen(nextOpen);
       if (!nextOpen) {
+        // Reset search state so palette opens fresh next time
+        setQuery("");
+        setResults([]);
         // Clear URL search param when closing
         const current = new URLSearchParams(searchParams.toString());
         if (current.has("q")) {
