@@ -20,7 +20,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { Metadata } from "next";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 
 /**
  * Statistics Dashboard Page
@@ -93,14 +93,23 @@ async function getStatistics() {
     .from(votes)
     .where(eq(votes.voteType, "disagree"));
 
-  const versionStats = await db
+  const statsLocale = await getLocale();
+  const statsUseEn = statsLocale === "en";
+
+  const versionStatsRaw = await db
     .select({
       year: constitutionVersions.year,
       name: constitutionVersions.name,
+      nameEn: constitutionVersions.nameEn,
       totalArticles: constitutionVersions.totalArticles,
     })
     .from(constitutionVersions)
     .orderBy(constitutionVersions.year);
+
+  const versionStats = versionStatsRaw.map((v) => ({
+    ...v,
+    name: (statsUseEn && v.nameEn) || v.name,
+  }));
 
   const topReferenced = await db
     .select({
@@ -126,6 +135,7 @@ async function getStatistics() {
         id: articles.id,
         number: articles.number,
         title: articles.title,
+        titleEn: articles.titleEn,
         year: constitutionVersions.year,
       })
       .from(articles)
@@ -136,7 +146,7 @@ async function getStatistics() {
       const detail = articleDetails.find((a) => a.id === ref.articleId);
       return {
         number: detail?.number ?? 0,
-        title: detail?.title ?? null,
+        title: ((statsUseEn && detail?.titleEn) || detail?.title) ?? null,
         year: detail?.year ?? 0,
         refCount: ref.refCount,
       };

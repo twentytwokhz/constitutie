@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 const VERSION_YEARS = ["2003", "1991", "1986", "1952"] as const;
 
@@ -31,6 +32,17 @@ export function VersionSelector() {
   // Extract current year from pathname (e.g., /2003/... → "2003")
   const yearMatch = pathname.match(/^\/(\d{4})(\/|$)/);
   const currentYear = yearMatch ? yearMatch[1] : undefined;
+
+  // Persist last viewed year so other pages (e.g. Compare) can use it as default
+  useEffect(() => {
+    if (currentYear) {
+      try {
+        localStorage.setItem("lastViewedYear", currentYear);
+      } catch {
+        // localStorage unavailable (SSR, private browsing)
+      }
+    }
+  }, [currentYear]);
 
   const handleVersionChange = (year: string) => {
     router.push(`/${year}`);

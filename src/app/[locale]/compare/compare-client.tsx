@@ -114,10 +114,33 @@ export function ComparePageClient() {
         const data: Version[] = await res.json();
         setVersions(data);
 
-        // Default selection: first two versions
+        // Default selection: oldest version (A) vs. last-browsed version (B).
+        // The header VersionSelector persists the active year in localStorage
+        // so the compare page can pick it up as a sensible default.
         if (data.length >= 2) {
-          setVersionA(String(data[0].year));
-          setVersionB(String(data[data.length - 1].year));
+          const sortedYears = data.map((v) => v.year).sort((a, b) => a - b);
+          setVersionA(String(sortedYears[0]));
+
+          // Try to use the last-viewed year from the reader as version B
+          let defaultB: string | null = null;
+          try {
+            defaultB = localStorage.getItem("lastViewedYear");
+          } catch {
+            // localStorage unavailable
+          }
+
+          // Use last-viewed year if it exists, is a valid version, and
+          // differs from version A; otherwise fall back to the newest version.
+          const fallbackB = String(sortedYears[sortedYears.length - 1]);
+          if (
+            defaultB !== null &&
+            sortedYears.includes(Number(defaultB)) &&
+            defaultB !== String(sortedYears[0])
+          ) {
+            setVersionB(defaultB);
+          } else {
+            setVersionB(fallbackB);
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load versions");
@@ -129,26 +152,29 @@ export function ComparePageClient() {
   }, []);
 
   // Fetch diff when both versions are selected
-  const fetchDiff = useCallback(async (a: string, b: string) => {
-    if (!a || !b || a === b) {
-      setDiffData(null);
-      return;
-    }
+  const fetchDiff = useCallback(
+    async (a: string, b: string) => {
+      if (!a || !b || a === b) {
+        setDiffData(null);
+        return;
+      }
 
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/diff?a=${a}&b=${b}`);
-      if (!res.ok) throw new Error("Failed to compute diff");
-      const data: DiffResponse = await res.json();
-      setDiffData(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load diff");
-      setDiffData(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/diff?a=${a}&b=${b}&locale=${locale}`);
+        if (!res.ok) throw new Error("Failed to compute diff");
+        const data: DiffResponse = await res.json();
+        setDiffData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load diff");
+        setDiffData(null);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [locale],
+  );
 
   // Re-fetch diff when selections change — reset ALL comparison state
   useEffect(() => {
@@ -171,7 +197,7 @@ export function ComparePageClient() {
       setSingleDiffLoading(true);
       try {
         const res = await fetch(
-          `/api/diff/article?a=${versionA}&b=${versionB}&article=${articleNum}`,
+          `/api/diff/article?a=${versionA}&b=${versionB}&article=${articleNum}&locale=${locale}`,
         );
         if (!res.ok) throw new Error("Failed to fetch article diff");
         const data: SingleArticleDiffResponse = await res.json();
@@ -182,7 +208,7 @@ export function ComparePageClient() {
         setSingleDiffLoading(false);
       }
     },
-    [versionA, versionB],
+    [versionA, versionB, locale],
   );
 
   // Fetch single article diff when selection changes
@@ -343,6 +369,9 @@ export function ComparePageClient() {
     }
   }, [versionA, versionB, t]);
 
+  /** Ref for the scrollable content area — used by jumpToChange */
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   /** Keyboard shortcuts: Alt+↓ next change, Alt+↑ previous change */
   useEffect(() => {
     if (changedArticles.length === 0) return;
@@ -360,381 +389,395 @@ export function ComparePageClient() {
   }, [changedArticles.length, jumpToNextChange, jumpToPrevChange]);
 
   return (
-    <div className="container mx-auto max-w-full overflow-x-hidden px-3 py-6 sm:px-4 sm:py-8">
-      {/* Page Title */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("compare.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground sm:mt-2 sm:text-base">
-          {t("compare.subtitle")}
-        </p>
-      </div>
+    <div className="flex flex-col h-[calc(100vh-67px)] overflow-hidden">
+      {/* ── Sticky controls panel (does NOT scroll) ── */}
+      <div className="shrink-0 border-b border-border/40 bg-background px-3 pt-4 pb-3 sm:px-4">
+        <div className="container mx-auto max-w-full">
+          {/* Page Title */}
+          <div className="mb-3">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("compare.title")}</h1>
+            <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+              {t("compare.subtitle")}
+            </p>
+          </div>
 
-      {/* Version Selectors Toolbar */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
-        {/* Version A (left) */}
-        <div className="flex-1">
-          <label
-            htmlFor="version-a"
-            className="mb-2 block text-sm font-medium text-muted-foreground"
-          >
-            {t("compare.selectVersionA")}
-          </label>
-          <Select value={versionA} onValueChange={setVersionA} disabled={versionsLoading}>
-            <SelectTrigger id="version-a" className="w-full">
-              <SelectValue placeholder={t("compare.placeholderA")} />
-            </SelectTrigger>
-            <SelectContent>
-              {versions.map((v) => (
-                <SelectItem key={v.year} value={String(v.year)}>
-                  {v.name} ({v.totalArticles} {t("common.articles")})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Swap button */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleSwap}
-          className="shrink-0 self-end"
-          aria-label={t("compare.swapVersions")}
-          title={t("compare.swapVersions")}
-          disabled={!versionA || !versionB}
-        >
-          <ArrowLeftRight className="h-4 w-4" />
-        </Button>
-
-        {/* Version B (right) */}
-        <div className="flex-1">
-          <label
-            htmlFor="version-b"
-            className="mb-2 block text-sm font-medium text-muted-foreground"
-          >
-            {t("compare.selectVersionB")}
-          </label>
-          <Select value={versionB} onValueChange={setVersionB} disabled={versionsLoading}>
-            <SelectTrigger id="version-b" className="w-full">
-              <SelectValue placeholder={t("compare.placeholderB")} />
-            </SelectTrigger>
-            <SelectContent>
-              {versions.map((v) => (
-                <SelectItem key={v.year} value={String(v.year)}>
-                  {v.name} ({v.totalArticles} {t("common.articles")})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Same version warning */}
-      {versionA && versionB && versionA === versionB && (
-        <div className="mb-6 rounded-md border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
-          {t("compare.selectDifferent")}
-        </div>
-      )}
-
-      {/* View Mode Toggle + Summary */}
-      {diffData && !loading && (
-        <div className="mb-6 space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-2">
-              <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-500/30 dark:text-emerald-300">
-                <Plus className="mr-1 h-3 w-3" />
-                {diffData.summary.added} {t("compare.added")}
-              </Badge>
-              <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300">
-                <Minus className="mr-1 h-3 w-3" />
-                {diffData.summary.removed} {t("compare.removed")}
-              </Badge>
-              <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300">
-                <FileText className="mr-1 h-3 w-3" />
-                {diffData.summary.modified} {t("compare.modified")}
-              </Badge>
-              <Badge variant="secondary">
-                {diffData.summary.unchanged} {t("compare.unchanged")}
-              </Badge>
-            </div>
-            {/* Jump to change navigation */}
-            {changedArticles.length > 0 && !selectedArticle && (
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={jumpToPrevChange}
-                  className="h-7 gap-1 px-2.5 text-xs"
-                  title={`${t("compare.prevChange")} (Alt+\u2191)`}
-                  aria-label={t("compare.prevChange")}
-                >
-                  <ChevronUp className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{t("common.previous")}</span>
-                </Button>
-                <span className="min-w-[3.5rem] text-center text-xs tabular-nums text-muted-foreground">
-                  {currentChangeIdx >= 0
-                    ? `${currentChangeIdx + 1} / ${changedArticles.length}`
-                    : `${changedArticles.length} ${t("compare.changes")}`}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={jumpToNextChange}
-                  className="h-7 gap-1 px-2.5 text-xs"
-                  title={`${t("compare.nextChange")} (Alt+\u2193)`}
-                  aria-label={t("compare.nextChange")}
-                >
-                  <span className="hidden sm:inline">{t("common.next")}</span>
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            )}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
-                <Button
-                  variant={sideBySide ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => setSideBySide(true)}
-                  className="h-7 gap-1.5 px-2.5 text-xs"
-                >
-                  <Columns2 className="h-3.5 w-3.5" />
-                  {t("compare.sideBySide")}
-                </Button>
-                <Button
-                  variant={!sideBySide ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => setSideBySide(false)}
-                  className="h-7 gap-1.5 px-2.5 text-xs"
-                >
-                  <Rows2 className="h-3.5 w-3.5" />
-                  {t("compare.inline")}
-                </Button>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportPdf}
-                disabled={exportingPdf || !diffData}
-                className="h-7 gap-1.5 px-3 text-xs"
-                title={t("compare.exportPdf")}
+          {/* Version Selectors Toolbar */}
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+            {/* Version A (left) */}
+            <div className="flex-1">
+              <label
+                htmlFor="version-a"
+                className="mb-1.5 block text-sm font-medium text-muted-foreground"
               >
-                {exportingPdf ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Download className="h-3.5 w-3.5" />
+                {t("compare.selectVersionA")}
+              </label>
+              <Select value={versionA} onValueChange={setVersionA} disabled={versionsLoading}>
+                <SelectTrigger id="version-a" className="w-full">
+                  <SelectValue placeholder={t("compare.placeholderA")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {versions.map((v) => (
+                    <SelectItem key={v.year} value={String(v.year)}>
+                      {v.name} ({v.totalArticles} {t("common.articles")})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Swap button */}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleSwap}
+              className="shrink-0 self-end"
+              aria-label={t("compare.swapVersions")}
+              title={t("compare.swapVersions")}
+              disabled={!versionA || !versionB}
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+            </Button>
+
+            {/* Version B (right) */}
+            <div className="flex-1">
+              <label
+                htmlFor="version-b"
+                className="mb-1.5 block text-sm font-medium text-muted-foreground"
+              >
+                {t("compare.selectVersionB")}
+              </label>
+              <Select value={versionB} onValueChange={setVersionB} disabled={versionsLoading}>
+                <SelectTrigger id="version-b" className="w-full">
+                  <SelectValue placeholder={t("compare.placeholderB")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {versions.map((v) => (
+                    <SelectItem key={v.year} value={String(v.year)}>
+                      {v.name} ({v.totalArticles} {t("common.articles")})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Same version warning */}
+          {versionA && versionB && versionA === versionB && (
+            <div className="mb-3 rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+              {t("compare.selectDifferent")}
+            </div>
+          )}
+
+          {/* View Mode Toggle + Summary */}
+          {diffData && !loading && (
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-500/30 dark:text-emerald-300">
+                    <Plus className="mr-1 h-3 w-3" />
+                    {diffData.summary.added} {t("compare.added")}
+                  </Badge>
+                  <Badge className="bg-rose-500/10 text-rose-700 border-rose-500/30 dark:text-rose-300">
+                    <Minus className="mr-1 h-3 w-3" />
+                    {diffData.summary.removed} {t("compare.removed")}
+                  </Badge>
+                  <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300">
+                    <FileText className="mr-1 h-3 w-3" />
+                    {diffData.summary.modified} {t("compare.modified")}
+                  </Badge>
+                  <Badge variant="secondary">
+                    {diffData.summary.unchanged} {t("compare.unchanged")}
+                  </Badge>
+                </div>
+                {/* Jump to change navigation */}
+                {changedArticles.length > 0 && !selectedArticle && (
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={jumpToPrevChange}
+                      className="h-7 gap-1 px-2.5 text-xs"
+                      title={`${t("compare.prevChange")} (Alt+\u2191)`}
+                      aria-label={t("compare.prevChange")}
+                    >
+                      <ChevronUp className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">{t("common.previous")}</span>
+                    </Button>
+                    <span className="min-w-[3.5rem] text-center text-xs tabular-nums text-muted-foreground">
+                      {currentChangeIdx >= 0
+                        ? `${currentChangeIdx + 1} / ${changedArticles.length}`
+                        : `${changedArticles.length} ${t("compare.changes")}`}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={jumpToNextChange}
+                      className="h-7 gap-1 px-2.5 text-xs"
+                      title={`${t("compare.nextChange")} (Alt+\u2193)`}
+                      aria-label={t("compare.nextChange")}
+                    >
+                      <span className="hidden sm:inline">{t("common.next")}</span>
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 )}
-                {exportingPdf ? t("compare.exporting") : t("compare.exportPdf")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                className="h-7 gap-1.5 px-3 text-xs"
-                title={t("compare.shareComparison")}
-                aria-label={t("compare.shareComparison")}
-              >
-                <Share2 className="h-3.5 w-3.5" />
-                {t("common.share")}
-              </Button>
-            </div>
-          </div>
-
-          {/* Article-level navigation: filter to a specific article */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{t("compare.specificArticle")}</span>
-            <Select
-              value={selectedArticle !== null ? String(selectedArticle) : "all"}
-              onValueChange={handleArticleSelect}
-            >
-              <SelectTrigger className="h-8 w-[240px] text-sm">
-                <SelectValue placeholder={t("compare.allArticles")} />
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px]">
-                <SelectItem value="all">{t("compare.allArticles")}</SelectItem>
-                {diffData.diff.map((article) => (
-                  <SelectItem key={article.articleNumber} value={String(article.articleNumber)}>
-                    {t("common.art")} {article.articleNumber}
-                    {article.a?.title || article.b?.title
-                      ? ` — ${article.a?.title || article.b?.title}`
-                      : ""}
-                    {article.status !== "unchanged" ? ` (${statusLabel(article.status)})` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {selectedArticle !== null && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearArticleSelection}
-                className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
-                title={t("compare.showAllArticles")}
-              >
-                <X className="h-3.5 w-3.5" />
-                {t("common.reset")}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {loading && (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">{t("compare.computing")}</span>
-        </div>
-      )}
-
-      {/* Error State */}
-      {error && !loading && (
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
-          {error}
-        </div>
-      )}
-
-      {/* Single article diff loading */}
-      {singleDiffLoading && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">{t("compare.loadingArticleDiff")}</span>
-        </div>
-      )}
-
-      {/* Single article diff mode */}
-      {selectedArticle !== null && singleDiffData && !singleDiffLoading && diffData && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">
-            {t("common.articlePrefix")} {singleDiffData.articleNumber}
-            {(singleDiffData.articleA?.title || singleDiffData.articleB?.title) && (
-              <span className="ml-2 text-base font-normal text-muted-foreground">
-                {singleDiffData.articleA?.title || singleDiffData.articleB?.title}
-              </span>
-            )}
-          </h2>
-
-          {/* Show presence info */}
-          <div className="flex gap-2 text-sm">
-            <Badge
-              variant={singleDiffData.exists.inA ? "default" : "secondary"}
-              className={singleDiffData.exists.inA ? "" : "opacity-50"}
-            >
-              {versionA}:{" "}
-              {singleDiffData.exists.inA ? t("common.exists") : t("common.doesNotExist")}
-            </Badge>
-            <Badge
-              variant={singleDiffData.exists.inB ? "default" : "secondary"}
-              className={singleDiffData.exists.inB ? "" : "opacity-50"}
-            >
-              {versionB}:{" "}
-              {singleDiffData.exists.inB ? t("common.exists") : t("common.doesNotExist")}
-            </Badge>
-          </div>
-
-          {/* Diff content */}
-          {singleDiffData.exists.inA && singleDiffData.exists.inB ? (
-            <div className="rounded-lg border overflow-hidden">
-              {sideBySide && (
-                <div className="grid grid-cols-2 border-b text-xs font-semibold uppercase tracking-wider opacity-60">
-                  <div className="px-4 py-1.5 border-r">{versionA}</div>
-                  <div className="px-4 py-1.5">{versionB}</div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 rounded-lg border bg-muted/50 p-1">
+                    <Button
+                      variant={sideBySide ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setSideBySide(true)}
+                      className="h-7 gap-1.5 px-2.5 text-xs"
+                    >
+                      <Columns2 className="h-3.5 w-3.5" />
+                      {t("compare.sideBySide")}
+                    </Button>
+                    <Button
+                      variant={!sideBySide ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setSideBySide(false)}
+                      className="h-7 gap-1.5 px-2.5 text-xs"
+                    >
+                      <Rows2 className="h-3.5 w-3.5" />
+                      {t("compare.inline")}
+                    </Button>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportPdf}
+                    disabled={exportingPdf || !diffData}
+                    className="h-7 gap-1.5 px-3 text-xs"
+                    title={t("compare.exportPdf")}
+                  >
+                    {exportingPdf ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Download className="h-3.5 w-3.5" />
+                    )}
+                    {exportingPdf ? t("compare.exporting") : t("compare.exportPdf")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShare}
+                    className="h-7 gap-1.5 px-3 text-xs"
+                    title={t("compare.shareComparison")}
+                    aria-label={t("compare.shareComparison")}
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
+                    {t("common.share")}
+                  </Button>
                 </div>
-              )}
-              {!sideBySide && (
-                <div className="border-b text-xs font-semibold uppercase tracking-wider opacity-60 px-4 py-1.5">
-                  {versionA} → {versionB}
-                </div>
-              )}
-              <MonacoDiffViewer
-                original={singleDiffData.articleA?.content || ""}
-                modified={singleDiffData.articleB?.content || ""}
-                sideBySide={sideBySide}
-              />
-            </div>
-          ) : (
-            <div className="rounded-lg border p-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
-                {singleDiffData.exists.inA
-                  ? `${versionA} (${t("compare.removedIn")} ${versionB})`
-                  : `${versionB} (${t("compare.addedIn")})`}
               </div>
-              <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-background/50 rounded p-3 border">
-                {singleDiffData.exists.inA
-                  ? singleDiffData.articleA?.content
-                  : singleDiffData.articleB?.content}
+
+              {/* Article-level navigation: filter to a specific article */}
+              <div className="flex flex-wrap items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  {t("compare.specificArticle")}
+                </span>
+                <Select
+                  value={selectedArticle !== null ? String(selectedArticle) : "all"}
+                  onValueChange={handleArticleSelect}
+                >
+                  <SelectTrigger className="h-8 w-[240px] text-sm">
+                    <SelectValue placeholder={t("compare.allArticles")} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="all">{t("compare.allArticles")}</SelectItem>
+                    {diffData.diff.map((article) => (
+                      <SelectItem key={article.articleNumber} value={String(article.articleNumber)}>
+                        {t("common.art")} {article.articleNumber}
+                        {article.a?.title || article.b?.title
+                          ? ` — ${article.a?.title || article.b?.title}`
+                          : ""}
+                        {article.status !== "unchanged" ? ` (${statusLabel(article.status)})` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedArticle !== null && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearArticleSelection}
+                    className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+                    title={t("compare.showAllArticles")}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    {t("common.reset")}
+                  </Button>
+                )}
               </div>
             </div>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Full diff results (all articles) - shown when no single article selected */}
-      {diffData && !loading && selectedArticle === null && (
-        <div className="space-y-3">
-          {/* Changed articles */}
-          {changedArticles.length > 0 && (
+      {/* ── Scrollable content area (only this part scrolls) ── */}
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-3 py-4 sm:px-4">
+        <div className="container mx-auto max-w-full">
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-3 text-muted-foreground">{t("compare.computing")}</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !loading && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          {/* Single article diff loading */}
+          {singleDiffLoading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="ml-3 text-muted-foreground">{t("compare.loadingArticleDiff")}</span>
+            </div>
+          )}
+
+          {/* Single article diff mode */}
+          {selectedArticle !== null && singleDiffData && !singleDiffLoading && diffData && (
             <div className="space-y-3">
               <h2 className="text-lg font-semibold">
-                {t("compare.changedArticles")} ({changedArticles.length})
+                {t("common.articlePrefix")} {singleDiffData.articleNumber}
+                {(singleDiffData.articleA?.title || singleDiffData.articleB?.title) && (
+                  <span className="ml-2 text-base font-normal text-muted-foreground">
+                    {singleDiffData.articleA?.title || singleDiffData.articleB?.title}
+                  </span>
+                )}
               </h2>
-              {changedArticles.map((article, idx) => (
-                <DiffArticleCard
-                  key={article.articleNumber}
-                  article={article}
-                  statusColor={statusColor}
-                  statusLabel={statusLabel}
-                  yearA={versionA}
-                  yearB={versionB}
-                  sideBySide={sideBySide}
-                  forceExpand={forceExpandArticle === article.articleNumber}
-                  onForceExpandHandled={() => setForceExpandArticle(null)}
-                  isActive={currentChangeIdx === idx}
-                />
-              ))}
+
+              {/* Show presence info */}
+              <div className="flex gap-2 text-sm">
+                <Badge
+                  variant={singleDiffData.exists.inA ? "default" : "secondary"}
+                  className={singleDiffData.exists.inA ? "" : "opacity-50"}
+                >
+                  {versionA}:{" "}
+                  {singleDiffData.exists.inA ? t("common.exists") : t("common.doesNotExist")}
+                </Badge>
+                <Badge
+                  variant={singleDiffData.exists.inB ? "default" : "secondary"}
+                  className={singleDiffData.exists.inB ? "" : "opacity-50"}
+                >
+                  {versionB}:{" "}
+                  {singleDiffData.exists.inB ? t("common.exists") : t("common.doesNotExist")}
+                </Badge>
+              </div>
+
+              {/* Diff content */}
+              {singleDiffData.exists.inA && singleDiffData.exists.inB ? (
+                <div className="rounded-lg border overflow-hidden">
+                  {sideBySide && (
+                    <div className="grid grid-cols-2 border-b text-xs font-semibold uppercase tracking-wider opacity-60">
+                      <div className="px-4 py-1.5 border-r">{versionA}</div>
+                      <div className="px-4 py-1.5">{versionB}</div>
+                    </div>
+                  )}
+                  {!sideBySide && (
+                    <div className="border-b text-xs font-semibold uppercase tracking-wider opacity-60 px-4 py-1.5">
+                      {versionA} → {versionB}
+                    </div>
+                  )}
+                  <MonacoDiffViewer
+                    original={singleDiffData.articleA?.content || ""}
+                    modified={singleDiffData.articleB?.content || ""}
+                    sideBySide={sideBySide}
+                  />
+                </div>
+              ) : (
+                <div className="rounded-lg border p-4">
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-wider opacity-60">
+                    {singleDiffData.exists.inA
+                      ? `${versionA} (${t("compare.removedIn")} ${versionB})`
+                      : `${versionB} (${t("compare.addedIn")})`}
+                  </div>
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-background/50 rounded p-3 border">
+                    {singleDiffData.exists.inA
+                      ? singleDiffData.articleA?.content
+                      : singleDiffData.articleB?.content}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Unchanged articles - collapsed by default */}
-          {unchangedArticles.length > 0 && (
-            <div className="mt-6">
-              <Button
-                variant="ghost"
-                onClick={() => setShowUnchanged(!showUnchanged)}
-                className="text-muted-foreground"
-              >
-                {showUnchanged ? (
-                  <ChevronUp className="mr-2 h-4 w-4" />
-                ) : (
-                  <ChevronDown className="mr-2 h-4 w-4" />
-                )}
-                {showUnchanged ? t("common.hide") : t("common.showAll")} {unchangedArticles.length}{" "}
-                {t("common.unchangedArticles")}
-              </Button>
-              {showUnchanged && (
-                <div className="mt-3 space-y-2">
-                  {unchangedArticles.map((article) => (
-                    <UnchangedArticleCard key={article.articleNumber} article={article} />
+          {/* Full diff results (all articles) - shown when no single article selected */}
+          {diffData && !loading && selectedArticle === null && (
+            <div className="space-y-3">
+              {/* Changed articles */}
+              {changedArticles.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-lg font-semibold">
+                    {t("compare.changedArticles")} ({changedArticles.length})
+                  </h2>
+                  {changedArticles.map((article, idx) => (
+                    <DiffArticleCard
+                      key={article.articleNumber}
+                      article={article}
+                      statusColor={statusColor}
+                      statusLabel={statusLabel}
+                      yearA={versionA}
+                      yearB={versionB}
+                      sideBySide={sideBySide}
+                      forceExpand={forceExpandArticle === article.articleNumber}
+                      onForceExpandHandled={() => setForceExpandArticle(null)}
+                      isActive={currentChangeIdx === idx}
+                    />
                   ))}
                 </div>
               )}
+
+              {/* Unchanged articles - collapsed by default */}
+              {unchangedArticles.length > 0 && (
+                <div className="mt-6">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowUnchanged(!showUnchanged)}
+                    className="text-muted-foreground"
+                  >
+                    {showUnchanged ? (
+                      <ChevronUp className="mr-2 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="mr-2 h-4 w-4" />
+                    )}
+                    {showUnchanged ? t("common.hide") : t("common.showAll")}{" "}
+                    {unchangedArticles.length} {t("common.unchangedArticles")}
+                  </Button>
+                  {showUnchanged && (
+                    <div className="mt-3 space-y-2">
+                      {unchangedArticles.map((article) => (
+                        <UnchangedArticleCard key={article.articleNumber} article={article} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* No changes state */}
+              {changedArticles.length === 0 && unchangedArticles.length > 0 && (
+                <div className="py-12 text-center text-muted-foreground">
+                  {t("compare.noChanges")}
+                </div>
+              )}
             </div>
           )}
 
-          {/* No changes state */}
-          {changedArticles.length === 0 && unchangedArticles.length > 0 && (
-            <div className="py-12 text-center text-muted-foreground">{t("compare.noChanges")}</div>
+          {/* Empty state - no selections */}
+          {!diffData && !loading && !error && !versionA && !versionB && (
+            <div className="py-20 text-center text-muted-foreground">
+              <FileText className="mx-auto mb-4 h-12 w-12 opacity-30" />
+              <p className="text-lg">{t("compare.selectVersions")}</p>
+            </div>
           )}
         </div>
-      )}
-
-      {/* Empty state - no selections */}
-      {!diffData && !loading && !error && !versionA && !versionB && (
-        <div className="py-20 text-center text-muted-foreground">
-          <FileText className="mx-auto mb-4 h-12 w-12 opacity-30" />
-          <p className="text-lg">{t("compare.selectVersions")}</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
