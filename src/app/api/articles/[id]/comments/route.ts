@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { articles, comments } from "@/lib/db/schema";
 import { moderateComment } from "@/lib/moderation";
+import { RATE_LIMITS, checkRateLimit } from "@/lib/rate-limit";
 import { and, desc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -47,6 +48,31 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Fingerprint hash is required" }, { status: 400 });
     }
 
+    // Rate limiting: combine IP + fingerprint for unique identifier
+    const ip =
+      request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const rateLimitKey = `comments:${ip}:${fingerprintHash}`;
+    const rateCheck = checkRateLimit(rateLimitKey, RATE_LIMITS.comments);
+
+    if (!rateCheck.allowed) {
+      const retryAfter = Math.ceil((rateCheck.resetAt - Date.now()) / 1000);
+      return NextResponse.json(
+        {
+          error: "Prea multe comentarii într-un timp scurt. Vă rugăm să așteptați.",
+          retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(retryAfter),
+            "X-RateLimit-Limit": String(rateCheck.limit),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(Math.ceil(rateCheck.resetAt / 1000)),
+          },
+        },
+      );
+    }
+
     // Verify the article exists
     const article = await db.select().from(articles).where(eq(articles.id, articleId)).limit(1);
 
@@ -72,7 +98,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
       .returning();
 
-    return NextResponse.json(newComment, { status: 201 });
+    return NextResponse.json(newComment, {
+      status: 201,
+      headers: {
+        "X-RateLimit-Limit": String(rateCheck.limit),
+        "X-RateLimit-Remaining": String(rateCheck.remaining),
+        "X-RateLimit-Reset": String(Math.ceil(rateCheck.resetAt / 1000)),
+      },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
