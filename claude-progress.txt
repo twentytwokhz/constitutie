@@ -3101,3 +3101,33 @@
 
 ### Current Status
 - Feature #199 marked as passing
+
+## Session: 2026-02-28 (Agent handling feature #200)
+
+### Completed Features
+
+#### Feature #200: Export PDF issues - locale-aware PDF and dropdowns
+- **PDF locale support**: Created inline pdfLabels map (ro/en) in diff-pdf-document.tsx
+  since @react-pdf components cannot use React hooks (useTranslations). All PDF text
+  now respects the selected locale:
+  - Document title/author/subject metadata
+  - Article prefix: Articolul vs Article
+  - Status badges: Adaugat/Eliminat/Modificat/Neschimbat vs Added/Removed/Modified/Unchanged
+  - Summary labels, footer label, page numbers, generated-at label, empty state
+- **Version dropdown labels**: Updated compare-client.tsx Version interface to include
+  nameEn. Dropdowns now display v.nameEn when locale is en (e.g.,
+  "The 1952 Constitution (105 articles)" instead of "Constitutia din 1952 (105 articles)").
+- **PDF filename localization**: Updated both client-side and server-side to use
+  locale-aware filenames (constitution-comparison vs constitutia-comparatie).
+- **Font compatibility**: Inter font with Latin-ext OTF subset already handles
+  Romanian diacritics correctly. No font changes needed.
+- Biome lint: 0 errors, TypeScript tsc: 0 errors
+- Zero mock data patterns in codebase
+
+### Files Modified
+- src/components/diff/diff-pdf-document.tsx - Added pdfLabels map, PdfLabels interface, getLabels()
+- src/app/[locale]/compare/compare-client.tsx - Added nameEn to Version interface, locale-aware dropdowns
+- src/app/api/diff/export-pdf/route.ts - Locale-aware PDF download filename
+
+### Current Status
+- Feature #200 marked as passing
