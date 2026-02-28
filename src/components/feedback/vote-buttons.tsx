@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, ThumbsDown, ThumbsUp } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VoteButtonsProps {
   articleId: number;
@@ -42,6 +42,7 @@ export function VoteButtons({
   const [disagreeCount, setDisagreeCount] = useState(initialDisagreeCount);
   const [userVote, setUserVote] = useState<"agree" | "disagree" | null>(null);
   const [isVoting, setIsVoting] = useState(false);
+  const isVotingRef = useRef(false); // Synchronous guard against rapid double-clicks
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -55,8 +56,11 @@ export function VoteButtons({
 
   const handleVote = useCallback(
     async (voteType: "agree" | "disagree") => {
-      if (userVote || isVoting) return;
+      // Synchronous ref check prevents race condition from rapid double-clicks
+      // (React state updates are async, so isVoting may not reflect yet)
+      if (userVote || isVotingRef.current) return;
 
+      isVotingRef.current = true;
       setIsVoting(true);
       setError(null);
       setSuccessMsg(null);
@@ -95,10 +99,11 @@ export function VoteButtons({
       } catch {
         setError("Eroare de rețea");
       } finally {
+        isVotingRef.current = false;
         setIsVoting(false);
       }
     },
-    [articleId, userVote, isVoting],
+    [articleId, userVote],
   );
 
   return (
