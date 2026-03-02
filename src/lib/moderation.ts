@@ -2,10 +2,9 @@
  * AI Comment Moderation via OpenRouter API
  *
  * Uses a language model to evaluate comments for:
- * - Obscene/offensive language
- * - Spam or low-quality content
- * - Personal attacks
- * - Off-topic content
+ * - Obscene/vulgar language
+ * - Threats or incitement to violence
+ * - Hate speech or discrimination
  *
  * When the AI API is unavailable (network error, invalid key, bad response),
  * falls back to a programmatic profanity filter that checks against curated
@@ -28,18 +27,19 @@ const SYSTEM_PROMPT = `Ești un moderator automat de comentarii pentru o platfor
 
 Evaluează comentariul primit și decide dacă trebuie aprobat sau respins.
 
-RESPINGE comentariul dacă conține:
-- Limbaj obscen, vulgar sau ofensator
-- Atacuri la persoană sau discurs instigator la ură
-- Spam, reclame sau conținut irelevant
-- Conținut extrem de scurt sau fără sens (sub 3 cuvinte cu sens)
+RESPINGE comentariul DOAR dacă conține:
+- Limbaj obscen, vulgar sau înjurături
 - Amenințări sau incitare la violență
+- Discurs instigator la ură sau discriminare
 
-APROBĂ comentariul dacă:
-- Este constructiv, chiar dacă critic
-- Exprimă o opinie civilizată despre un articol constituțional
-- Pune întrebări legitime despre legislație
-- Oferă perspective sau interpretări relevante
+APROBĂ orice alt comentariu, inclusiv:
+- Opinii scurte sau simple (ex: "Bun articol", "Interesant", "Nu sunt de acord")
+- Critici sau dezacord exprimat civilizat
+- Întrebări de orice fel
+- Comentarii off-topic dar civilizate
+- Emotii sau reacții simple
+
+Fii PERMISIV. Singura regulă strictă este: fără limbaj vulgar sau amenințări.
 
 Răspunde DOAR cu un obiect JSON valid, fără alt text:
 {"approved": true, "reason": null}

@@ -156,7 +156,7 @@
     "about": "About the project",
     "aboutText": "Open source project for making the Romanian Constitution accessible. Data comes directly from the official texts of all 9 constitutions (1866–2003).",
     "constitution": "Constitution",
-    "builtWith": "Built with ❤️ by Florin Bobiș",
+    "builtWith": "Built with ❤️ by Florin",
     "copyright": "Romanian Constitution. Open-source project.",
     "explore": "Explore",
     "compare": "Compare",
@@ -170,7 +170,9 @@
     "constitution1965": "Constitution 1965",
     "constitution1986": "Constitution 1986",
     "constitution1991": "Constitution 1991",
-    "constitution2003": "Constitution 2003"
+    "constitution2003": "Constitution 2003",
+    "sourceCode": "Source Code",
+    "github": "GitHub"
   },
   "reader": {
     "tableOfContents": "Table of Contents",

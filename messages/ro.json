@@ -156,7 +156,7 @@
     "about": "Despre proiect",
     "aboutText": "Proiect open source pentru accesibilizarea Constituției României. Datele provin direct din textele oficiale ale tuturor celor 9 constituții (1866–2003).",
     "constitution": "Constituția",
-    "builtWith": "Realizat cu ❤️ de Florin Bobiș",
+    "builtWith": "Realizat cu ❤️ de Florin",
     "copyright": "Constituția României. Proiect open-source.",
     "explore": "Explorează",
     "compare": "Compară",
@@ -170,7 +170,9 @@
     "constitution1965": "Constituția 1965",
     "constitution1986": "Constituția 1986",
     "constitution1991": "Constituția 1991",
-    "constitution2003": "Constituția 2003"
+    "constitution2003": "Constituția 2003",
+    "sourceCode": "Cod sursă",
+    "github": "GitHub"
   },
   "reader": {
     "tableOfContents": "Cuprins",

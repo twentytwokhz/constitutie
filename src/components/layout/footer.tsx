@@ -1,6 +1,8 @@
 import { Link } from "@/i18n/navigation";
-import { BookOpen, GitCompareArrows, Network, Search } from "lucide-react";
+import { BookOpen, GitCompareArrows, Github, Network, Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+
+const GITHUB_URL = "https://github.com/twentytwokhz/constitutie";
 
 export async function Footer() {
   const t = await getTranslations();
@@ -92,6 +94,15 @@ export async function Footer() {
           <div>
             <h3 className="text-sm font-semibold">{t("footer.about")}</h3>
             <p className="mt-3 text-sm text-muted-foreground">{t("footer.aboutText")}</p>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Github className="h-4 w-4" />
+              {t("footer.sourceCode")}
+            </a>
           </div>
         </div>
 
@@ -100,7 +111,18 @@ export async function Footer() {
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} {t("footer.copyright")}
           </p>
-          <p className="text-xs text-muted-foreground">{t("footer.builtWith")}</p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-muted-foreground">{t("footer.builtWith")}</p>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label={t("footer.github")}
+            >
+              <Github className="h-4 w-4" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

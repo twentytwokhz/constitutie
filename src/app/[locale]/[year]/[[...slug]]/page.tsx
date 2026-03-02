@@ -491,8 +491,50 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           </article>
         </TextSelectionFeedback>
 
+        {/* Article Navigation (Prev/Next) — full deep links */}
+        <nav className="mt-8 flex items-center justify-between border-t border-border pt-6">
+          {prevArticle ? (
+            <Link
+              href={buildArticlePath(prevArticle)}
+              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="font-medium text-foreground">
+                Art. {prevArticle.number}
+                {prevArticle.title && (
+                  <span className="hidden sm:inline text-muted-foreground font-normal">
+                    {" "}
+                    — {prevArticle.title}
+                  </span>
+                )}
+              </span>
+            </Link>
+          ) : (
+            <div />
+          )}
+          {nextArticle ? (
+            <Link
+              href={buildArticlePath(nextArticle)}
+              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <span className="font-medium text-foreground">
+                Art. {nextArticle.number}
+                {nextArticle.title && (
+                  <span className="hidden sm:inline text-muted-foreground font-normal">
+                    {" "}
+                    — {nextArticle.title}
+                  </span>
+                )}
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          ) : (
+            <div />
+          )}
+        </nav>
+
         {/* Article Engagement: Vote & Share */}
-        <div className="mt-8 border-t border-border pt-6">
+        <div className="mt-6 border-t border-border pt-6">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-3">
@@ -517,58 +559,6 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
             </div>
           </div>
         </div>
-
-        {/* Article Navigation (Prev/Next) — full deep links */}
-        <nav className="mt-10 flex items-center justify-between border-t border-border pt-6">
-          {prevArticle ? (
-            <Link
-              href={buildArticlePath(prevArticle)}
-              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <ChevronLeft className="h-4 w-4 shrink-0 group-hover:-translate-x-0.5 transition-transform" />
-              <div className="text-left">
-                <span className="block text-xs uppercase tracking-wide text-muted-foreground">
-                  {tCommon("previous")}
-                </span>
-                <span className="block font-medium text-foreground">
-                  Art. {prevArticle.number}
-                  {prevArticle.title && (
-                    <span className="hidden sm:inline text-muted-foreground font-normal">
-                      {" "}
-                      — {prevArticle.title}
-                    </span>
-                  )}
-                </span>
-              </div>
-            </Link>
-          ) : (
-            <div />
-          )}
-          {nextArticle ? (
-            <Link
-              href={buildArticlePath(nextArticle)}
-              className="group flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <div className="text-right">
-                <span className="block text-xs uppercase tracking-wide text-muted-foreground">
-                  {tCommon("next")}
-                </span>
-                <span className="block font-medium text-foreground">
-                  Art. {nextArticle.number}
-                  {nextArticle.title && (
-                    <span className="hidden sm:inline text-muted-foreground font-normal">
-                      {" "}
-                      — {nextArticle.title}
-                    </span>
-                  )}
-                </span>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          ) : (
-            <div />
-          )}
-        </nav>
 
         {/* Comments Section */}
         <section className="mt-8 border-t border-border pt-6">
