@@ -7,13 +7,13 @@ import { routing } from "./i18n/routing";
 const intlMiddleware = createIntlMiddleware(routing);
 
 /**
- * Next.js Middleware — i18n Routing + Bot Protection
+ * Next.js Proxy — i18n Routing + Bot Protection
  *
  * Handles two concerns:
  * 1. Locale detection and routing for all page requests (via next-intl)
  * 2. Bot protection for API routes (blocks automated mutation requests)
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Bot protection for API routes
   if (request.nextUrl.pathname.startsWith("/api/")) {
     const { isBot, score, reason } = detectBot(request.headers, request.method);
