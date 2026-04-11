@@ -1,9 +1,9 @@
 "use client";
 
-import { TocSidebar } from "@/components/reader/toc-sidebar";
 import { List, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { TocSidebar } from "@/components/reader/toc-sidebar";
 
 interface MobileTocProps {
   year: number;

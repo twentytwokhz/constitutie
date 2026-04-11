@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { db } from "@/lib/db";
-import { articles, constitutionVersions } from "@/lib/db/schema";
 import { asc, eq } from "drizzle-orm";
 import { ImageResponse } from "next/og";
+import { db } from "@/lib/db";
+import { articles, constitutionVersions } from "@/lib/db/schema";
 
 export const alt = "Constituția României";
 export const size = { width: 1200, height: 630 };

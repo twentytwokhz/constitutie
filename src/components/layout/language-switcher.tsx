@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "@/i18n/navigation";
 import { Globe } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 const localeLabels: Record<string, string> = {
   ro: "RO",

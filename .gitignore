@@ -42,3 +42,12 @@ features.db-journal
 
 # Autoforge
 .autoforge/
+
+# Claude Code (local only)
+.claude/
+CLAUDE.md
+
+# Mempalace (local memory)
+.mempalace/
+mempalace.yaml
+entities.json

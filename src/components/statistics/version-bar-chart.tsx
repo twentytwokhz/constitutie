@@ -1,13 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useTranslations } from "next-intl";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 interface VersionData {
   year: number;

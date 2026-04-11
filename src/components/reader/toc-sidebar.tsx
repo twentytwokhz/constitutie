@@ -1,9 +1,9 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/navigation";
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link, usePathname } from "@/i18n/navigation";
 
 interface TocArticle {
   id: number;

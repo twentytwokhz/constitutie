@@ -1,3 +1,8 @@
+import { and, asc, eq } from "drizzle-orm";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { CommentsSection } from "@/components/feedback/comments-section";
 import { TextSelectionFeedback } from "@/components/feedback/text-selection-feedback";
 import { VoteButtons } from "@/components/feedback/vote-buttons";
@@ -9,11 +14,6 @@ import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { articles, constitutionVersions, structuralUnits } from "@/lib/db/schema";
-import { and, asc, eq } from "drizzle-orm";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
 
 /**
  * Generate per-article Open Graph and Twitter metadata for SEO and social sharing.

@@ -1,7 +1,7 @@
-import { db } from "@/lib/db";
-import { articles, constitutionVersions } from "@/lib/db/schema";
 import { asc } from "drizzle-orm";
 import type { MetadataRoute } from "next";
+import { db } from "@/lib/db";
+import { articles, constitutionVersions } from "@/lib/db/schema";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://constitutia-romaniei.ro";
 

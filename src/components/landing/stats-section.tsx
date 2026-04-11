@@ -1,7 +1,7 @@
-import { db } from "@/lib/db";
-import { articleReferences, articles, comments, constitutionVersions } from "@/lib/db/schema";
 import { count, eq } from "drizzle-orm";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { db } from "@/lib/db";
+import { articleReferences, articles, comments, constitutionVersions } from "@/lib/db/schema";
 import { StatsGrid } from "./stats-grid";
 
 async function getStats() {

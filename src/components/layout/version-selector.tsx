@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { CoatOfArms } from "@/components/national-symbols";
 import {
   Select,
@@ -9,8 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
 
 const VERSION_YEARS = [
   "2003",

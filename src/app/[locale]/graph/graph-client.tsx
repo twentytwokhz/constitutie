@@ -1,5 +1,8 @@
 "use client";
 
+import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ForceGraphCanvas, { type ForceGraphHandle } from "@/components/graph/force-graph";
 import {
   Select,
@@ -9,9 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Link } from "@/i18n/navigation";
-import { Maximize2, Minus, Network, Plus, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
 
 interface GraphNode {
   id: string;

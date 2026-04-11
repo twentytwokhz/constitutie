@@ -1,6 +1,6 @@
-import { DiffPdfDocument, type PdfDiffArticle } from "@/components/diff/diff-pdf-document";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { type NextRequest, NextResponse } from "next/server";
+import { DiffPdfDocument, type PdfDiffArticle } from "@/components/diff/diff-pdf-document";
 
 export const dynamic = "force-dynamic";
 

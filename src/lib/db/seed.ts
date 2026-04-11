@@ -24,8 +24,8 @@ import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
 import {
   ALL_CONSTITUTION_YEARS,
-  type ParsedVersion,
   contentToTipTap,
+  type ParsedVersion,
   parseConstitution,
 } from "../parser/index.js";
 import * as schema from "./schema.js";

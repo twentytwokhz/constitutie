@@ -1,7 +1,7 @@
-import { db } from "@/lib/db";
-import { articles, constitutionVersions } from "@/lib/db/schema";
 import { asc, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { articles, constitutionVersions } from "@/lib/db/schema";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

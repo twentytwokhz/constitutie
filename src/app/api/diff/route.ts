@@ -1,7 +1,7 @@
-import { db } from "@/lib/db";
-import { articles, constitutionVersions } from "@/lib/db/schema";
 import { and, asc, eq, isNotNull } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { articles, constitutionVersions } from "@/lib/db/schema";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
