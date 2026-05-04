@@ -11,18 +11,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { ALL_CONSTITUTION_YEARS } from "@/lib/parser";
 
-const VERSION_YEARS = [
-  "2003",
-  "1991",
-  "1986",
-  "1965",
-  "1952",
-  "1948",
-  "1938",
-  "1923",
-  "1866",
-] as const;
+// Header convention is newest-first; parser stores chronological ascending.
+const VERSION_YEARS = [...ALL_CONSTITUTION_YEARS]
+  .reverse()
+  .map((y) => y.toString());
 
 /**
  * Version selector dropdown for the header.
