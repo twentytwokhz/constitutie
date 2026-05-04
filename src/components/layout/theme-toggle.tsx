@@ -26,12 +26,9 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    // Return a placeholder with same dimensions to prevent layout shift
-    return (
-      <Button variant="ghost" size="icon" aria-label={t("toggle")} disabled>
-        <span className="h-5 w-5" />
-      </Button>
-    );
+    // Plain dimension-matched placeholder avoids next-themes/Radix Button
+    // hydration asymmetry on the `disabled` attribute under React 19.
+    return <span className="inline-block h-9 w-9" aria-hidden="true" />;
   }
 
   const isDark = resolvedTheme === "dark";

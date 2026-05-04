@@ -65,6 +65,11 @@ export function MonacoDiffViewer({
 
   const handleEditorMount: DiffOnMount = useCallback((editor) => {
     editorRef.current = editor;
+    // Monaco's `wordWrap` and `diffWordWrap` construction options sometimes
+    // don't propagate to the original (left) pane in side-by-side diffs.
+    // Force wrap on both panes explicitly so long single-line clauses wrap.
+    editor.getOriginalEditor().updateOptions({ wordWrap: "on" });
+    editor.getModifiedEditor().updateOptions({ wordWrap: "on" });
   }, []);
 
   if (!mounted) {
@@ -94,6 +99,7 @@ export function MonacoDiffViewer({
           scrollBeyondLastLine: false,
           lineNumbers: "off",
           wordWrap: "on",
+          diffWordWrap: "on",
           wrappingStrategy: "advanced",
           fontSize: 13,
           lineHeight: 20,
@@ -107,8 +113,7 @@ export function MonacoDiffViewer({
           enableSplitViewResizing: true,
           renderIndicators: true,
           renderMarginRevertIcon: false,
-          originalEditable: false,
-          domReadOnly: true,
+          useInlineViewWhenSpaceIsLimited: false,
           contextmenu: false,
           glyphMargin: false,
           folding: false,

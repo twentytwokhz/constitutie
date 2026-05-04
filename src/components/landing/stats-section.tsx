@@ -73,7 +73,7 @@ export async function StatsSection() {
               label: t("stats.comments"),
               description: t("stats.commentsSubtitle"),
             },
-          ]}
+          ].filter((item) => item.value > 0)}
         />
       </div>
     </section>

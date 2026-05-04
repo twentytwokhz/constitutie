@@ -49,14 +49,15 @@
     "backHome": "Înapoi la pagina principală"
   },
   "hero": {
-    "headline": "Constituția",
-    "headlineHighlight": "României",
-    "subtitle": "Explorează legea fundamentală a României prin toate versiunile sale istorice:",
-    "years": "1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003.",
-    "ctaExplore": "Explorează Constituția",
-    "ctaCompare": "Compară Versiuni",
+    "headline": "Vezi exact ce s-a schimbat în 9",
+    "headlineHighlight": "constituții",
+    "subtitle": "De la monarhia constituțională (1866) la integrarea euroatlantică (2003) — articol cu articol.",
+    "years": "",
+    "ctaExplore": "Citește Constituția din 2003",
+    "ctaCompare": "Compară versiunile",
     "romania": "România",
-    "fundamentalLaw": "Legea Fundamentală"
+    "fundamentalLaw": "Legea Fundamentală",
+    "provenance": "Sursă text: Monitorul Oficial · Cod sursă deschis pe GitHub"
   },
   "features": {
     "sectionTitle": "Descoperă funcționalitățile",

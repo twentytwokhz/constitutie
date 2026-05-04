@@ -119,9 +119,22 @@ export default async function HomePage() {
                   {t("hero.ctaCompare")}
                 </Link>
               </div>
+              <p
+                className="mt-6 text-xs text-muted-foreground/80 animate-word-reveal"
+                style={{ animationDelay: "900ms" }}
+              >
+                {t("hero.provenance")}
+              </p>
             </div>
-            <div className="flex-shrink-0 animate-word-reveal" style={{ animationDelay: "300ms" }}>
-              <IllustrationConstitution className="h-48 w-48 sm:h-64 sm:w-64 md:h-80 md:w-80 animate-gentle-float" />
+            <div
+              className="relative flex-shrink-0 animate-word-reveal"
+              style={{ animationDelay: "300ms" }}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-primary/25 via-primary/10 to-transparent blur-3xl"
+              />
+              <IllustrationConstitution className="h-64 w-64 sm:h-80 sm:w-80 md:h-[28rem] md:w-[28rem] drop-shadow-2xl animate-gentle-float" />
             </div>
           </div>
         </div>

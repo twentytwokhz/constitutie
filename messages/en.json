@@ -49,14 +49,15 @@
     "backHome": "Back to home"
   },
   "hero": {
-    "headline": "Romanian",
-    "headlineHighlight": "Constitution",
-    "subtitle": "Explore Romania's fundamental law through all its historical versions:",
-    "years": "1866, 1923, 1938, 1948, 1952, 1965, 1986, 1991, 2003.",
-    "ctaExplore": "Explore the Constitution",
-    "ctaCompare": "Compare Versions",
+    "headline": "See exactly what changed across 9",
+    "headlineHighlight": "constitutions",
+    "subtitle": "From constitutional monarchy (1866) to Euro-Atlantic integration (2003) — article by article.",
+    "years": "",
+    "ctaExplore": "Read the 2003 Constitution",
+    "ctaCompare": "Compare versions",
     "romania": "Romania",
-    "fundamentalLaw": "Fundamental Law"
+    "fundamentalLaw": "Fundamental Law",
+    "provenance": "Source text: Monitorul Oficial · Open source on GitHub"
   },
   "features": {
     "sectionTitle": "Discover the features",
